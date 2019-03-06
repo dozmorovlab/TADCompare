@@ -29,7 +29,7 @@
 #' #Find differential TADs
 #' diff_tads <- TADCompare(rao_chr20_25_prim, rao_chr20_25_rep, resolution = 25000)
 #'
-TADCompare = function(cont_mat1, cont_mat2, resolution, z_thresh = 2, window_size = 2000000/resolution, gap_thresh = .8) {
+TADCompare = function(cont_mat1, cont_mat2, TADs, resolution, z_thresh = 2, gap_thresh =.8) {
 
   require(PRIMME)
   require(Matrix)
@@ -38,37 +38,19 @@ TADCompare = function(cont_mat1, cont_mat2, resolution, z_thresh = 2, window_siz
 
   #Set maximize size of sliding window
 
-  #resolution = as.numeric(colnames(cont_mat1)[2])-as.numeric(colnames(cont_mat1)[1])
-  window_size = window_size
-
-  #Remove full gaps from matrices
-
-  non_gaps = which(colSums(cont_mat1) !=0 & (colSums(cont_mat2) !=0))
-
-  #Remove gaps
-  cont_mat1 = cont_mat1[non_gaps,non_gaps]
-  cont_mat2 = cont_mat2[non_gaps,non_gaps]
-
   #Defining window size
-  max_end = window_size
-  max_size = window_size/ceiling(200000/resolution)
-  min_size = ceiling(200000/resolution)
+
   Group_over = bind_rows()
-
-  start = 1
-  end = max_end
-
-  end_loop = 0
-
-  if (end+window_size>nrow(cont_mat1)) {
-    end = nrow(cont_mat1)
-  }
 
   point_dists1 = c()
   point_dists2 = c()
   Regions = c()
 
-  while (end_loop == 0) {
+  apply(TADs, 1, function(x) {
+
+    start = x[[1]]/resolution
+    end = x[[2]]/resolution
+
     #Subsetting
     sub_filt1 = cont_mat1[start:end, start:end]
     sub_filt2 = cont_mat2[start:end, start:end]
@@ -195,12 +177,14 @@ TADCompare = function(cont_mat1, cont_mat2, resolution, z_thresh = 2, window_siz
 
     #Get number of rows without 80% of contacts and make NA to control sparsity
 
-    point_dists1 = c(point_dists1, point_dist1)
-    point_dists2 = c(point_dists2, point_dist2)
+    dist_diff = (point_dists1)-(point_dists2)
+    #Getting the z-scores
+    sd_diff = dist_diff/(sd(dist_diff, na.rm = TRUE))
 
     Regions = c(Regions, colnames(sub_filt1))
 
       }
+  })
     #Test if we've reached end of matrix
     if (end == nrow(cont_mat1)) {
       end_loop = 1
