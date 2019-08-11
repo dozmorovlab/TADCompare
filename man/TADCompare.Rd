@@ -2,52 +2,66 @@
 % Please edit documentation in R/TADCompare.R
 \name{TADCompare}
 \alias{TADCompare}
-\title{Algorithm for differential TAD detection}
+\title{Differential TAD boundary detection}
 \usage{
 TADCompare(cont_mat1, cont_mat2, resolution, z_thresh = 2,
-  window_size = 2e+06/resolution, gap_thresh = 0.8)
+  window_size = 25, gap_thresh = 0.8, pre_TADs = FALSE,
+  TADs = NULL)
 }
 \arguments{
-\item{cont_mat1}{The first contact matrix to compare in either sparse 3 column, n x n or n x (n+3)
+\item{cont_mat1}{Contact matrix in either sparse 3 column, n x n or n x (n+3)
 form where the first three columns are coordinates in BED format.
 If an x n matrix is used, the column names must correspond to the start
-point of the corresponding bin. Required.}
+point of the corresponding bin. If large mode is selected, then
+this matrix must be a tab-seperated n x n or n x (n+3) and it should be the
+path to a contact matrix. Required.}
 
-\item{cont_mat2}{The first contact matrix to compare in either sparse 3 column, n x n or n x (n+3)
-form where the first three columns are coordinates in BED format.
-If an x n matrix is used, the column names must correspond to the start
-point of the corresponding bin. Required.}
+\item{cont_mat2}{Second contact matrix, used for differential comparison,
+must be in same format as cont_mat1. Required}
 
-\item{resolution}{Resolution of the contact matrix. Required}
+\item{resolution}{Resolution of the data. Used to assign TAD boundaries
+to genomic regions. If not provided, resolution will be estimated from
+column names of matrix. Default is "auto"}
 
-\item{z_thresh}{Threshold for boundary score. Corresponds to the z-score of
-differences between eigenvector gaps}
+\item{z_thresh}{Threshold for boundary score. Higher values result in a
+higher threshold for differential TADs. Default is 2.}
 
-\item{window_size}{Size of the sliding window. Defaults to 2000000/resolution}
+\item{gap_thresh}{Required \% of 0s before a region will be considered a gap
+and excluded. Default is .8}
 
-\item{gap_threshold}{Corresponds to the percentage of zeros allowed before
-a column/row is removed from the analysis. 1=100\%, .7 = 70\%, etc. Default is 1.}
+\item{pre_TADs}{Set TRUE if a pre-defined set of TAD boundaries will be
+tested (Defined by TADs parameter). If FALSE, TADCompare will test all
+possible boundaries. Default is FALSE}
+
+\item{TADs}{Data frame containing TAD boundaries to be tested. Column with
+boundaries must be named "end". Only works if pre_TADs is TRUE. Default is
+NULL}
 }
 \value{
-\item{diff_loci}{Data frame containing differential regions and their
-corresponding gap score. Additionally, the matrix in which the TAD boundary
-exists is listed.}
-
-\item{sd_diff}{Vector containing all boundary scores}
+A list containing differential TAD characteristics
+ \itemize{
+ \item TAD_Frame - Data frame containing any region where a TAD boundary
+ was detected.
+ \item Diff_Loci - Data frame containing any regions with differential
+ loci
+ \item Boundary_Scores - Boundary scores for the entire genome
+}
 }
 \description{
-Algorithm for differential TAD detection
+Differential TAD boundary detection
 }
 \details{
-Given two contact matrices, TADCompare returns a dataframe listing
-regions which contain differential TADs. It also returns a continuous score
-of boundary differences that can be used to compare regions of the genome.
+Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
+TADCompare identifies differential TAD boundaries. Using a novel boundary
+score metric, TADCompare simultaneously identifies TAD boundaries and
+tests for differential enrichment between datasets. Strength of interactions
+are provided using raw boundary scores and p-values.
 }
 \examples{
 #Read in data
-data("rao_chr20_25_prim")
 data("rao_chr20_25_rep")
+data("rao_chr20_25_prim")
 #Find differential TADs
-diff_tads <- TADCompare(rao_chr20_25_prim, rao_chr20_25_rep, resolution = 25000)
-
+diff_list <- TADCompare(rao_chr20_25_rep, rao_chr20_25_prim,
+resolution = 25000)
 }
