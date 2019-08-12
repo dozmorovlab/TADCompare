@@ -1,37 +1,26 @@
-#' Differential TAD boundary detection
+#' Consensus boundary identification
 #'
 #' @import dplyr
 #' @import magrittr
 #' @import PRIMME
-#' @importFrom GenomicRanges GRanges GRangesList start
-#' @param cont_mat1 Contact matrix in either sparse 3 column, n x n or n x (n+3)
+#' @param cont_mats List of contact matrices in either sparse 3 column, n x n or n x (n+3)
 #' form where the first three columns are coordinates in BED format.
 #' If an x n matrix is used, the column names must correspond to the start
-#' point of the corresponding bin. If large mode is selected, then
-#' this matrix must be a tab-seperated n x n or n x (n+3) and it should be the
-#' path to a contact matrix. Required.
-#' @param cont_mat2 Second contact matrix, used for differential comparison,
-#' must be in same format as cont_mat1. Required
+#' point of the corresponding bin. Required.
 #' @param resolution Resolution of the data. Used to assign TAD boundaries
 #' to genomic regions. If not provided, resolution will be estimated from
-#' column names of matrix. Default is "auto"
+#' column names of the first matrix. Default is "auto"
 #' @param z_thresh Threshold for boundary score. Higher values result in a
 #' higher threshold for differential TADs. Default is 2.
+#' @window_size Size of sliding window for TAD detection, measured in bins.
+#' Results should be consistent Default is 15.
 #' @param gap_thresh Required \% of 0s before a region will be considered a gap
 #' and excluded. Default is .8
-#' @param pre_TADs Set TRUE if a pre-defined set of TAD boundaries will be
-#' tested (Defined by TADs parameter). If FALSE, TADCompare will test all
-#' possible boundaries. Default is FALSE
-#' @param TADs Data frame containing TAD boundaries to be tested. Column with
-#' boundaries must be named "end". Only works if pre_TADs is TRUE. Default is
-#' NULL
-#' @return A list containing differential TAD characteristics
+#' @return A list containing consensus TAD boundaries and overall scores
 #'  \itemize{
-#'  \item TAD_Frame - Data frame containing any region where a TAD boundary
-#'  was detected.
-#'  \item Diff_Loci - Data frame containing any regions with differential
-#'  loci
-#'  \item Boundary_Scores - Boundary scores for the entire genome
+#'  \item Consensus - Data frame containing location of all consensus
+#'  boundaries
+#'  \item All_Regions - Data frame containing consensus scores for all regions
 #' }
 #' @export
 #' @details Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
@@ -41,16 +30,15 @@
 #' are provided using raw boundary scores and p-values.
 #' @examples
 #' #Read in data
-#' data("rao_chr20_25_rep")
-#' data("rao_chr20_25_prim")
-#' #Find differential TADs
-#' diff_list <- TADCompare(rao_chr20_25_rep, rao_chr20_25_prim,
-#' resolution = 25000)
+#' data("rao_chr22_rep")
+#' data("rao_chr22_prim")
+#' cont_mats = list(rao_chr22_rep, rao_chr22_prim)
+#' #Find consensus TAD boundaries
+#' diff_list <- TADCompare(cont_mats, resolution = 50000)
 #'
 
 ConsensusTADs = function(cont_mats, resolution,
-                      z_thresh = 2, window_size = 25, gap_thresh = .8,
-                       Pre_Def = TRUE) {
+                      z_thresh = 2, window_size = 15, gap_thresh = .8) {
 
   require(PRIMME)
   require(Matrix)
@@ -114,8 +102,8 @@ ConsensusTADs = function(cont_mats, resolution,
     apply(TAD_Frame %>% dplyr::select(-Coordinate) %>% as.matrix(.)
           ,1, median))
 
-  return(list(Full = score_frame,
-              Consensus = TAD_Frame))
+  return(list(Consensus = TAD_Frame,
+              All_Regions = score_frame))
 }
 
 
