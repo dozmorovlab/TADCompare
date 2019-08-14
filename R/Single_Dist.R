@@ -1,9 +1,4 @@
-Single_Dist = function(cont_mat1, resolution, window_size = 25, gap_thresh = .8) {
-
-  #Set maximize size of sliding window
-
-  #resolution = as.numeric(colnames(cont_mat1)[2])-as.numeric(colnames(cont_mat1)[1])
-  window_size = window_size
+Single_Dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .8) {
 
   #Remove full gaps from matrices
 
@@ -11,6 +6,7 @@ Single_Dist = function(cont_mat1, resolution, window_size = 25, gap_thresh = .8)
 
   cont_mat_filt = cont_mat1[non_gaps,non_gaps]
 
+  #Setting window size parameters
   max_end = window_size
 
   start = 1

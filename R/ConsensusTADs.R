@@ -11,7 +11,7 @@
 #' to genomic regions. If not provided, resolution will be estimated from
 #' column names of the first matrix. Default is "auto"
 #' @param z_thresh Threshold for boundary score. Higher values result in a
-#' higher threshold for differential TADs. Default is 2.
+#' higher threshold for differential TADs. Default is 3.
 #' @window_size Size of sliding window for TAD detection, measured in bins.
 #' Results should be consistent Default is 15.
 #' @param gap_thresh Required \% of 0s before a region will be considered a gap
@@ -37,7 +37,87 @@
 #' diff_list <- TADCompare(cont_mats, resolution = 50000)
 
 ConsensusTADs = function(cont_mats, resolution,
-                      z_thresh = 2, window_size = 15, gap_thresh = .8) {
+                      z_thresh = 3, window_size = 15, gap_thresh = .8) {
+
+  #Get dimensions of first contact matrix
+  row_test = dim(cont_mats[[1]])[1]
+  col_test = dim(cont_mats[[1]])[2]
+
+  if (row_test == col_test) {
+    if (all(is.finite(cont_mats[[1]])) == FALSE) {
+      stop("Contact matrix 1 contains non-numeric entries")
+    }
+
+  }
+
+  if (col_test == 3) {
+
+
+    #Convert sparse matrix to n x n matrix
+
+    message("Converting to n x n matrix")
+
+    cont_mats = lapply(cont_mats, HiCcompare::sparse2full)
+
+    if (all(is.finite(cont_mats[[1]])) == FALSE) {
+      stop("Contact matrix 1 contains non-numeric entries")
+    }
+
+    if (resolution == "auto") {
+      message("Estimating resolution")
+      resolution = as.numeric(names(table(as.numeric(colnames(cont_mats[[1]]))-
+                                            lag(
+                                              as.numeric(
+                                                colnames(
+                                                  cont_mats[[1]])))))[1])
+    }
+
+  } else if (col_test-row_test == 3) {
+
+    message("Converting to n x n matrix")
+
+    cont_mats = lapply(cont_mats, function(x) {
+      #Find the start coordinates based on the second column of the bed file portion of matrix
+
+      start_coords = x[,2]
+
+      #Calculate resolution based on given bin size in bed file
+
+      resolution = as.numeric(x[1,3])-as.numeric(x[1,2])
+
+      #Remove bed file portion
+
+      x = as.matrix(x[,-c(seq_len(3))])
+
+      if (all(is.finite(x)) == FALSE) {
+        stop("Contact matrix contains non-numeric entries")
+      }
+
+
+      #Make column names correspond to bin start
+
+      colnames(x) = start_coords
+      return(x)
+    })
+
+    } else if (col_test!=3 & (row_test != col_test) & (col_test-row_test != 3)) {
+
+    #Throw error if matrix does not correspond to known matrix type
+
+    stop("Contact matrix must be sparse or n x n or n x (n+3)!")
+
+      } else if ( (resolution == "auto") & (col_test-row_test == 0) ) {
+
+      message("Estimating resolution")
+
+      #Estimating resolution based on most common distance between loci
+
+      resolution = as.numeric(names(table(as.numeric(colnames(cont_mats[[1]]))-
+                                          lag(
+                                            as.numeric(
+                                              colnames(
+                                                cont_mats[[1]])))))[1])
+    }
 
   #Calculate boundary scores
   bound_scores = lapply(seq_len(length(cont_mats)), function(x) {
@@ -49,6 +129,7 @@ ConsensusTADs = function(cont_mats, resolution,
     dist_sub
   })
 
+  #Reduce matrices to only include shared regions
   coord_sum = lapply(bound_scores, function(x) x[,2])
   shared_cols = Reduce(intersect, coord_sum)
   bound_scores = lapply(bound_scores, function(x) x %>%
@@ -60,7 +141,7 @@ ConsensusTADs = function(cont_mats, resolution,
   colnames(score_frame)[1] = "Sample"
   base_sample = score_frame %>% filter(Sample == "Sample 1")
 
-  #Get differences in boundary scores
+  #Get differences in boundary scores and convert to z-scores
 
   score_frame = score_frame %>% dplyr::group_by(Sample)  %>%
     dplyr::mutate(Diff_Score = (base_sample$Boundary-Boundary)) %>%
@@ -70,6 +151,7 @@ ConsensusTADs = function(cont_mats, resolution,
                          TAD_Score = (Boundary-mean(Boundary, na.rm = TRUE))/
                            sd(Boundary, na.rm = TRUE))
 
+  #Identify differential boundaries
   score_frame = score_frame %>% dplyr::mutate(Differential = ifelse(abs(Diff_Score)>z_thresh,
                                        "Differential", "Non-Differential"),
                                        Differential = ifelse(is.na(Diff_Score),
@@ -95,6 +177,7 @@ ConsensusTADs = function(cont_mats, resolution,
     apply(TAD_Frame %>% dplyr::select(-Coordinate) %>% as.matrix(.)
           ,1, median))
 
+  #Return consensus TAD boundaries and scores for all regions
   return(list(Consensus = TAD_Frame,
               All_Regions = score_frame))
 }

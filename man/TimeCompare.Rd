@@ -4,7 +4,7 @@
 \alias{TimeCompare}
 \title{Time-varying TAD boundary analysis}
 \usage{
-TimeCompare(cont_mats, resolution, z_thresh = 2, window_size = 15,
+TimeCompare(cont_mats, resolution, z_thresh = 3, window_size = 15,
   gap_thresh = 0.8, groupings = NULL)
 }
 \arguments{
@@ -18,7 +18,7 @@ to genomic regions. If not provided, resolution will be estimated from
 column names of the first matrix. Default is "auto"}
 
 \item{z_thresh}{Threshold for boundary score. Higher values result in a
-higher threshold for differential TADs. Default is 2.}
+higher threshold for differential TADs. Default is 3.}
 
 \item{gap_thresh}{Required \% of 0s before a region will be considered a gap
 and excluded. Default is .8}
