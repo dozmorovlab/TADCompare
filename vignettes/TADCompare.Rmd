@@ -179,19 +179,21 @@ no_res = TADCompare(rao_chr22_prim, rao_chr22_rep)
 identical(results$Diff_Loci, no_res$Diff_Loci)
 ```
 
-## Running TADcompare
+## Running MultiCompare
 
-The only required input is two contact matrices. TADCompare will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For fastests results, we suggest using n x n matrices. Additionally, we suggest users input the resolution of their data. If resolution is not inputted we estimate it using the column names of the inputted contact matrix. 
+`TimeCompare` takes a list of matrices similar in format to `TADCompare`. Like `TADCompare`, `TimeCompare` will estimate resolution and convert matrices to the appropriate format. For this example we use time-varying contact matrices from [@Rao:2017aa]. The matrices represent a single 50kb resolution contact matrix treated with chromatin destroying Auxin at 4 time points, starting with application and charting the withdrawal process.
 
 ```{r, message = FALSE, warning = FALSE}
-#Get the rao contact matrices built into the package
-data("rao_chr22_prim")
-data("rao_chr22_rep")
-#Placing matrices into a list
-#Running the algorithm with resolution specified
+#Get the list of contact matrices
+data("time_mats")
+#Checking format
+head(time_mats[[1]])
+#These are sparse 3-column matrices
+
+#Running MultiCompare
+time_var = TimeCompare(cont_mats, resolution = 50000)
 
 ```
-
 
 ## Removing gaps
 
