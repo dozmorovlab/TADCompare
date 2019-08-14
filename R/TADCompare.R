@@ -46,7 +46,7 @@
 #' diff_list <- TADCompare(rao_chr20_25_rep, rao_chr20_25_prim,
 #' resolution = 25000)
 
-TADCompare = function(cont_mat1, cont_mat2, resolution,
+TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                       z_thresh = 2, window_size = 25,
                       gap_thresh = .8, pre_TADs = FALSE,
                       TADs = NULL) {

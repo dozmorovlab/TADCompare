@@ -4,7 +4,7 @@
 \alias{TADCompare}
 \title{Differential TAD boundary detection}
 \usage{
-TADCompare(cont_mat1, cont_mat2, resolution, z_thresh = 2,
+TADCompare(cont_mat1, cont_mat2, resolution = "auto", z_thresh = 2,
   window_size = 25, gap_thresh = 0.8, pre_TADs = FALSE,
   TADs = NULL)
 }
