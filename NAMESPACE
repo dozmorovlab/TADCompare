@@ -2,6 +2,7 @@
 
 export(ConsensusTADs)
 export(TADCompare)
+export(TimeCompare)
 import(PRIMME)
 import(dplyr)
 import(magrittr)
