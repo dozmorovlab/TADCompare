@@ -30,8 +30,8 @@ NULL}
 \value{
 A list containing consensus TAD boundaries and overall scores
  \itemize{
- \item Consensus - Data frame containing location of all consensus
- boundaries
+ \item Time_TADs - Data frame containing all regions with a TAD boundary
+ at one or more time point
  \item All_Regions - Data frame containing consensus scores for all regions
 }
 }

@@ -22,8 +22,8 @@
 #' NULL
 #' @return A list containing consensus TAD boundaries and overall scores
 #'  \itemize{
-#'  \item Consensus - Data frame containing location of all consensus
-#'  boundaries
+#'  \item Time_TADs - Data frame containing all regions with a TAD boundary
+#'  at one or more time point
 #'  \item All_Regions - Data frame containing consensus scores for all regions
 #' }
 #' @export
@@ -146,7 +146,7 @@ TimeCompare = function(cont_mats, resolution,
   base_sample = score_frame %>% filter(Sample == "Sample 1")
 
   #Check if user specified groups
-  if (!is.null(groupings)) {
+  if (groupings == TRUE) {
     #Map groupings to samples
     Group_Frame = data.frame(Groups = groupings,
                              Sample = unique(score_frame$Sample))
@@ -266,9 +266,11 @@ TimeCompare = function(cont_mats, resolution,
 
   TAD_Frame = TAD_Frame %>% dplyr::mutate(Category = TAD_Cat)
 
-  return(list(Differential_Points = Differential_Points,
-              Full = score_frame,
-              Consensus = TAD_Frame))
+  TAD_Frame_Sub = TAD_Frame %>%
+    dplyr::filter_at(dplyr::vars(`Sample 1`:Consensus_Score), dplyr::any_vars(.>3))
+
+  return(list(TAD_Bounds = TAD_Frame_Sub,
+              All_Bounds = TAD_Frame))
 }
 
 
