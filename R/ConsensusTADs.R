@@ -35,7 +35,6 @@
 #' cont_mats = list(rao_chr22_rep, rao_chr22_prim)
 #' #Find consensus TAD boundaries
 #' diff_list <- TADCompare(cont_mats, resolution = 50000)
-#'
 
 ConsensusTADs = function(cont_mats, resolution,
                       z_thresh = 2, window_size = 15, gap_thresh = .8) {

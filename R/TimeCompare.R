@@ -1,4 +1,4 @@
-#' Consensus boundary identification
+#' Time-varying TAD boundary analysis
 #'
 #' @import dplyr
 #' @import magrittr
@@ -171,7 +171,7 @@ TimeCompare = function(cont_mats, resolution,
 
   Dynamic = ifelse(Dynamic, "Dynamic TAD", NA)
 
-  TAD_Cat = coalesce(as.character(Common_TADs),
+  TAD_Cat = dplyr::coalesce(as.character(Common_TADs),
                      as.character(Early_Appearing),
                      as.character(Late_Appearing),
                      as.character(Early_Disappearing),
@@ -182,17 +182,11 @@ TimeCompare = function(cont_mats, resolution,
 
   return(list(Differential_Points = Differential_Points,
               Full = score_frame,
-              Consensus = TAD_Frame,
-              )
+              Consensus = TAD_Frame))
 }
 
 
 Single_Dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .8) {
-
-  require(PRIMME)
-  require(Matrix)
-  require(dplyr)
-  require(cluster)
 
   #Set maximize size of sliding window
 
@@ -344,22 +338,3 @@ Single_Dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .8)
   colnames(point_dists1) = c("Index", "Coordinate","Boundary")
   return(point_dists1 = point_dists1)
 }
-
-Pairwise_z = function(x, z_thresh) {
-  poss_combs = combn(1:ncol(x),2)
-  lab_list = c()
-  z_frame = cbind()
-  for (i in 1:ncol(poss_combs)) {
-    index_1 = poss_combs[1,i]
-    index_2 = poss_combs[2,i]
-    diff = x[,index_1]-x[,index_2]
-    z_diff = ifelse(((diff-mean(diff))/sd(diff))>z_thresh,
-                    "Differential",
-                    "Non-Differential")
-    lab_list = c(lab_list,paste0(index_1,"-", index_2))
-    z_frame = cbind(z_frame, z_diff)
-  }
-  colnames(z_frame) = lab_list
-  return(z_frame)
-}
-
