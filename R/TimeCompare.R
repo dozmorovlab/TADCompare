@@ -146,7 +146,7 @@ TimeCompare = function(cont_mats, resolution,
   base_sample = score_frame %>% filter(Sample == "Sample 1")
 
   #Check if user specified groups
-  if (groupings == TRUE) {
+  if (!is.null(groupings) & groupings != FALSE) {
     #Map groupings to samples
     Group_Frame = data.frame(Groups = groupings,
                              Sample = unique(score_frame$Sample))
