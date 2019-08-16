@@ -83,7 +83,6 @@ TADCompare = function(cont_mat1, cont_mat2 = NULL, resolution = "auto",
     cont_mat1 = HiCcompare::sparse2full(cont_mat1)
     cont_mat2 = HiCcompare::sparse2full(cont_mat2)
 
-
     if (all(is.finite(cont_mat1)) == FALSE) {
       stop("Contact matrix 1 contains non-numeric entries")
     }
@@ -91,8 +90,6 @@ TADCompare = function(cont_mat1, cont_mat2 = NULL, resolution = "auto",
     if (all(is.finite(cont_mat2)) == FALSE) {
       stop("Contact matrix 2 contains non-numeric entries")
     }
-
-
     if (resolution == "auto") {
       message("Estimating resolution")
       resolution = as.numeric(names(table(as.numeric(colnames(cont_mat1))-lag(as.numeric(colnames(cont_mat1)))))[1])

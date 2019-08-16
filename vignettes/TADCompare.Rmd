@@ -207,16 +207,9 @@ data("rao_chr22_rep")
 cont_mats = list(rao_chr22_prim, rao_chr22_rep)
 #Running MultiCompare
 con_tads = ConsensusTADs(cont_mats, resolution = 50000)
-#Print head of all regions containing a TAD at one time point
+#Print head of all regions containing a TAD at at least one time point
 head(con_tads$Consensus)
 ```
-## Removing gaps
-
-Though, it has been shown that windowed spectral clustering is more robust to sparsity than other common methods[@cresswell:2019aa], there is still some instability caused by consecutive regions of gaps. To counter this, we use a `gap_threshold` parameter to allow users to exclude regions based on how many zeros are included. By default this value is set to 1 which means only columns/rows with 100% of values being zero are removed before analysis. Accordingly, setting this value to .7 would mean rows/columns with 70% zeros would be removed. Since we are not interested in long-range contacts for TAD identification, this percentage only applies to the number of zeros within a specific distance of the diagonal (Defined by the maximum TAD size). Users must be careful not to filter too much as this can remove informative regions of the matrix.
-
-## Running SpectralTAD with parallelization
-
-It is sometimes the case that people want to run SpectralTAD on multiple chromosomes at once in parallel. This can be done using the `SpectralTAD_Par` function. SpectralTAD_Par is identical to SpectralTAD but takes a list of contact matrices as an input. These matrices can be of any of the allowable types and mixing of types is allowed. Users are required to provide a vector of chromosomes, `chr_over`, where it is ordered such that each entry matches up with its corresponding contact matrix in the list of matrices. Users can also input list names using the `labels` parameter. In terms of parallelization, users can either input the number of cores they would like to use or the function will automatically use 1 less than the total number of cores on the computer on which it is ran. The function works on Linux/Mac and Windows with automatic OS detection built in. We show the steps below.
 
 ## Effect of matrix type on runtime
 
@@ -224,65 +217,33 @@ The type of matrix input into the algorithm can affect runtimes for the algorith
 
 ```{r, message = FALSE}
 library(microbenchmark)
-#Converting to nxn
-n_n = HiCcompare::sparse2full(rao_chr20_25_rep)
+#Converting to sparse
+prim_sparse = HiCcompare::full2sparse(rao_chr22_prim)
+rep_sparse = HiCcompare::full2sparse(rao_chr22_rep)
 #Converting to nxn+3
-n_n_3 = cbind.data.frame("chr20", as.numeric(colnames(n_n)), as.numeric(colnames(n_n))+25000, n_n)
+#Primary
+prim_n_n_3 = cbind.data.frame("chr20", as.numeric(colnames(rao_chr22_prim)), as.numeric(colnames(rao_chr22_prim))+50000, rao_chr22_prim)
+#Replicate
+rep_n_n_3 = cbind.data.frame("chr20", as.numeric(colnames(rao_chr22_rep)), as.numeric(colnames(rao_chr22_rep))+50000, rao_chr22_rep)
 #Defining each function
-sparse = SpectralTAD(cont_mat = rao_chr20_25_rep, chr = "chr20", qual_filter = FALSE)
-n_by_n = SpectralTAD(cont_mat = n_n, chr = "chr20", qual_filter = FALSE)
-n_by_n_3 =SpectralTAD(cont_mat = n_n_3, chr = "chr20", qual_filter = FALSE)
+#Sparse
+sparse = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000)
+#NxN
+n_by_n = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000)
+#Nx(N+3)
+n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000)
 
 #Benchmarking different parameters
-microbenchmark(sparse = SpectralTAD(cont_mat = rao_chr20_25_rep, chr = "chr20", qual_filter = FALSE),
-n_by_n = SpectralTAD(cont_mat = n_n, chr = "chr20", qual_filter = FALSE),
-n_by_n_3 =SpectralTAD(cont_mat = n_n_3, chr = "chr20", qual_filter = FALSE), unit = "s", times = 3)
+microbenchmark(
+#Sparse
+sparse = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000),
+#NxN
+n_by_n = TADCompare(cont_mat1 = rao_chr22_prim, cont_mat2 = rao_chr22_rep, resolution = 50000),
+#Nx(N+3)
+n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000), times = 5, unit = "s"
+)
 ```
 
-## Effect of parameters on runtime
-
-Just as the type of data affects runtime, the parameters used to detect TADs do as well. The main bottleneck is the quality filter function which requires the inversion of a matrix and the calculation of silhouette score.
-
-```{r, message = FALSE}
-microbenchmark(quality_filter = SpectralTAD(cont_mat = n_n, chr = "chr20", qual_filter = TRUE, z_clust = FALSE), no_filter = SpectralTAD(cont_mat = n_n, chr = "chr20", qual_filter = FALSE, z_clust = FALSE), z_clust = SpectralTAD(cont_mat = n_n, chr = "chr20", qual_filter = FALSE, z_clust = TRUE), times = 3, unit = "s")
-```
-
-As can be seen using the z-score method is the fastest.
-
-## Using SpectralTAD output with HiCExplorer and Juicebox
-
-SpectralTAD is designed to work in tandem with Juicebox (http://www.aidenlab.org/juicebox/) and HiCExplorer (https://hicexplorer.usegalaxy.eu/), two popular TAD visualization tools. Users may output files, corresponding to either tools.
-
-### Using SpectralTAD with HiCExplorer
-
-HiCExplorer takes simple bed files. To use SpectralTAD with HiCExplorer, do the following:
-
-```{r, eval = FALSE}
-#Get contact matrix
-data("rao_chr20_25_rep")
-head(rao_chr20_25_rep)
-#Run spectral TAD with output format "hicexplorer" or "bed" and specify the path
-spec_hier = SpectralTAD(rao_chr20_25_rep, chr = "chr20", resolution = 25000, qual_filter = FALSE, levels = 3, out_format = "hicexplorer", out_path = "chr20.bed")
-
-```
-
-This code will output a three-column bed file with TAD coordinates for all three levels. hicPlotTADs from HiCExplorer takes a .ini configuration file. To use SpectralTAD results you simply just have to set the output file as the directory under the [tads] subheading. For a full walk-through see (https://hicexplorer.readthedocs.io/en/latest/content/tools/hicPlotTADs.html#id4) under the heading "Configuration file template."
-
-### Using SpectralTAD with Juicebox
-
-Juicebox takes bedpe files as its primary file type. To use SpectralTAD with Juicebox, do the following:
-
-```{r, eval = FALSE}
-#Get contact matrix
-data("rao_chr20_25_rep")
-head(rao_chr20_25_rep)
-#Run spectral TAD with output format "hicexplorer" or "bed" and specify the path
-spec_hier = SpectralTAD(rao_chr20_25_rep, chr = "chr20", resolution = 25000, qual_filter = FALSE, levels = 3, out_format = "juicebox", out_path = "chr20.bedpe")
-```
-
-The output for this code is an 11-column bedpe file, which is formatted to work for Juicebox. To use the file, you must first select a HiC matrix in the Juicebox interface (https://www.aidenlab.org/juicebox/). This is done by choosing `Load Map -> Select File -> Select Contact Map`. This data corresponds to `Rao and Huntley et al. | Cell 2014 GM12878 (human) in situ ENCODE Batch 1 HIC048` so we select this. Alternatively, you can upload your own hic matrix in .hic or .cool format. To select the TADs called by `SpectralTAD` simply choose `Load Tracks -> Local Track File -> Choose File -> chr20.bedpe`. To view chromosome 20 specifically, select `≡ -> Chromosomes -> chr20`.
-
-
-
+As we see, TADCompare is extremely fast no matter the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
 
 # References
