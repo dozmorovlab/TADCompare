@@ -179,7 +179,7 @@ no_res = TADCompare(rao_chr22_prim, rao_chr22_rep)
 identical(results$Diff_Loci, no_res$Diff_Loci)
 ```
 
-## Running MultiCompare
+## Running TimeCompare
 
 `TimeCompare` takes a list of matrices similar in format to `TADCompare`. Like `TADCompare`, `TimeCompare` will estimate resolution and convert matrices to the appropriate format. For this example we use time-varying contact matrices from [@Rao:2017aa]. The matrices represent a single 50kb resolution contact matrix treated with chromatin destroying Auxin at 4 time points, starting with application and charting the withdrawal process.
 
@@ -189,12 +189,27 @@ data("time_mats")
 #Checking format
 head(time_mats[[1]])
 #These are sparse 3-column matrices
-
 #Running MultiCompare
-time_var = TimeCompare(cont_mats, resolution = 50000)
-
+time_var = TimeCompare(time_mats, resolution = 50000)
+#Print head of all regions containing a TAD at one time point
+head(time_var$TAD_Bounds)
 ```
 
+## Running ConsensusTADs
+
+`ConsensusTADs` takes essentially the same input as `TimeCompare` (a list of contact matrices) and provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these we can get a single set of TADs summarized across a set of replicates, conditions or time points. For this example we use the two replicates from [@Rao:2014aa].
+
+```{r, message = FALSE, warning = FALSE}
+#Get the rao contact matrices built into the package
+data("rao_chr22_prim")
+data("rao_chr22_rep")
+#Place into list
+cont_mats = list(rao_chr22_prim, rao_chr22_rep)
+#Running MultiCompare
+con_tads = ConsensusTADs(cont_mats, resolution = 50000)
+#Print head of all regions containing a TAD at one time point
+head(con_tads$Consensus)
+```
 ## Removing gaps
 
 Though, it has been shown that windowed spectral clustering is more robust to sparsity than other common methods[@cresswell:2019aa], there is still some instability caused by consecutive regions of gaps. To counter this, we use a `gap_threshold` parameter to allow users to exclude regions based on how many zeros are included. By default this value is set to 1 which means only columns/rows with 100% of values being zero are removed before analysis. Accordingly, setting this value to .7 would mean rows/columns with 70% zeros would be removed. Since we are not interested in long-range contacts for TAD identification, this percentage only applies to the number of zeros within a specific distance of the diagonal (Defined by the maximum TAD size). Users must be careful not to filter too much as this can remove informative regions of the matrix.
