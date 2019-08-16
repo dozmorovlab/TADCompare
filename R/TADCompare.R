@@ -46,12 +46,12 @@
 #' diff_list <- TADCompare(rao_chr20_25_rep, rao_chr20_25_prim,
 #' resolution = 25000)
 
-TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
+TADCompare = function(cont_mat1, cont_mat2 = NULL, resolution = "auto",
                       z_thresh = 2, window_size = 25,
                       gap_thresh = .8, pre_TADs = FALSE,
                       TADs = NULL) {
 
-
+  #Pulling out dimensions to test for matrix type
   row_test = dim(cont_mat1)[1]
   col_test = dim(cont_mat1)[2]
 
@@ -108,7 +108,7 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
 
     #Calculate resolution based on given bin size in bed file
 
-    resolution = as.numeric(cont_mat[1,3])-as.numeric(cont_mat[1,2])
+    resolution = as.numeric(cont_mat1[1,3])-as.numeric(cont_mat1[1,2])
 
     #Remove bed file portion
 
