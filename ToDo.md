@@ -5,5 +5,6 @@
         - Total number of TADs, gaps
         - Width distribution (min, mean, median, max) of TADs, gaps
         - Boundary strength statistics (min, mean, median, max) of TADs
+            - Variance of boundary strength (also may change)
  
  - For differential detection and time course analysis, add a function that returns the stacked bar plot, like https://www.smartsheet.com/sites/default/files/ic-excel-stacked-bar-charts-part-to-hole.png. Goal - to see the proportions of types of TAD boundary changes, both for two-group and time course analyses. 
