@@ -27,3 +27,13 @@ E  creating vignettes (18.6s)
    Error: Vignette re-building failed.
    Execution halted
 ```
+
+## Vignette
+
+- Address current ???
+- Split the current vignette into four, titles quoted:
+    1) "Input data". Includes file format description (beginning of the current vignette) and benchmarking of file format conversions (end)
+    2) "TAD comparison between two conditions"
+    3) "TAD comparison across time course"
+    4) "Consensus TAD calling"
+    - Write each vignette to be completely self-standing. Assume zero prior knowkedge, be verbose. Assume a user never read the paper, clarify everything. Make your vignettes separate papers, that is, reasonably follow IMRaD format.
