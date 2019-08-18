@@ -10,3 +10,20 @@
  - For differential detection and time course analysis, add a function that returns the stacked bar plot, like https://www.smartsheet.com/sites/default/files/ic-excel-stacked-bar-charts-part-to-hole.png. Goal - to see the proportions of types of TAD boundary changes, both for two-group and time course analyses. 
  
 - Add `README.md`, formatted similar to `SpectralTAD` package. See "Add to README.md" section at https://github.com/mdozmorov/Programming_notes#r-packages
+
+- Installation error: `remotes::install_github("cresswellkg/TADCompare", build_vignettes = TRUE)`
+```
+E  creating vignettes (18.6s)
+   --- re-building ‘TADCompare.Rmd’ using rmarkdown
+   Warning in data("rao_chr22_prim") : data set 'rao_chr22_prim' not found
+   Quitting from lines 60-63 (TADCompare.Rmd) 
+   Error: processing vignette 'TADCompare.Rmd' failed with diagnostics:
+   object 'rao_chr22_prim' not found
+   --- failed re-building ‘TADCompare.Rmd’
+   
+   SUMMARY: processing the following file failed:
+     ‘TADCompare.Rmd’
+   
+   Error: Vignette re-building failed.
+   Execution halted
+```
