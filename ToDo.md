@@ -8,3 +8,5 @@
             - Variance of boundary strength (also may change)
  
  - For differential detection and time course analysis, add a function that returns the stacked bar plot, like https://www.smartsheet.com/sites/default/files/ic-excel-stacked-bar-charts-part-to-hole.png. Goal - to see the proportions of types of TAD boundary changes, both for two-group and time course analyses. 
+ 
+- Add `README.md`, formatted similar to `SpectralTAD` package. See "Add to README.md" section at https://github.com/mdozmorov/Programming_notes#r-packages
