@@ -46,7 +46,7 @@
 #' diff_list <- TADCompare(rao_chr20_25_rep, rao_chr20_25_prim,
 #' resolution = 25000)
 
-TADCompare = function(cont_mat1, cont_mat2 = NULL, resolution = "auto",
+TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                       z_thresh = 2, window_size = 25,
                       gap_thresh = .8, pre_TADs = FALSE,
                       TADs = NULL) {
@@ -360,7 +360,9 @@ TADCompare = function(cont_mat1, cont_mat2 = NULL, resolution = "auto",
                                  "Non-Differential"),
            Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
     arrange(Boundary) %>%
-    mutate(Bound_Dist = (Boundary-lag(Boundary))/resolution) %>%
+    mutate(Bound_Dist = pmin(abs(Boundary-lag(Boundary))/resolution,
+           abs((Boundary-lead(Boundary)))/resolution)) %>%
+
     mutate(Differential = ifelse( (Differential == "Differential") &
                                     (Bound_Dist<=5) & !is.na(Bound_Dist),
                                   "Shifted", Differential)) %>%
@@ -438,14 +440,23 @@ TADCompare = function(cont_mat1, cont_mat2 = NULL, resolution = "auto",
 
   #Add up-down enrichment of TAD boundaries
   TAD_Frame = TAD_Frame %>%
-    mutate(Type = ifelse( (TAD_Score1>3) &
-                            (TAD_Score2>3) &
+    mutate(Type = ifelse( (TAD_Score1>2) &
+                            (TAD_Score2>2) &
                             (Differential == "Differential"),
                           "Strength Change", Type))
 
+  TAD_Size = TAD_Frame %>% group_by(Enriched_In) %>%
+    transmute(Boundary_Distance = Boundary-lag(Boundary))
+
+  Size_Plot = ggplot(TAD_Size, aes(x = Enriched_In, y = Boundary_Distance,
+                                   fill = Enriched_In)) + geom_boxplot() +
+    theme_bw(base_size = 24)
+
+
   return(list(TAD_Frame =TAD_Frame,
               Diff_Loci = diff_loci,
-              Gap_Scores = Gap_Scores))
+              Gap_Scores = Gap_Scores,
+              Size_Plot = Size_Plot))
 }
 
 
