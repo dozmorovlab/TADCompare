@@ -269,8 +269,14 @@ TimeCompare = function(cont_mats, resolution,
   TAD_Frame_Sub = TAD_Frame %>%
     dplyr::filter_at(dplyr::vars(`Sample 1`:Consensus_Score), dplyr::any_vars(.>3))
 
+  TAD_Sum = TAD_Frame_Sub %>% group_by(Category) %>% summarise(Count = n())
+
+  Count_Plot = ggplot(TAD_Sum, aes(1,y = Count, fill = Category)) +
+    geom_bar(stat="identity") + theme_bw(base_size = 24)
+
   return(list(TAD_Bounds = TAD_Frame_Sub,
-              All_Bounds = TAD_Frame))
+              All_Bounds = TAD_Frame,
+              Count_Plot = Count_Plot))
 }
 
 .single_dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .8) {

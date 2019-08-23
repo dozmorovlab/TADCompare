@@ -440,8 +440,8 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
 
   #Add up-down enrichment of TAD boundaries
   TAD_Frame = TAD_Frame %>%
-    mutate(Type = ifelse( (TAD_Score1>2) &
-                            (TAD_Score2>2) &
+    mutate(Type = ifelse( (TAD_Score1>3) &
+                            (TAD_Score2>3) &
                             (Differential == "Differential"),
                           "Strength Change", Type))
 
@@ -452,11 +452,16 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                                    fill = Enriched_In)) + geom_boxplot() +
     theme_bw(base_size = 24)
 
+  TAD_Sum = TAD_Frame %>% group_by(Enriched_In, Type) %>% summarise(Count = n())
+
+  Count_Plot = ggplot(TAD_Sum, aes(x = Enriched_In, y = Count, fill = Type)) +
+    geom_bar(stat="identity") + theme_bw(base_size = 24)
 
   return(list(TAD_Frame =TAD_Frame,
               Diff_Loci = diff_loci,
               Gap_Scores = Gap_Scores,
-              Size_Plot = Size_Plot))
+              Size_Plot = Size_Plot,
+              Count_Plot = Count_Plot ))
 }
 
 
