@@ -446,6 +446,11 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                             (Differential == "Differential"),
                           "Strength Change", Type))
 
+  #Classify leftovers as complex
+
+  TAD_Frame = TAD_Frame %>% mutate(Type = gsub("^Differential$",
+                                               "Complex", Type))
+
   TAD_Size = TAD_Frame %>% group_by(Enriched_In) %>%
     transmute(Boundary_Distance = Boundary-lag(Boundary))
 
