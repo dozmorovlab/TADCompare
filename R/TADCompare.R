@@ -3,6 +3,7 @@
 #' @import dplyr
 #' @import magrittr
 #' @import PRIMME
+#' @import ggplot2
 #' @param cont_mat1 Contact matrix in either sparse 3 column, n x n or n x (n+3)
 #' form where the first three columns are coordinates in BED format.
 #' If an x n matrix is used, the column names must correspond to the start
@@ -374,7 +375,7 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                             (lag(Differential) == "Non-Differential") &
                             (lead(Differential) == "Non-Differential"),
                           ifelse(Enriched_In == "Matrix 1", "Split", "Merge"),
-                          Differential) )
+                          Differential))
 
   #See if TADs are pre-specified
 
@@ -463,6 +464,8 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
               Size_Plot = Size_Plot,
               Count_Plot = Count_Plot ))
 }
+
+
 
 
 
