@@ -346,9 +346,6 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
   diff_loci = data.frame(Region = as.numeric(Regions)[gaps],Gap_Score = sd_diff[gaps])
 
   #Return differential TAD boundaries
-  diff_loci = diff_loci %>% mutate(P_value = 2*(1-pnorm(abs(Gap_Score))), TAD_Region = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2"))
-  Gap_Scores = data.frame(Region = as.numeric(Regions), TAD_Score1 = TAD_Score1,
-                          TAD_Score2 =TAD_Score2,Gap_Score = sd_diff)
   TAD_Frame = data.frame(Boundary = as.numeric(Regions),
                          Gap_Score = sd_diff,
                          TAD_Score1, TAD_Score2)
@@ -464,7 +461,6 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
     geom_bar(stat="identity") + theme_bw(base_size = 24)
 
   return(list(TAD_Frame =TAD_Frame,
-              Diff_Loci = diff_loci,
               Gap_Scores = Gap_Scores,
               Size_Plot = Size_Plot,
               Count_Plot = Count_Plot ))
