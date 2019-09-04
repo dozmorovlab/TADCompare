@@ -32,6 +32,7 @@ bibliography: pack_ref.bib
 
 ```{r set-options, echo=FALSE, cache=FALSE}
 options(width = 400)
+options(stringsAsFactors = FALSE)
 ```
 
 # Introduction
@@ -54,14 +55,13 @@ library(TADCompare)
 
 ### Working with $n \times n$ matrices
 
-$n \times n$ contact matrices are most commonly associated with data coming from the Bing Ren lab (http://chromosome.sdsc.edu/mouse/hi-c/download.html). These contact matrices are square and symmetric with entry $ij$ corresponding to the number of contacts between region $i$ and region $j$. Below is an example of a $5 \times 5$ region of an $n \times n$ contact matrix derived from Rao et al. 2014 data [??? Gm12878?] [@Rao:2014aa], chromosome 22, 50kb resolution. Note the symmetry around the diagonal - the typical shape of chromatin interaction matrix.
+$n \times n$ contact matrices are most commonly associated with data coming from the Bing Ren lab (http://chromosome.sdsc.edu/mouse/hi-c/download.html). These contact matrices are square and symmetric with entry $ij$ corresponding to the number of contacts between region $i$ and region $j$. Below is an example of a $5 \times 5$ region of an $n \times n$ contact matrix derived from Rao et al. 2014 data, GM12878 cell line [@Rao:2014aa], chromosome 22, 50kb resolution. Note the symmetry around the diagonal - the typical shape of chromatin interaction matrix.
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 data("rao_chr22_prim")
 row.names(rao_chr22_prim) = colnames(rao_chr22_prim) = format(as.numeric(row.names(rao_chr22_prim)), scientific = FALSE)
-coords <- 30:35
-rao_chr22_prim[coords, coords]
-pheatmap::pheatmap(rao_chr22_prim[coords, coords], cluster_rows = FALSE, cluster_cols = FALSE)
+coords <- 200:275
+pheatmap::pheatmap(log10(rao_chr22_prim[coords, coords]), cluster_rows = FALSE, cluster_cols = FALSE)
 ```
 
 ### Working with $n \times (n+3)$ matrices
@@ -79,11 +79,11 @@ sub_mat
 
 ### Working with sparse 3-column matrices
 
-Sparse 3-column matrices, sometimes referred to as a coordinated lists, [??? First time I hear about it - is that true?] are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them. [??? You never mention why they call "sparse"] This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the `HiCcompare` package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix is shown below.
+Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the `HiCcompare` package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix is shown below.
 
 ```{r, echo = FALSE, warning = FALSE}
-data("rao_chr22_prim") [??? This is square data?]
-head(rao_chr22_prim)
+data("rao_chr22_prim") 
+head(HiCcompare::full2sparse(rao_chr22_prim))
 ```
 
 ### Working with other data types
@@ -118,7 +118,7 @@ diff_tads = lapply(names(sparse_mat1), function(x) {
 
 #### Working with HiC-Pro files
 
-HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs. [??? Check for correctness. What is in the 3rd column?] The `.bed` file maps these IDs to genomic coordinates. The steps for analyzing these files is shown below:
+HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains a four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs which map back to the coordinates in the bed file and the third column contains the number of contacts between the two regions. The steps for analyzing these files is shown below:
 
 ```{r, eval = FALSE}
 #Read in both files
@@ -176,7 +176,6 @@ dim(rao_chr22_rep)
 #Running the algorithm with resolution specified
 results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
 #Printing the first 5 differential boundaries
-[??? I get nothing, zero results]
 head(results$Diff_Loci, 5)
 [??? Need to describe the structure of the results object. It is involved, so should be a separate paragraph]
 #Repeating without specifying resolution
@@ -187,27 +186,23 @@ identical(results$Diff_Loci, no_res$Diff_Loci)
 
 ## Running TimeCompare
 
-`TimeCompare` takes a list of matrices similar in format to `TADCompare`. Like `TADCompare`, `TimeCompare` will estimate resolution and convert matrices to the appropriate format. For this example we use time-varying contact matrices from [@Rao:2017aa]. The matrices represent a single 50kb resolution contact matrix treated with chromatin destroying Auxin at 4 time points [??? This is wrong description. Read the original, know the data!], starting with application and charting the withdrawal process. [??? Describe the data, number of time points, etc.]
+`TimeCompare` takes a list of matrices similar in format to `TADCompare`. Like `TADCompare`, `TimeCompare` will estimate resolution and convert matrices to the appropriate format. For this example we use time-varying sparse 3-column contact matrices from [@Rao:2017aa], representing the HCT-116 cell line. The matrices represent a single chromosome 22 cell sample treated with TAD boundary destroying auxin. The data is then sequenced at 4 time points (20, 40, 60 and 180 minutes) after withdrawal of auxin. Once auxin is withdrawn, the TAD boundaries slowly return. Using `TimeCompare` we can track the return of TADs after withdrawal.
 
 ```{r, message = FALSE, warning = FALSE}
 #Get the list of contact matrices
 data("time_mats")
 #Checking format
 head(time_mats[[1]])
-[??? So, is this sparse data? Describe]
 #These are sparse 3-column matrices
 #Running MultiCompare
 time_var = TimeCompare(time_mats, resolution = 50000)
-[??? Lots of warning messages, `In bind_rows_(x, .id) : Unequal factor levels: coercing to character`. Check your code, this is prone to bugs!!!]
 #Print head of all regions containing a TAD at one time point
 head(time_var$TAD_Bounds)
 ```
 
 ## Running ConsensusTADs
 
-[??? Describe what it is doing!]
-
-`ConsensusTADs` takes essentially the same input as `TimeCompare` (a list of contact matrices) and provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these, we can get a single set of TADs summarized across a set of replicates, conditions or time points. For this example we use the two replicates from [@Rao:2014aa].
+`ConsensusTADs` is an approach for calling TADs across multiple datasets. It uses the median boundary score across n replicates or cell lines to calculate a consensus of TAD boundaries. This effectively filters out noisy TAD boundaries that may appear in only one or a few replicates or cell lines. `ConsensusTADs` takes essentially the same input as `TimeCompare` (a list of contact matrices) and provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these, we can get a single set of TADs summarized across a set of replicates, conditions or time points. For this example we use the two replicates from [@Rao:2014aa].
 
 ```{r, message = FALSE, warning = FALSE}
 #Get the rao contact matrices built into the package
@@ -217,7 +212,6 @@ data("rao_chr22_rep")
 cont_mats = list(rao_chr22_prim, rao_chr22_rep)
 #Running MultiCompare
 con_tads = ConsensusTADs(cont_mats, resolution = 50000)
-[??? Same warnings, `In bind_rows_(x, .id) : Unequal factor levels: coercing to character` - fix!!!]
 #Print head of all regions containing a TAD at at least one time point
 head(con_tads$Consensus)
 ```
@@ -233,15 +227,16 @@ prim_sparse = HiCcompare::full2sparse(rao_chr22_prim)
 rep_sparse = HiCcompare::full2sparse(rao_chr22_rep)
 #Converting to nxn+3
 #Primary
-[??? cbind.data.frame does not work. use explicit code, like
-sub_mat = data.frame(chr = "chr22", 
-                     start = as.numeric(colnames(rao_chr22_prim[coords, coords])), 
-                     end = as.numeric(colnames(rao_chr22_prim[coords, coords])) + 50000, 
-                     rao_chr22_prim[coords, coords]) 
-]
-prim_n_n_3 = cbind.data.frame("chr20", as.numeric(colnames(rao_chr22_prim)), as.numeric(colnames(rao_chr22_prim))+50000, rao_chr22_prim)
+prim_n_n_3 = data.frame(chr = "chr22",
+                        start = as.numeric(colnames(rao_chr22_prim)),
+                        end = as.numeric(colnames(rao_chr22_prim))+50000, 
+                        rao_chr22_prim)
+
 #Replicate
-rep_n_n_3 = cbind.data.frame("chr20", as.numeric(colnames(rao_chr22_rep)), as.numeric(colnames(rao_chr22_rep))+50000, rao_chr22_rep)
+rep_n_n_3 = data.frame(chr = "chr22", 
+                       start = as.numeric(colnames(rao_chr22_rep)),
+                       end = as.numeric(colnames(rao_chr22_rep))+50000,
+                       rao_chr22_rep)
 #Defining each function
 #Sparse
 sparse = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000)
@@ -259,9 +254,8 @@ n_by_n = TADCompare(cont_mat1 = rao_chr22_prim, cont_mat2 = rao_chr22_rep, resol
 #Nx(N+3)
 n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000), times = 5, unit = "s"
 )
-[??? Describe the resulting table]
 ```
 
-As we see, TADCompare is extremely fast no matter the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
+The table above shows a summary of runtimes for different types of contact matrices measured in seconds. As we see, TADCompare is extremely fast no matter the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
 
 # References
