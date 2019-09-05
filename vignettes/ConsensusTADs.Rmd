@@ -1,0 +1,39 @@
+---
+title: "ConsensusTADs"
+author: "Kellen Cresswell"
+date: "September 5, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Running ConsensusTADs
+
+`ConsensusTADs` is an approach for calling TADs across multiple datasets. It uses the median boundary score across n replicates or cell lines to calculate a consensus of TAD boundaries. This effectively filters out noisy TAD boundaries that may appear in only one or a few replicates or cell lines. `ConsensusTADs` takes essentially the same input as `TimeCompare` (a list of contact matrices) and provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these, we can get a single set of TADs summarized across a set of replicates, conditions or time points. For this example we use the two replicates from [@Rao:2014aa].
+
+```{r, message = FALSE, warning = FALSE}
+#Get the rao contact matrices built into the package
+data("rao_chr22_prim")
+data("rao_chr22_rep")
+#Place into list
+cont_mats = list(rao_chr22_prim, rao_chr22_rep)
+#Running MultiCompare
+con_tads = ConsensusTADs(cont_mats, resolution = 50000)
+```
+
+ConsensusTADs returns two data frames. The first contains all regions containing consensus TADs based on the consensus score.
+
+```{r}
+head(con_tads$Consensus)
+```
+
+The columns correspond to the coordinate of the region with a significant boundary score, the individual boundary score for each region and the consenus score.
+
+The second data frame, All_Regions, is identical in format but it includes every region of the genome which occurs in both matrices.
+
+```{r}
+head(con_tads$All_Regions)
+```
+

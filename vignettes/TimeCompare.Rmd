@@ -1,0 +1,44 @@
+---
+title: "TimeCompare"
+author: "Kellen Cresswell"
+date: "September 5, 2019"
+output: html_document
+---
+
+# Introduction
+
+`TimeCompare` is a function for time-course analysis of data. Briefly, a user inputs a list of contact matrices representing at least 4 time points (It will run with fewer but classifications may not be correct) and recieves a data frame containing all regions with at least one TAD boundary across all time points. These regions are further classified into 6 seperate types of temporal changes (Highly common, dynamic, early/late appearing and early/late disappearing) based on how TAD boundaries evolve over time. It also returns a plot summarizing the occurence of each TAD boundary and another data frame containing a summary of change at each region, regardless of whether a boundary was detected.
+
+## Running TimeCompare
+
+`TimeCompare` takes a list of matrices similar in format to `TADCompare`. Like `TADCompare`, `TimeCompare` will estimate resolution and convert matrices to the appropriate format. For this example we use time-varying sparse 3-column contact matrices from [@Rao:2017aa], representing the HCT-116 cell line. The matrices represent a single chromosome 22 cell sample treated with TAD boundary destroying auxin. The data is then sequenced at 4 time points (20, 40, 60 and 180 minutes) after withdrawal of auxin. Once auxin is withdrawn, the TAD boundaries slowly return. Using `TimeCompare` we can track the return of TADs after withdrawal.
+
+```{r, message = FALSE, warning = FALSE}
+#Get the list of contact matrices
+data("time_mats")
+#Checking format
+head(time_mats[[1]])
+#These are sparse 3-column matrices
+#Running MultiCompare
+time_var = TimeCompare(time_mats, resolution = 50000)
+```
+
+The first item returned by `TimeCompare` is TAD_Bounds, a data frame containing all regions that contain a TAD at at least one time point:
+
+```{r}
+head(time_var$TAD_Bounds)
+```
+
+The first column corresponds to genomic coordinates. The columns beginning with sample correspond to the boundary score at the given coordinate in each sample. Consensus score is simply the median score across all samples and the category corresponds to the type of change.
+
+All_Bounds is the second list entry and is identical but it includes every region of the genome regardless of whether it is a TAD or not.
+
+```{r}
+head(time_var$All_Bounds)
+```
+
+We also include a stacked barplot that includes the number of times each type of temporal boundary occurs in the data. This plot is created in ggplot2 and fully customizable.
+
+```{r}
+time_var$Count_Plot
+```
