@@ -19,7 +19,6 @@ bibliography: pack_ref.bib
 ---
 
 ```{r set-options, echo=FALSE, cache=FALSE}
-options(width = 400)
 options(stringsAsFactors = FALSE)
 ```
 
