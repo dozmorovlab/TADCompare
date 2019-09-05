@@ -11,23 +11,6 @@
  
 - Add `README.md`, formatted similar to `SpectralTAD` package. See "Add to README.md" section at https://github.com/mdozmorov/Programming_notes#r-packages
 
-- Installation error: `remotes::install_github("cresswellkg/TADCompare", build_vignettes = TRUE)`
-```
-E  creating vignettes (18.6s)
-   --- re-building ‘TADCompare.Rmd’ using rmarkdown
-   Warning in data("rao_chr22_prim") : data set 'rao_chr22_prim' not found
-   Quitting from lines 60-63 (TADCompare.Rmd) 
-   Error: processing vignette 'TADCompare.Rmd' failed with diagnostics:
-   object 'rao_chr22_prim' not found
-   --- failed re-building ‘TADCompare.Rmd’
-   
-   SUMMARY: processing the following file failed:
-     ‘TADCompare.Rmd’
-   
-   Error: Vignette re-building failed.
-   Execution halted
-```
-
 ## Vignette
 
 - Address current ???
@@ -37,3 +20,5 @@ E  creating vignettes (18.6s)
     3) "TAD comparison across time course"
     4) "Consensus TAD calling"
     - Write each vignette to be completely self-standing. Assume zero prior knowkedge, be verbose. Assume a user never read the paper, clarify everything. Make your vignettes separate papers, that is, reasonably follow IMRaD format.
+
+- Add gene enrichment analysis into vignette using rGREAT

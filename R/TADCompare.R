@@ -346,6 +346,8 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
   diff_loci = data.frame(Region = as.numeric(Regions)[gaps],Gap_Score = sd_diff[gaps])
 
   #Return differential TAD boundaries
+  Gap_Scores = data.frame(Region = as.numeric(Regions), TAD_Score1 = TAD_Score1,
+                          TAD_Score2 =TAD_Score2,Gap_Score = sd_diff)
   TAD_Frame = data.frame(Boundary = as.numeric(Regions),
                          Gap_Score = sd_diff,
                          TAD_Score1, TAD_Score2)
@@ -448,21 +450,24 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
   TAD_Frame = TAD_Frame %>% mutate(Type = gsub("^Differential$",
                                                "Complex", Type))
 
-  TAD_Size = TAD_Frame %>% group_by(Enriched_In) %>%
-    transmute(Boundary_Distance = Boundary-lag(Boundary))
+  TAD_Sum = TAD_Frame %>% group_by(Type) %>% summarise(Count = n())
 
-  Size_Plot = ggplot(TAD_Size, aes(x = Enriched_In, y = Boundary_Distance,
-                                   fill = Enriched_In)) + geom_boxplot() +
-    theme_bw(base_size = 24)
+  #Fix double counting of shifted boundaries
 
-  TAD_Sum = TAD_Frame %>% group_by(Enriched_In, Type) %>% summarise(Count = n())
+  TAD_Sum = TAD_Sum %>% mutate(Count = ifelse(Type == "Shifted",
+                                              Count/2,
+                               Count))
 
-  Count_Plot = ggplot(TAD_Sum, aes(x = Enriched_In, y = Count, fill = Type)) +
-    geom_bar(stat="identity") + theme_bw(base_size = 24)
+  Count_Plot = ggplot2::ggplot(TAD_Sum,
+                                            aes(x = 1,
+                                                y = Count, fill = Type)) +
+    geom_bar(stat="identity") + theme_bw(base_size = 24) +
+    theme(axis.title.x = element_blank(), panel.grid = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+    labs(y = "Number of Boundaries")
 
   return(list(TAD_Frame =TAD_Frame,
               Gap_Scores = Gap_Scores,
-              Size_Plot = Size_Plot,
               Count_Plot = Count_Plot ))
 }
 
