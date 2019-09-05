@@ -1,17 +1,40 @@
 ---
-title: "TimeCompare"
-author: "Kellen Cresswell"
-date: "September 5, 2019"
-output: html_document
+title: "TAD comparison across time course"
+author:
+- name: Kellen Cresswell
+  affiliation:
+  - &1 Department of Biostatistics, Virginia Commonwealth University, Richmond, VA
+- name: Mikhail Dozmorov
+  affiliation:
+  - *1
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{TADCompare}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+bibliography: pack_ref.bib
 ---
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 400)
+options(stringsAsFactors = FALSE)
+```
 
 # Introduction
 
 `TimeCompare` is a function for time-course analysis of data. Briefly, a user inputs a list of contact matrices representing at least 4 time points (It will run with fewer but classifications may not be correct) and recieves a data frame containing all regions with at least one TAD boundary across all time points. These regions are further classified into 6 seperate types of temporal changes (Highly common, dynamic, early/late appearing and early/late disappearing) based on how TAD boundaries evolve over time. It also returns a plot summarizing the occurence of each TAD boundary and another data frame containing a summary of change at each region, regardless of whether a boundary was detected.
 
-## Running TimeCompare
+# Running TimeCompare
 
 `TimeCompare` takes a list of matrices similar in format to `TADCompare`. Like `TADCompare`, `TimeCompare` will estimate resolution and convert matrices to the appropriate format. For this example we use time-varying sparse 3-column contact matrices from [@Rao:2017aa], representing the HCT-116 cell line. The matrices represent a single chromosome 22 cell sample treated with TAD boundary destroying auxin. The data is then sequenced at 4 time points (20, 40, 60 and 180 minutes) after withdrawal of auxin. Once auxin is withdrawn, the TAD boundaries slowly return. Using `TimeCompare` we can track the return of TADs after withdrawal.
+
+```{r, warning=FALSE,message=FALSE}
+library(TADCompare)
+library(dplyr)
+```
 
 ```{r, message = FALSE, warning = FALSE}
 #Get the list of contact matrices
@@ -42,3 +65,5 @@ We also include a stacked barplot that includes the number of times each type of
 ```{r}
 time_var$Count_Plot
 ```
+
+# References

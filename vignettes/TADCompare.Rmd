@@ -7,18 +7,6 @@ author:
 - name: Mikhail Dozmorov
   affiliation:
   - *1
-
-date: '`r format(Sys.Date(), "%B %e, %Y")`'
-abstract: >
-    TADCompare is an R package designed for identification and analysis of
-    differential Topoloigcally Associated Domains (TADs) across multiple
-    datasets. It uses a novel metric called boundary score that identifies
-    the likelihood of TAD boundaries and can be used to quantify difference
-    in TAD boundaries across datasets. We provide three unique functions:
-    TADCompare for differential TAD boundary identification, TimeCompare
-    for quantification of change over time and ConsensusTADs for consensus
-    TAD calling. 
-package: TADCompare
 output:
     BiocStyle::html_document
 vignette: >
@@ -35,9 +23,18 @@ options(width = 400)
 options(stringsAsFactors = FALSE)
 ```
 
-## Running TADcompare
+# Introduction
+
+TADCompare is a function that allows users to automatically identify differential TAD boundaries between two datasets. For each differential boundary, we provide unique classification (complex, merge, split, shifted and strength change) defining how the TAD changes between the datasets.
+
+# Running TADcompare
 
 The only required input is two contact matrices. TADCompare will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For fastests results, we suggest using $n \times n$ matrices. Additionally, we suggest users to provide resolution of their data. If resolution is not provided, we estimate it using the numeric column names of contact matrices. 
+
+```{r, warning=FALSE,message=FALSE}
+library(TADCompare)
+library(dplyr)
+```
 
 ```{r, message = FALSE, warning = FALSE}
 #Get the rao contact matrices built into the package
@@ -54,11 +51,8 @@ no_res = TADCompare(rao_chr22_prim, rao_chr22_rep)
 identical(results$Diff_Loci, no_res$Diff_Loci)
 ```
 
-## Introduction
 
-TADCompare is a function that allows users to automatically identify differential TAD boundaries between two datasets. For each differential boundary, we provide unique classification (complex, merge, split, shifted and strength change) defining how the TAD changes between the datasets.
-
-### Types of TADCompare output
+## Types of TADCompare output
 
 TADCompare returns a list with 2 data frames and 1 plot. The two data frames are TAD_Frame which contains all regions with at least one TAD. Its columns correspond to the coordinates of the TAD boundary, the differential boundary score between both data sets, a general designation of differential or non-differential, the contact matrix which contains the TAD boundary and the type of TAD boundary. The results are shown below.
 
@@ -78,11 +72,11 @@ Finally, we include a plot which contains a stacked barplot indicating the preve
 results$Count_Plot
 ```
 
-### Performing gene ontology analysis using TADCompare
+## Performing gene ontology analysis using TADCompare
 
 To demonstrate one of the ways to utilize TADCompare, we provide a walkthrough of performing gene ontology enrichment analysis using TADCompare and `rGREAT` (Version 2.0). We first show how to perform gene ontology enrichment on shifted boundaries enriched in matrix 1.
 
-```{r}
+```{r, warning=FALSE, message = FALSE}
 library(rGREAT)
 #Saving the results into its own data frame
 TAD_Frame = results$TAD_Frame
@@ -121,3 +115,4 @@ enrichment_table = bind_rows(TAD_Enrich) %>% dplyr::select(Ontology = `source`, 
 head(enrichment_table %>% dplyr::arrange(`P-value`))
 ```
 
+# References

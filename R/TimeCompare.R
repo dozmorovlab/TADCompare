@@ -271,8 +271,13 @@ TimeCompare = function(cont_mats, resolution,
 
   TAD_Sum = TAD_Frame_Sub %>% group_by(Category) %>% summarise(Count = n())
 
-  Count_Plot = ggplot(TAD_Sum, aes(1,y = Count, fill = Category)) +
-    geom_bar(stat="identity") + theme_bw(base_size = 24)
+  Count_Plot = ggplot(TAD_Sum,
+                      aes(x = 1,
+                          y = Count, fill = Category)) +
+    geom_bar(stat="identity") + theme_bw(base_size = 24) +
+    theme(axis.title.x = element_blank(), panel.grid = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+    labs(y = "Number of Boundaries")
 
   return(list(TAD_Bounds = TAD_Frame_Sub,
               All_Bounds = TAD_Frame,

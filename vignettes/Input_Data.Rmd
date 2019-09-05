@@ -1,8 +1,21 @@
 ---
-title: "Data Inputs"
-author: "Kellen Cresswell"
-date: "September 5, 2019"
-output: html_document
+title: "Input Data"
+author:
+- name: Kellen Cresswell
+  affiliation:
+  - &1 Department of Biostatistics, Virginia Commonwealth University, Richmond, VA
+- name: Mikhail Dozmorov
+  affiliation:
+  - *1
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{TADCompare}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+bibliography: pack_ref.bib
 ---
 
 ```{r set-options, echo=FALSE, cache=FALSE}
@@ -26,11 +39,16 @@ devtools::install_github("cresswellkg/TADCompare")
 library(TADCompare)
 ```
 
-## Input data
+# Working with different types of data
 
-### Working with $n \times n$ matrices
+## Working with $n \times n$ matrices
 
 $n \times n$ contact matrices are most commonly associated with data coming from the Bing Ren lab (http://chromosome.sdsc.edu/mouse/hi-c/download.html). These contact matrices are square and symmetric with entry $ij$ corresponding to the number of contacts between region $i$ and region $j$. Below is an example of a $5 \times 5$ region of an $n \times n$ contact matrix derived from Rao et al. 2014 data, GM12878 cell line [@Rao:2014aa], chromosome 22, 50kb resolution. Note the symmetry around the diagonal - the typical shape of chromatin interaction matrix.
+
+```{r, warning=FALSE,message=FALSE}
+library(dplyr)
+library(TADCompare)
+```
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 data("rao_chr22_prim")
@@ -39,11 +57,12 @@ coords <- 200:275
 pheatmap::pheatmap(log10(rao_chr22_prim[coords, coords]), cluster_rows = FALSE, cluster_cols = FALSE)
 ```
 
-### Working with $n \times (n+3)$ matrices
+## Working with $n \times (n+3)$ matrices
 
 $n \times (n+3)$ matrices are commonly associated with the TopDom TAD caller (http://zhoulab.usc.edu/TopDom/). These matrices consist of a normal $n \times n$ matrix but with three additional leading columns containg the chromosome, the start of the region and the end of the region. Regions in this case are determined by the resolution of the data. The typical $n \times (n+3)$ matrix is shown below.
 
 ```{r, echo = FALSE, warning = FALSE}
+coords = 50:53
 sub_mat = data.frame(chr = "chr22", 
                      start = as.numeric(colnames(rao_chr22_prim[coords, coords])), 
                      end = as.numeric(colnames(rao_chr22_prim[coords, coords])) + 50000, 
@@ -52,7 +71,8 @@ row.names(sub_mat) = NULL
 sub_mat
 ```
 
-### Working with sparse 3-column matrices
+
+## Working with sparse 3-column matrices
 
 Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the `HiCcompare` package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix is shown below.
 
@@ -61,11 +81,11 @@ data("rao_chr22_prim")
 head(HiCcompare::full2sparse(rao_chr22_prim))
 ```
 
-### Working with other data types
+## Working with other data types
 
 Users can also find TADs from data output by `cooler` (http://cooler.readthedocs.io/en/latest/index.html) and HiC-Pro (https://github.com/nservant/HiC-Pro) with minor pre-processing using the `HiCcompare` package.
 
-#### Working with .cool files
+## Working with .cool files
 
 The cooler software can be downloaded from https://mirnylab.github.io/cooler/. A catalog of popular HiC datasets can be found at ftp://cooler.csail.mit.edu/coolers. We can extract chromatin interaction data from .cool files using the following steps:
 
@@ -91,7 +111,7 @@ diff_tads = lapply(names(sparse_mat1), function(x) {
 
 ```
 
-#### Working with HiC-Pro files
+## Working with HiC-Pro files
 
 HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains a four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs which map back to the coordinates in the bed file and the third column contains the number of contacts between the two regions. The steps for analyzing these files is shown below:
 
@@ -141,7 +161,7 @@ names(diff_res) = chr
 
 The type of matrix input into the algorithm can affect runtimes for the algorithm. $n \times n$ matrices require no conversion and are the fastest. Meanwhile, $n \times (n+3)$ matrices take slightly longer to run due to the need to remove the first 3 columns. Sparse 3-column matrices have the highest runtimes due to the complexity of converting them to an $n \times n$ matrix. The times are summarized below, holding all other parameters constant.
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning=FALSE}
 library(microbenchmark)
 #Converting to sparse
 prim_sparse = HiCcompare::full2sparse(rao_chr22_prim)
@@ -178,3 +198,5 @@ n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution 
 ```
 
 The table above shows a summary of runtimes for different types of contact matrices measured in seconds. As we see, TADCompare is extremely fast no matter the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
+
+# References

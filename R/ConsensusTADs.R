@@ -158,17 +158,24 @@ ConsensusTADs = function(cont_mats, resolution,
                                                              "Non-Differential",
                                                              Differential))
 
-  #Getting a frame summarizing boundaries
+  #Getting a frame summarizing boundaries and subset to only have significant
 
-  TAD_Frame = score_frame %>% dplyr::select(Sample, Coordinate, TAD_Score) %>%
+  score_frame = score_frame %>% dplyr::select(Sample, Coordinate, TAD_Score) %>%
     dplyr::arrange(as.numeric(gsub("Sample", "", Sample))) %>%
     dplyr::mutate(Sample = factor(Sample, levels = unique(Sample)))
 
+  #Filtering for TADs specifically
+  TAD_Frame = score_frame %>% group_by(Coordinate) %>% filter(any(TAD_Score>3))
 
-  #Spread into wide format
+
+  #Spread the score frame and TAD frame into wide format
   TAD_Frame = tidyr::spread(as.data.frame(TAD_Frame),
                             key = Sample,
                             value = TAD_Score)
+
+  score_frame = tidyr::spread(as.data.frame(score_frame),
+                              key = Sample,
+                              value = TAD_Score)
 
   #Get median of boundary scores for each row
 
@@ -176,6 +183,15 @@ ConsensusTADs = function(cont_mats, resolution,
     dplyr::mutate(Consensus_Score =
     apply(TAD_Frame %>% dplyr::select(-Coordinate) %>% as.matrix(.)
           ,1, median))
+
+  score_frame = score_frame %>% ungroup() %>%
+    dplyr::mutate(Consensus_Score =
+                    apply(score_frame %>% dplyr::select(-Coordinate) %>%
+                            as.matrix(.)
+                          ,1, median))
+
+  #Get a subset of TAD_Frame that contains only regions with significant TADs
+
 
   #Return consensus TAD boundaries and scores for all regions
   return(list(Consensus = TAD_Frame,

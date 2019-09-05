@@ -25,7 +25,7 @@ BiocManager::install("TADCompare")
 library(TADCompare)
 ```
 
-## Input
+# Input
 
 There are three types of input accepted:
 
@@ -33,7 +33,7 @@ There are three types of input accepted:
 2. n x (n+3) contact matrices
 3. 3-column sparse contact matrices
 
-It is required that the same format be used for each of the inputs to a given function or an error will occur. These formats are explained in depth in the [vignette](vignettes/TADCompare.Rmd).
+It is required that the same format be used for each of the inputs to a given function or an error will occur. These formats are explained in depth in the [vignette](vignettes/Data_Input.Rmd).
 
 # Usage
 
