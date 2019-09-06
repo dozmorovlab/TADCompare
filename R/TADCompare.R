@@ -29,8 +29,6 @@
 #'  \itemize{
 #'  \item TAD_Frame - Data frame containing any region where a TAD boundary
 #'  was detected.
-#'  \item Diff_Loci - Data frame containing any regions with differential
-#'  loci
 #'  \item Boundary_Scores - Boundary scores for the entire genome
 #' }
 #' @export
@@ -41,11 +39,11 @@
 #' are provided using raw boundary scores and p-values.
 #' @examples
 #' #Read in data
-#' data("rao_chr20_25_rep")
-#' data("rao_chr20_25_prim")
+#' data("rao_chr22_prim")
+#' data("rao_chr22_rep")
 #' #Find differential TADs
-#' diff_list <- TADCompare(rao_chr20_25_rep, rao_chr20_25_prim,
-#' resolution = 25000)
+#' diff_list <- TADCompare(rao_chr22_prim, rao_chr22_rep,
+#' resolution = 50000)
 
 TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                       z_thresh = 2, window_size = 25,
@@ -467,7 +465,7 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
     labs(y = "Number of Boundaries")
 
   return(list(TAD_Frame =TAD_Frame,
-              Gap_Scores = Gap_Scores,
+              Boundary_Scores = Gap_Scores,
               Count_Plot = Count_Plot ))
 }
 

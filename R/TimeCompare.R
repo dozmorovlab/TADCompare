@@ -22,9 +22,10 @@
 #' NULL
 #' @return A list containing consensus TAD boundaries and overall scores
 #'  \itemize{
-#'  \item Time_TADs - Data frame containing all regions with a TAD boundary
+#'  \item TAD_Bounds - Data frame containing all regions with a TAD boundary
 #'  at one or more time point
-#'  \item All_Regions - Data frame containing consensus scores for all regions
+#'  \item All_Bounds - Data frame containing consensus scores for all regions
+#'  \item Count_Plot - Plot containing the prevelance of each boundary type
 #' }
 #' @export
 #' @details Given a list of sparse 3 column, n x n, or n x (n+3) contact
@@ -33,11 +34,9 @@
 #' and the corresponding classification is returned.
 #' @examples
 #' #Read in data
-#' data("rao_chr22_rep")
-#' data("rao_chr22_prim")
-#' cont_mats = list(rao_chr22_rep, rao_chr22_prim)
+#' data("time_mats")
 #' #Find time varying TAD boundaries
-#' diff_list <- TimeCompare(cont_mats, resolution = 50000)
+#' diff_list <- TimeCompare(time_mats, resolution = 50000)
 
 TimeCompare = function(cont_mats, resolution,
                       z_thresh = 3, window_size = 15, gap_thresh = .8,
