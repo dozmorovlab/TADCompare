@@ -24,7 +24,7 @@ options(stringsAsFactors = FALSE)
 
 # Introduction
 
-`TADCompare` is an R package for analysis of differential TAD boundaries. It is designed to work on a wide-range of formats and resolutions of HiC data. `TADCompare` contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` allows for identification of differential TAD boundaries between two contact matrices. `TimeCompare` takes a set of contact matrices, one matrix per time point, identifies TAD boundaries and classifies how they change over time. `ConsensusTADs` takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our novel consensus boundary score. All three functions can take matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. [??? TBD the following] None of the functions have required parameters but instructions on how to alter them are provided. 
+`TADCompare` is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. `TADCompare` package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` allows for identification of differential TAD boundaries between two contact matrices. [??? Link to the corresponding vignette] `TimeCompare` takes a set of contact matrices, one matrix per time point, identifies TAD boundaries and classifies how they change over time. [??? Link to the corresponding vignette] `ConsensusTADs` takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our novel consensus boundary score. [??? Link to the corresponding vignette] The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. [??? TBD the following] Instructions on changing the default parameters are provided. 
 
 # Getting Started
 
@@ -58,7 +58,7 @@ pheatmap::pheatmap(log10(rao_chr22_prim[coords, coords]), cluster_rows = FALSE, 
 
 ## Working with $n \times (n+3)$ matrices
 
-$n \times (n+3)$ matrices are commonly associated with the TopDom TAD caller (http://zhoulab.usc.edu/TopDom/). These matrices consist of a normal $n \times n$ matrix but with three additional leading columns containg the chromosome, the start of the region and the end of the region. Regions in this case are determined by the resolution of the data. The typical $n \times (n+3)$ matrix is shown below.
+$n \times (n+3)$ matrices are commonly associated with the `TopDom` TAD caller (http://zhoulab.usc.edu/TopDom/). These matrices consist of an $n \times n$ matrix but with three additional leading columns containing the chromosome, the start of the region and the end of the region. Regions in this case are determined by the resolution of the data. The typical $n \times (n+3)$ matrix is shown below.
 
 ```{r, echo = FALSE, warning = FALSE}
 coords = 50:53
@@ -73,7 +73,7 @@ sub_mat
 
 ## Working with sparse 3-column matrices
 
-Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the `HiCcompare` package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix is shown below.
+Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. [??? Ref missing] 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the `HiCcompare` package's `sparse2full()` function. [??? Link to the package] The first 5 rows of a typical sparse 3-column matrix is shown below.
 
 ```{r, echo = FALSE, warning = FALSE}
 data("rao_chr22_prim") 
@@ -82,16 +82,16 @@ head(HiCcompare::full2sparse(rao_chr22_prim))
 
 ## Working with other data types
 
-Users can also find TADs from data output by `cooler` (http://cooler.readthedocs.io/en/latest/index.html) and HiC-Pro (https://github.com/nservant/HiC-Pro) with minor pre-processing using the `HiCcompare` package.
+Users can also find TADs from data output by `cooler` (http://cooler.readthedocs.io/en/latest/index.html) and HiC-Pro (https://github.com/nservant/HiC-Pro) with minor pre-processing using the `HiCcompare` package. [??? Link to the relevant resources]
 
 ## Working with .cool files
 
 The cooler software can be downloaded from https://mirnylab.github.io/cooler/. A catalog of popular HiC datasets can be found at ftp://cooler.csail.mit.edu/coolers. We can extract chromatin interaction data from .cool files using the following steps:
 
 1. Follow instructions to install the cooler software, https://mirnylab.github.io/cooler/
-[??? Does not work, IOError: Unable to open file (unable to open file: name = 'ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfControl-HindIII-allreps-filtered.50kb.cool', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0)]
-2. Convert first matrix to text file using `cooler dump --join ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfControl-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Control.txt`
-3. Convert first matrix to text file using `cooler dump --join ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfDepleted-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Depleted.txt`
+[??? Does not work, IOError: Unable to open file (unable to open file: name = 'ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfControl-HindIII-allreps-filtered.50kb.cool', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0) ??? Add wget download command ??? Select example data that you are using in the vignette]
+2. Convert the first matrix to a text file using `cooler dump --join ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfControl-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Control.txt`
+3. Convert the first matrix to a text file using `cooler dump --join ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfDepleted-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Depleted.txt`
 4. Run the code below
 
 ```{r, eval = FALSE}
@@ -107,16 +107,15 @@ sparse_mat2 = HiCcompare::cooler2sparse(cool_mat2)
 diff_tads = lapply(names(sparse_mat1), function(x) {
   TADCompare(sparse_mat1[[x]], sparse_mat2[[x]], resolution = 50000)
 })
-
 ```
 
 ## Working with HiC-Pro files
 
-HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains a four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs which map back to the coordinates in the bed file and the third column contains the number of contacts between the two regions. The steps for analyzing these files is shown below:
+HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs which map back to the coordinates in the bed file and the third column contains the number of contacts between the two regions. The steps for analyzing these files is shown below:
 
+[??? Select better data, describe where it came from, include in the package]
 ```{r, eval = FALSE}
 #Read in both files
-[??? You should include these data in the package. Select better data, describe where it came from]
 mat1 = read.table("amyg_100000.matrix")
 bed1 = read.table("amyg_100000_abs.bed")
 
@@ -196,6 +195,6 @@ n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution 
 )
 ```
 
-The table above shows a summary of runtimes for different types of contact matrices measured in seconds. As we see, TADCompare is extremely fast no matter the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
+The table above shows a summary of runtimes for different types of contact matrices measured in seconds. [??? Show only "mean" time] As we see, `TADCompare` is extremely fast no matter the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
 
 # References
