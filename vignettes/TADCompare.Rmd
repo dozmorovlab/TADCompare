@@ -28,7 +28,7 @@ options(stringsAsFactors = FALSE)
 
 # Running TADcompare
 
-The only required input is two contact matrices. [??? Link to "Input data" vignette] TADCompare will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For fastests results, we suggest using $n \times n$ matrices. Additionally, we suggest users to provide resolution of their data. If resolution is not provided, we estimate it using the numeric column names of contact matrices. 
+The only required input is two contact matrices in one of the permitted forms specified in the [Input data vignette](Input_Data.html). TADCompare will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For fastests results, we suggest using $n \times n$ matrices. Additionally, we suggest users to provide resolution of their data. If resolution is not provided, we estimate it using the numeric column names of contact matrices. 
 
 ```{r, warning=FALSE,message=FALSE}
 library(TADCompare)
@@ -53,17 +53,22 @@ identical(results$Diff_Loci, no_res$Diff_Loci)
 
 ## Types of TADCompare output
 
-TADCompare returns a list with 2 data frames and 1 plot. The two data frames are TAD_Frame which contains all regions with at least one TAD. Its columns [??? Add more details, explicitly describing each column, reasonably] correspond to the coordinates of the TAD boundary, the differential boundary score between both data sets, a general designation of differential or non-differential, the contact matrix which contains the TAD boundary and the type of TAD boundary. The results are shown below.
+TADCompare returns a list with 2 data frames and 1 plot. The first data frame contains all regions of the genome containing a TAD boundary in at least one of the contact matrices. The results are shown below:
 
 ```{r}
 head(results$TAD_Frame)
 ```
 
-The second data frame contains coordinates, differential boundary scores and indvidual boundary scores for each region of the contact matrix regardless of whether it contains a TAD boundary. [??? Same, detail each column]
+The "Boundary" column is simply a genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the data is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the category of TAD change. 
+
+The second data frame contains the same information as the first data frame but includes every region of the genome. We show it below:
 
 ```{r}
-head(results$Gap_Scores)
+head(results$Boundary_Scores)
 ```
+
+"Region" corresponds to the region of the genome. "TAD_Score1" and "TAD_Score2" correspond to boundary scores for each contact matrix and "Gap_Score" is the differential boundary score. 
+
 
 Finally, we include a plot which contains a stacked barplot indicating the prevelance of each type of TAD boundary. The barplot is created in ggplot2, making it completely customizable. We show this below:
 
