@@ -3,6 +3,7 @@
 #' @import dplyr
 #' @import magrittr
 #' @import PRIMME
+#' [??? See comments in TADcompare, additional are added below]
 #' @param cont_mats List of contact matrices in either sparse 3 column, n x n or n x (n+3)
 #' form where the first three columns are coordinates in BED format.
 #' If an x n matrix is used, the column names must correspond to the start
@@ -24,7 +25,7 @@
 #' }
 #' @export
 #' @details Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
-#' TADCompare identifies differential TAD boundaries. Using a novel boundary
+#' TADCompare identifies differential TAD boundaries. [??? What?] Using a novel boundary
 #' score metric, TADCompare simultaneously identifies TAD boundaries and
 #' tests for differential enrichment between datasets. Strength of interactions
 #' are provided using raw boundary scores and p-values.
@@ -35,6 +36,8 @@
 #' cont_mats = list(rao_chr22_rep, rao_chr22_prim)
 #' #Find consensus TAD boundaries
 #' diff_list <- TADCompare(cont_mats, resolution = 50000)
+
+[??? Wrong example]
 
 ConsensusTADs = function(cont_mats, resolution,
                       z_thresh = 3, window_size = 15, gap_thresh = .8) {
