@@ -8,12 +8,9 @@
     - See "Add to README.md" section at https://github.com/mdozmorov/Programming_notes#r-packages
     - Take it seriously, README is the first thing people see when google your package
 
-- Upon installation, the following message appears - doesn't look good. Possible to fix?
-```
-Registered S3 method overwritten by 'R.oo':
-  method        from       
-  throw.default R.methodsS3
-```
+- Check comments in R functions - help there is very hairy. Do not copy-paste, think. Start with `TADCompare.R` - it has main comments, correct everywhere.
+
+- Complete DESCRIPTION
 
 - Add gene enrichment analysis into vignette using rGREAT
 
