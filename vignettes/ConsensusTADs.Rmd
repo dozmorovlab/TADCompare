@@ -35,14 +35,13 @@ library(TADCompare)
 library(dplyr)
 ```
 
+We demonstrate how to run ConsensusTADs by calling consensus TADs on time-varying contact matrices created by treating a single sample with auxin, which destroys its TAD boundaries, and then tracking their return at four time points (20, 40, 60 and 180 minutes) [@Rao:2017aa]. The consensus boundary score is intended to provide a summary of TAD boundaries across all time points.
+
 ```{r, message = FALSE, warning = FALSE}
 #Get the rao contact matrices built into the package
-data("rao_chr22_prim")
-data("rao_chr22_rep")
-#Place into list
-cont_mats = list(rao_chr22_prim, rao_chr22_rep)
+data("time_mats")
 #Running MultiCompare
-con_tads = ConsensusTADs(cont_mats, resolution = 50000)
+con_tads = ConsensusTADs(time_mats, resolution = 50000)
 ```
 
 ConsensusTADs returns two data frames. The first contains all regions containing consensus TADs based on the consensus score.
@@ -58,7 +57,5 @@ The second data frame, All_Regions, is identical in format but it includes every
 ```{r}
 head(con_tads$All_Regions)
 ```
-
-[??? Although not mandatory, could you choose a better example with more samples? So, one can see how the median is working]
 
 # References

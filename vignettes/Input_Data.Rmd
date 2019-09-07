@@ -75,7 +75,7 @@ sub_mat
 
 ## Working with sparse 3-column matrices
 
-Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. [??? Ref missing] 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html) package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix are shown below.
+Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html) package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix are shown below.
 
 ```{r, echo = FALSE, warning = FALSE}
 data("rao_chr22_prim") 
@@ -91,10 +91,11 @@ Users can also find TADs from data output by `cooler` (http://cooler.readthedocs
 The cooler software can be downloaded from https://mirnylab.github.io/cooler/. A catalog of popular HiC datasets can be found at ftp://cooler.csail.mit.edu/coolers. We can extract chromatin interaction data from .cool files using the following steps:
 
 1. Follow instructions to install the cooler software, https://mirnylab.github.io/cooler/
-[??? Does not work, IOError: Unable to open file (unable to open file: name = 'ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfControl-HindIII-allreps-filtered.50kb.cool', errno = 2, error message = 'No such file or directory', flags = 0, o_flags = 0) ??? Add wget download command ??? Select example data that you are using in the vignette]
-2. Convert the first matrix to a text file using `cooler dump --join ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfControl-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Control.txt`
-3. Convert the first matrix to a text file using `cooler dump --join ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfDepleted-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Depleted.txt`
-4. Run the code below
+2. Download the first contact matrix wget ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfControl-HindIII-allreps-filtered.50kb.cool
+3. Convert the first matrix to a text file using `cooler dump --join Zuin2014-HEK293CtcfControl-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Control.txt`
+4. Download the second contact matrix wget ftp://cooler.csail.mit.edu/coolers/hg19/Zuin2014-HEK293CtcfDepleted-HindIII-allreps-filtered.50kb.cool
+5. Convert the matrix to a text file using `cooler dump --join Zuin2014-HEK293CtcfDepleted-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Depleted.txt`
+6. Run the code below
 
 ```{r, eval = FALSE}
 #Read in data

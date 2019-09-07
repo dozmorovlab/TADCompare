@@ -67,8 +67,6 @@ The second data frame contains the same information as the first data frame but 
 head(results$Boundary_Scores)
 ```
 
-[??? NULL output!]
-
 "Region" corresponds to the region of the genome. "TAD_Score1" and "TAD_Score2" correspond to boundary scores for each contact matrix and "Gap_Score" is the differential boundary score. 
 
 
@@ -78,54 +76,5 @@ Finally, we include a plot which contains a stacked barplot indicating the preva
 results$Count_Plot
 ```
 
-[??? Separate into a vignette, make generic, applicable to everything]
-## Performing gene ontology analysis using TADCompare
 
-To demonstrate one of the ways to interpret the results of differential and time course TAD boundary analysis, we perform gene ontology enrichment analysis using `rGREAT` (https://bioconductor.org/packages/release/bioc/html/rGREAT.html). We first show how to perform gene ontology enrichment on shifted boundaries detected in matrix 1.
 
-```{r, warning=FALSE, message = FALSE}
-library(rGREAT)
-#Saving the results into its own data frame
-TAD_Frame = results$TAD_Frame
-#Filter data to only include complex boundaries enriched in the first contact matrix
-TAD_Frame = TAD_Frame %>% dplyr::filter( (Type == "Shifted") & (Enriched_In == "Matrix 2")  )
-#Assign a chromosome and convert to a bed format
-TAD_Frame = TAD_Frame %>% dplyr::select(Boundary) %>%
-  mutate(chr = "chr22", start = Boundary, end = Boundary) %>% dplyr::select(chr,start,end)
-#Set up rGREAT job with default parameters
-great_shift = submitGreatJob(TAD_Frame, request_interval = 1, version = "2.0")
-#Submit the job
-enrichment_table = getEnrichmentTables(great_shift)
-#Find the top p-values in GO biological processes
-head(enrichment_table$`GO Biological Process` %>% dplyr::arrange(Hyper_Raw_PValue))
-```
-
-[??? Describe columns]
-
-Now we demonstrate how to perform the same analysis but for all boundary types simultaneously. For this example, we focus on boundaries enriched in matrix 2. 
-
-```{r}
-#Pulling out the frame of TADs
-TAD_Frame = results$TAD_Frame %>% filter(Enriched_In == "Matrix 2")
-#Getting sets of coordinates for TAD boundaries and converting into bed format
-Bound_List = lapply(unique(TAD_Frame$Type), function(x) {
-  TAD_Frame %>% filter((Type == x))  %>% mutate(chr = "chr22") %>% dplyr::select(chr, Boundary) %>%
-  mutate(start = Boundary, end = Boundary) %>% dplyr::select(chr,start,end)
-})
-#Performing rGREAT analysis for each boundary type
-TAD_Enrich = lapply(Bound_List, function(x) getEnrichmentTables(submitGreatJob(x, request_interval = 1, version = "2.0")))
-#Name list of data frames to keep track of which enrichment belongs to which
-names(TAD_Enrich) = unique(TAD_Frame$Type)
-#Bind each type of pathway and create new column for each pathway
-TAD_Enrich = lapply(names(TAD_Enrich), function(x) bind_rows(lapply(TAD_Enrich[[x]], function(y) y %>% mutate(Type = x)), .id = 'source')) 
-#Bind each boundary type together
-enrichment_table = bind_rows(TAD_Enrich) %>% dplyr::select(Ontology = `source`, Description = `name`, `P-value` = Hyper_Raw_PValue, Type)
-#Get the top enriched pathways
-head(enrichment_table %>% dplyr::arrange(`P-value`))
-```
-
-[??? Describe columns]
-
-[??? If no references, delete this header from the vignette]
-
-# References
