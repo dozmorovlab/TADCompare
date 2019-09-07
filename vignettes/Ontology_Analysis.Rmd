@@ -64,7 +64,7 @@ TAD_Enrich = lapply(Bound_List, function(x) getEnrichmentTables(submitGreatJob(x
 names(TAD_Enrich) = unique(TAD_Frame$Category)
 #Bind each category of pathway and create new column for each pathway
 TAD_Enrich = lapply(names(TAD_Enrich), function(x) bind_rows(lapply(TAD_Enrich[[x]], function(y) y %>% mutate(Category = x)), .id = 'source')) 
-#Bind each boundary category together
+#Bind each boundary category together and pull out important variables
 enrichment_table = bind_rows(TAD_Enrich) %>% dplyr::select(Ontology = `source`, Description = `name`, `P-value` = Hyper_Raw_PValue, Category)
 #Get the top enriched pathways
 head(enrichment_table %>% dplyr::arrange(`P-value`))
