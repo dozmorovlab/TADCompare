@@ -28,7 +28,7 @@ options(stringsAsFactors = FALSE)
 
 # Running ConsensusTADs
 
- `ConsensusTADs` takes essentially the same input as `TimeCompare` (a list of contact matrices) and provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these, we can get a single set of TADs summarized across a set of replicates, conditions or time points. For this example we use the two replicates from [@Rao:2014aa].
+ `ConsensusTADs` takes essentially the same input as `TimeCompare` (a list of contact matrices) and provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these, we can get a single set of TADs summarized across a set of replicates, conditions, or time points. For this example, we use the two replicates from [@Rao:2014aa].
 
 ```{r, warning=FALSE, message = FALSE}
 library(TADCompare)
@@ -51,12 +51,14 @@ ConsensusTADs returns two data frames. The first contains all regions containing
 head(con_tads$Consensus)
 ```
 
-The columns correspond to the coordinate of the region with a significant boundary score, the individual boundary score for each region and the consenus score.
+The columns correspond to the coordinate of the region with a significant boundary score, the individual boundary score for each region and the consensus score.
 
-The second data frame, All_Regions, is identical in format but it includes every region of the genome which occurs in both matrices.
+The second data frame, All_Regions, is identical in format but it includes every region of the genome, which occurs in both matrices.
 
 ```{r}
 head(con_tads$All_Regions)
 ```
+
+[??? Although not mandatory, could you choose a better example with more samples? So, one can see how the median is working]
 
 # References

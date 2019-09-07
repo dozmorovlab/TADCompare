@@ -24,11 +24,11 @@ options(stringsAsFactors = FALSE)
 
 # Introduction
 
-`TADCompare::TADCompare` is a function that allows users to automatically identify differential TAD boundaries between two datasets. For each differential boundary, we provide unique classification (complex, merge, split, shifted and strength change) defining how the TAD boundaries change between the datasets.
+`TADCompare::TADCompare` is a function that allows users to automatically identify differential TAD boundaries between two datasets. For each differential boundary, we provide unique classification (complex, merge, split, shifted, and strength change) defining how the TAD boundaries change between the datasets.
 
 # Running TADcompare
 
-The only required input is two contact matrices in one of the permitted forms specified in the [Input data vignette](Input_Data.html). TADCompare will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For fastests results, we suggest using $n \times n$ matrices. Additionally, we suggest users to provide resolution of their data. If resolution is not provided, we estimate it using the numeric column names of contact matrices. 
+The only required input is two contact matrices in one of the permitted forms specified in the [Input data vignette](Input_Data.html). TADCompare will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For fastest results, we suggest using $n \times n$ matrices. Additionally, we recommend users to provide resolution of their data. If the resolution is not provided, we estimate it using the numeric column names of contact matrices. 
 
 ```{r, warning=FALSE,message=FALSE}
 library(TADCompare)
@@ -59,7 +59,7 @@ TADCompare returns a list with 2 data frames and 1 plot. The first data frame co
 head(results$TAD_Frame)
 ```
 
-The "Boundary" column is simply a genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the data is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the category of TAD change. 
+The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the data is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. 
 
 The second data frame contains the same information as the first data frame but includes every region of the genome. We show it below:
 
@@ -67,10 +67,12 @@ The second data frame contains the same information as the first data frame but 
 head(results$Boundary_Scores)
 ```
 
+[??? NULL output!]
+
 "Region" corresponds to the region of the genome. "TAD_Score1" and "TAD_Score2" correspond to boundary scores for each contact matrix and "Gap_Score" is the differential boundary score. 
 
 
-Finally, we include a plot which contains a stacked barplot indicating the prevelance of each type of TAD boundary. The barplot is created in ggplot2, making it completely customizable. We show this below:
+Finally, we include a plot which contains a stacked barplot indicating the prevalence of each type of TAD boundary. The barplot is created in ggplot2, making it completely customizable. We show this below:
 
 ```{r}
 results$Count_Plot
@@ -98,7 +100,9 @@ enrichment_table = getEnrichmentTables(great_shift)
 head(enrichment_table$`GO Biological Process` %>% dplyr::arrange(Hyper_Raw_PValue))
 ```
 
-Now we demonstrate how to perform the same analysis but for all boundary types simultaneously. For this example we focus on boundaries enriched in matrix 2. 
+[??? Describe columns]
+
+Now we demonstrate how to perform the same analysis but for all boundary types simultaneously. For this example, we focus on boundaries enriched in matrix 2. 
 
 ```{r}
 #Pulling out the frame of TADs
@@ -120,5 +124,8 @@ enrichment_table = bind_rows(TAD_Enrich) %>% dplyr::select(Ontology = `source`, 
 head(enrichment_table %>% dplyr::arrange(`P-value`))
 ```
 
+[??? Describe columns]
+
 [??? If no references, delete this header from the vignette]
+
 # References
