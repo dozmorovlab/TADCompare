@@ -15,8 +15,8 @@
 #' higher threshold for differential TADs. Default is 3.
 #' @window_size Size of sliding window for TAD detection, measured in bins.
 #' Results should be consistent Default is 15.
-#' @param gap_thresh Required \% of 0s before a region will be considered a gap
-#' and excluded. Default is .8
+#' @param gap_thresh Required \% of non-zero entries before a region will
+#' be considered non-informative and excluded. Default is .2
 #' @return A list containing consensus TAD boundaries and overall scores
 #'  \itemize{
 #'  \item Consensus - Data frame containing location of all consensus
@@ -24,23 +24,19 @@
 #'  \item All_Regions - Data frame containing consensus scores for all regions
 #' }
 #' @export
-#' @details Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
-#' TADCompare identifies differential TAD boundaries. [??? What?] Using a novel boundary
-#' score metric, TADCompare simultaneously identifies TAD boundaries and
-#' tests for differential enrichment between datasets. Strength of interactions
-#' are provided using raw boundary scores and p-values.
+#' @details Given a list of 3 column, n x n , or n x (n+3) contact matrices,
+#' ConsensusTADs provides the set of consensus TAD boundaries across
+#' all matrices. Consensus TADs are defined by the consensus boundary score,
+#' a score measuring TAD boundary likelihood across all matrices.
 #' @examples
 #' #Read in data
-#' data("rao_chr22_rep")
-#' data("rao_chr22_prim")
-#' cont_mats = list(rao_chr22_rep, rao_chr22_prim)
+#' data("time_mats")
 #' #Find consensus TAD boundaries
-#' diff_list <- TADCompare(cont_mats, resolution = 50000)
+#' diff_list <- ConsensusTADs(time_mats, resolution = 50000)
 
-[??? Wrong example]
 
 ConsensusTADs = function(cont_mats, resolution,
-                      z_thresh = 3, window_size = 15, gap_thresh = .8) {
+                      z_thresh = 3, window_size = 15, gap_thresh = .2) {
 
   #Get dimensions of first contact matrix
   row_test = dim(cont_mats[[1]])[1]
@@ -201,7 +197,7 @@ ConsensusTADs = function(cont_mats, resolution,
               All_Regions = score_frame))
 }
 
-.single_dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .8) {
+.single_dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .2) {
 
   #Remove full gaps from matrices
 
@@ -229,7 +225,7 @@ ConsensusTADs = function(cont_mats, resolution,
     sub_filt1 = cont_mat_filt[start:end, start:end]
 
     #Identify columns with more than the gap threshold of zeros
-    Per_Zero1 = (colSums(sub_filt1 ==0)/nrow(sub_filt1))>gap_thresh
+    Per_Zero1 = (colSums(sub_filt1 != 0)/nrow(sub_filt1))<gap_thresh
 
     #Remove rows and dcolumns with zeros above gap threshold
     sub_filt1 = sub_filt1[!Per_Zero1, !Per_Zero1]

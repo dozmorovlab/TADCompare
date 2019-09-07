@@ -7,24 +7,17 @@
 #' @param cont_mat1 Contact matrix in either sparse 3 column, n x n or n x (n+3)
 #' form where the first three columns are coordinates in BED format.
 #' If an n x n matrix is used, the column names must correspond to the start
-#' point of the corresponding bin. If large mode [??? What's this?] is selected, then
-#' this matrix must be a tab-separated n x n or n x (n+3) and [??? I don't understand. TBD] it should be the
-#' path to a contact matrix. Required.
+#' point of the corresponding bin. Required.
 #' @param cont_mat2 Second contact matrix, used for differential comparison,
 #' must be in same format as cont_mat1. Required
 #' @param resolution Resolution of the data. Used to assign TAD boundaries
 #' to genomic regions. If not provided, resolution will be estimated from
-#' column names of matrix. [??? What about sparse format?] Default is "auto"
-#' @param z_thresh Threshold for [??? differential?] boundary score. Higher values result in a
+#' column names of matrix. If matrices are sparse, resolution will be estimated
+#' from the column names of the transformed full matrix. Default is "auto"
+#' @param z_thresh Threshold for differential boundary score. Higher values result in a
 #' higher threshold for differential TAD boundaries. Default is 2.
-#' @param gap_thresh Required \% of 0s before a region will be considered a gap
-#' and excluded. Default is .8 [??? Change the code and the description to handle this threshold from another angle, 0.2]
-#' @param pre_TADs Set TRUE if a pre-defined set of TAD boundaries [??? In what format?] will be
-#' tested (Defined by TADs parameter). [??? Can you get rid of this parameter? If "TADs" is not null, then pre-defined boundaries ARE used, otherwise not ] If FALSE, TADCompare will test all
-#' possible boundaries. Default is FALSE
-#' @param TADs Data frame containing TAD boundaries to be tested. [??? You'll be required to use GRanges - redo] Column with
-#' boundaries must be named "end". Only works if pre_TADs is TRUE. Default is
-#' NULL
+#' @param gap_thresh Required \% of non-zero entries before a region will
+#' be considered non-informative and excluded. Default is .2
 #' @return A list containing differential TAD characteristics
 #'  \itemize{
 #'  \item TAD_Frame - Data frame containing any region where a TAD boundary
@@ -36,22 +29,20 @@
 #' @details Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
 #' TADCompare identifies differential TAD boundaries. Using a novel boundary
 #' score metric, TADCompare simultaneously identifies TAD boundaries and
-#' tests for differential presence of them. Strength of interactions [??? As well as the magnitude of the differences?]
+#' tests for presence of differential boundaries. Strength of differences
 #' are provided using raw boundary scores and p-values.
 #' @examples
 #' #Read in data
 #' data("rao_chr22_prim")
 #' data("rao_chr22_rep")
 #' #Find differential TADs
-#' diff_list <- TADCompare(rao_chr22_prim, rao_chr22_rep,
+#' diff_frame <- TADCompare(rao_chr22_prim, rao_chr22_rep,
 #' resolution = 50000)
 
-[??? Example not working, data not found]
 
 TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                       z_thresh = 2, window_size = 25,
-                      gap_thresh = .8, pre_TADs = FALSE,
-                      TADs = NULL) {
+                      gap_thresh = .2) {
 
   #Pulling out dimensions to test for matrix type
   row_test = dim(cont_mat1)[1]
@@ -194,12 +185,12 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
 
     #Removing gap regions from sub_matrices
 
-    Per_Zero1 = colSums(sub_filt1 ==0)/nrow(sub_filt1)
-    Per_Zero2 = colSums(sub_filt2 ==0)/nrow(sub_filt2)
+    Per_Zero1 = colSums(sub_filt1 !=0)/nrow(sub_filt1)
+    Per_Zero2 = colSums(sub_filt2 !=0)/nrow(sub_filt2)
 
     #Remove columns with more zeros than threshold
-    sub_gaps1 = Per_Zero1<gap_thresh
-    sub_gaps2 = Per_Zero2<gap_thresh
+    sub_gaps1 = Per_Zero1>gap_thresh
+    sub_gaps2 = Per_Zero2>gap_thresh
 
     comp_rows = sub_gaps1 & sub_gaps2
     sub_filt1 = sub_filt1[ comp_rows, comp_rows]
@@ -376,68 +367,6 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                             (lead(Differential) == "Non-Differential"),
                           ifelse(Enriched_In == "Matrix 1", "Split", "Merge"),
                           Differential))
-
-  #See if TADs are pre-specified
-
-  if (pre_TADs == TRUE) {
-
-    #Subset to only include preset TADs
-    Full_TADs = unique(c(TADs$end))
-    TAD_Locs = match(Full_TADs, Regions)
-    TAD_Frame = data.frame(Boundary = Full_TADs, Gap_Score = sd_diff[TAD_Locs])
-    TAD_Frame = TAD_Frame %>% arrange(Boundary)
-
-    #Get gap scores and subset based on pre-defined TADs
-    Ind_Score1 = ((point_dists1-mean(point_dists1, na.rm = TRUE))/
-                    sd(point_dists1, na.rm = TRUE))[sort(TAD_Locs)]
-
-    Ind_Score2 = ((point_dists2-mean(point_dists2, na.rm = TRUE))/
-                    sd(point_dists2, na.rm = TRUE))[sort(TAD_Locs)]
-
-    #Define boundayr types
-    TAD_Frame = TAD_Frame %>%
-      mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
-                                "Non-Differential"),
-             Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
-      arrange(Boundary)
-
-    #Testing if boundaries are within 5 bins in front (Shifted)
-
-    TAD_Frame = TAD_Frame %>%
-      mutate(Bound_Dist = (Boundary-lag(Boundary))/resolution) %>%
-      mutate(Differential = ifelse( (Differential == "Differential") &
-                                    (Bound_Dist<=5) & !is.na(Bound_Dist),
-                                    "Shifted", Differential)) %>%
-                                    dplyr::select(-Bound_Dist)
-
-    #Testing if boundaries are within 5 bins behind
-
-    TAD_Frame = TAD_Frame %>%
-      mutate(Bound_Dist = abs((Boundary-lead(Boundary))/resolution)) %>%
-      mutate(Differential = ifelse( (Differential == "Differential") &
-                                      (Bound_Dist<=5) & !is.na(Bound_Dist),
-                                    "Shifted", Differential)) %>%
-      dplyr::select(-Bound_Dist) %>% filter(!is.na(Differential))
-
-    #Defining merged and split boundaries
-
-    TAD_Frame = TAD_Frame %>%
-      mutate(Type = ifelse( (Differential == "Differential") &
-                              (lag(Differential) == "Non-Differential") &
-                              (lead(Differential) == "Non-Differential"),
-                            ifelse(Enriched_In == "Matrix 1", "Split", "Merge"),
-                            Differential) )
-
-    #Appending TAD Scores
-
-    TAD_Frame = cbind.data.frame(TAD_Frame, Ind_Score1, Ind_Score2)
-    colnames(TAD_Frame)[c(ncol(TAD_Frame)-1, ncol(TAD_Frame))] =
-      c("TAD_Score1", "TAD_Score2")
-
-
-    return(list(TAD_Frame = TAD_Frame,
-                Gap_Scores = Gap_Scores))
-  }
 
   #Add up-down enrichment of TAD boundaries
   TAD_Frame = TAD_Frame %>%

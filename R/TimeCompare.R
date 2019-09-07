@@ -16,10 +16,12 @@
 #' higher threshold for differential TADs. Default is 3.
 #' @window_size Size of sliding window for TAD detection, measured in bins.
 #' Results should be consistent Default is 15.
-#' @param gap_thresh Required \% of 0s before a region will be considered a gap
-#' and excluded. Default is .8
-#' @param groupings Vector identifying which group [??? Do not understand.] each contact matrix belongs
-#' to. Each group will be combined using consensus boundary scores. Default is
+#' @param gap_thresh Required \% of non-zero entries before a region will
+#' be considered non-informative and excluded. Default is .2
+#' @param groupings Variable for identifying groups of replicates at a given time point.
+#' Each group will be combined using consensus boundary scores. It should be a vector of equal length
+#' to cont_mats where each entry is a label corresponding to the group membership of the corresponding
+#' matrix. Default is
 #' NULL
 #' @return A list containing consensus TAD boundaries and overall scores
 #'  \itemize{
@@ -30,9 +32,10 @@
 #' }
 #' @export
 #' @details Given a list of sparse 3 column, n x n, or n x (n+3) contact
-#' matrices, TimeCompare identifies TADs and [??? The following is ugly, clarify] classifies time points based on
-#' boundary change. A data frame of time points with at least one boundary
-#' and the corresponding classification is returned.
+#' matrices representing different time points, TimeCompare identifies all
+#' regions with at least one TAD. Within each region, we classify TADs based
+#' on how they change over time into six categories (Common, Dynamic,
+#' Early/Late Appearing and Early/Late Disappearing).
 #' @examples
 #' #Read in data
 #' data("time_mats")
@@ -45,7 +48,7 @@
 
 
 TimeCompare = function(cont_mats, resolution,
-                      z_thresh = 3, window_size = 15, gap_thresh = .8,
+                      z_thresh = 2, window_size = 15, gap_thresh = .2,
                       groupings = NULL) {
 
   #Get dimensions of first contact matrix
@@ -289,7 +292,7 @@ TimeCompare = function(cont_mats, resolution,
               Count_Plot = Count_Plot))
 }
 
-.single_dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .8) {
+.single_dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .2) {
 
   #Remove full gaps from matrices
 
@@ -317,7 +320,7 @@ TimeCompare = function(cont_mats, resolution,
     sub_filt1 = cont_mat_filt[start:end, start:end]
 
     #Identify columns with more than the gap threshold of zeros
-    Per_Zero1 = (colSums(sub_filt1 ==0)/nrow(sub_filt1))>gap_thresh
+    Per_Zero1 = (colSums(sub_filt1 !=0)/nrow(sub_filt1))<gap_thresh
 
     #Remove rows and dcolumns with zeros above gap threshold
     sub_filt1 = sub_filt1[!Per_Zero1, !Per_Zero1]
