@@ -24,7 +24,7 @@ options(stringsAsFactors = FALSE)
 
 # Introduction
 
-`TADCompare` is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. `TADCompare` package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` allows for identification of differential TAD boundaries between two contact matrices. [??? Link to the corresponding vignette] `TimeCompare` takes a set of contact matrices, one matrix per time point, identifies TAD boundaries and classifies how they change over time. [??? Link to the corresponding vignette] `ConsensusTADs` takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our novel consensus boundary score. [??? Link to the corresponding vignette] The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. [??? TBD the following] Instructions on changing the default parameters are provided. 
+`TADCompare` is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. `TADCompare` package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` allows for identification of differential TAD boundaries between [two contact matrices](TADCompare.html).  `TimeCompare` takes a set of contact matrices, one matrix per time point, identifies TAD boundaries and classifies [how they change over time](TimeCompare.html). `ConsensusTADs` takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](ConsensusTADs.html). The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. [??? TBD the following] Instructions on changing the default parameters are provided. 
 
 # Getting Started
 
@@ -34,9 +34,9 @@ options(stringsAsFactors = FALSE)
 # if (!requireNamespace("BiocManager", quietly=TRUE))
 #     install.packages("BiocManager")
 # BiocManager::install("TADCompare")
-install.packages(c("PRIMME","dplyr","ggplot2"))
-BiocManager::install(c("HiCcompare"))
-devtools::install_github("cresswellkg/TADCompare")
+#install.packages(c("PRIMME","dplyr","ggplot2"))
+#BiocManager::install(c("HiCcompare"))
+#devtools::install_github("cresswellkg/TADCompare")
 library(TADCompare)
 ```
 
@@ -75,7 +75,7 @@ sub_mat
 
 ## Working with sparse 3-column matrices
 
-Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. [??? Ref missing] 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the `HiCcompare` package's `sparse2full()` function. [??? Link to the package] The first 5 rows of a typical sparse 3-column matrix is shown below.
+Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. [??? Ref missing] 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html) package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix is shown below.
 
 ```{r, echo = FALSE, warning = FALSE}
 data("rao_chr22_prim") 
@@ -84,7 +84,7 @@ head(HiCcompare::full2sparse(rao_chr22_prim))
 
 ## Working with other data types
 
-Users can also find TADs from data output by `cooler` (http://cooler.readthedocs.io/en/latest/index.html) and HiC-Pro (https://github.com/nservant/HiC-Pro) with minor pre-processing using the `HiCcompare` package. [??? Link to the relevant resources]
+Users can also find TADs from data output by `cooler` (http://cooler.readthedocs.io/en/latest/index.html) and HiC-Pro (https://github.com/nservant/HiC-Pro) with minor pre-processing using the [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html) package.
 
 ## Working with .cool files
 
@@ -187,16 +187,18 @@ n_by_n = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution 
 n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000)
 
 #Benchmarking different parameters
-microbenchmark(
+bench = microbenchmark(
 #Sparse
 sparse = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000),
 #NxN
 n_by_n = TADCompare(cont_mat1 = rao_chr22_prim, cont_mat2 = rao_chr22_rep, resolution = 50000),
 #Nx(N+3)
 n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000), times = 5, unit = "s"
-)
+) 
+
+summary(bench) %>% dplyr::select(expr, mean, median)
 ```
 
-The table above shows a summary of runtimes for different types of contact matrices measured in seconds. [??? Show only "mean" time] As we see, `TADCompare` is extremely fast no matter the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
+The table above shows the mean and median of runtimes for different types of contact matrices measured in seconds. As we see, `TADCompare` is extremely fast no matter the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
 
 # References

@@ -79,7 +79,7 @@ results$Count_Plot
 [??? Separate into a vignette, make generic, applicable to everything]
 ## Performing gene ontology analysis using TADCompare
 
-To demonstrate one of the ways to interpret the results of differential and time course TAD boundary analysis, we perform gene ontology enrichment analysis using `rGREAT` (Version 2.0) [??? Link to the package. Is version necessary?]. We first show how to perform gene ontology enrichment on shifted boundaries enriched [??? Detected?] in matrix 1. [??? Describe each column]
+To demonstrate one of the ways to interpret the results of differential and time course TAD boundary analysis, we perform gene ontology enrichment analysis using `rGREAT` (https://bioconductor.org/packages/release/bioc/html/rGREAT.html). We first show how to perform gene ontology enrichment on shifted boundaries detected in matrix 1.
 
 ```{r, warning=FALSE, message = FALSE}
 library(rGREAT)
