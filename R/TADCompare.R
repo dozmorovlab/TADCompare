@@ -6,23 +6,23 @@
 #' @import ggplot2
 #' @param cont_mat1 Contact matrix in either sparse 3 column, n x n or n x (n+3)
 #' form where the first three columns are coordinates in BED format.
-#' If an x n matrix is used, the column names must correspond to the start
-#' point of the corresponding bin. If large mode is selected, then
-#' this matrix must be a tab-seperated n x n or n x (n+3) and it should be the
+#' If an n x n matrix is used, the column names must correspond to the start
+#' point of the corresponding bin. If large mode [??? What's this?] is selected, then
+#' this matrix must be a tab-separated n x n or n x (n+3) and [??? I don't understand. TBD] it should be the
 #' path to a contact matrix. Required.
 #' @param cont_mat2 Second contact matrix, used for differential comparison,
 #' must be in same format as cont_mat1. Required
 #' @param resolution Resolution of the data. Used to assign TAD boundaries
 #' to genomic regions. If not provided, resolution will be estimated from
-#' column names of matrix. Default is "auto"
-#' @param z_thresh Threshold for boundary score. Higher values result in a
-#' higher threshold for differential TADs. Default is 2.
+#' column names of matrix. [??? What about sparse format?] Default is "auto"
+#' @param z_thresh Threshold for [??? differential?] boundary score. Higher values result in a
+#' higher threshold for differential TAD boundaries. Default is 2.
 #' @param gap_thresh Required \% of 0s before a region will be considered a gap
-#' and excluded. Default is .8
-#' @param pre_TADs Set TRUE if a pre-defined set of TAD boundaries will be
-#' tested (Defined by TADs parameter). If FALSE, TADCompare will test all
+#' and excluded. Default is .8 [??? Change the code and the description to handle this threshold from another angle, 0.2]
+#' @param pre_TADs Set TRUE if a pre-defined set of TAD boundaries [??? In what format?] will be
+#' tested (Defined by TADs parameter). [??? Can you get rid of this parameter? If "TADs" is not null, then pre-defined boundaries ARE used, otherwise not ] If FALSE, TADCompare will test all
 #' possible boundaries. Default is FALSE
-#' @param TADs Data frame containing TAD boundaries to be tested. Column with
+#' @param TADs Data frame containing TAD boundaries to be tested. [??? You'll be required to use GRanges - redo] Column with
 #' boundaries must be named "end". Only works if pre_TADs is TRUE. Default is
 #' NULL
 #' @return A list containing differential TAD characteristics
@@ -31,11 +31,12 @@
 #'  was detected.
 #'  \item Boundary_Scores - Boundary scores for the entire genome
 #' }
+#' [??? Describe column names]
 #' @export
 #' @details Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
 #' TADCompare identifies differential TAD boundaries. Using a novel boundary
 #' score metric, TADCompare simultaneously identifies TAD boundaries and
-#' tests for differential enrichment between datasets. Strength of interactions
+#' tests for differential presence of them. Strength of interactions [??? As well as the magnitude of the differences?]
 #' are provided using raw boundary scores and p-values.
 #' @examples
 #' #Read in data
@@ -44,6 +45,8 @@
 #' #Find differential TADs
 #' diff_list <- TADCompare(rao_chr22_prim, rao_chr22_rep,
 #' resolution = 50000)
+
+[??? Example not working, data not found]
 
 TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                       z_thresh = 2, window_size = 25,
