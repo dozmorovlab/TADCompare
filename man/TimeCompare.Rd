@@ -4,13 +4,13 @@
 \alias{TimeCompare}
 \title{Time-varying TAD boundary analysis}
 \usage{
-TimeCompare(cont_mats, resolution, z_thresh = 3, window_size = 15,
-  gap_thresh = 0.8, groupings = NULL)
+TimeCompare(cont_mats, resolution, z_thresh = 2, window_size = 15,
+  gap_thresh = 0.2, groupings = NULL)
 }
 \arguments{
 \item{cont_mats}{List of contact matrices in either sparse 3 column, n x n or n x (n+3)
 form where the first three columns are coordinates in BED format.
-If an x n matrix is used, the column names must correspond to the start
+If an n x n matrix is used, the column names must correspond to the start
 point of the corresponding bin. Required.}
 
 \item{resolution}{Resolution of the data. Used to assign TAD boundaries
@@ -20,19 +20,22 @@ column names of the first matrix. Default is "auto"}
 \item{z_thresh}{Threshold for boundary score. Higher values result in a
 higher threshold for differential TADs. Default is 3.}
 
-\item{gap_thresh}{Required \% of 0s before a region will be considered a gap
-and excluded. Default is .8}
+\item{gap_thresh}{Required \% of non-zero entries before a region will
+be considered non-informative and excluded. Default is .2}
 
-\item{groupings}{Vector identifying which group each contact matrix belongs
-to. Each group will be combined using consensus boundary scores. Default is
+\item{groupings}{Variable for identifying groups of replicates at a given time point.
+Each group will be combined using consensus boundary scores. It should be a vector of equal length
+to cont_mats where each entry is a label corresponding to the group membership of the corresponding
+matrix. Default is
 NULL}
 }
 \value{
 A list containing consensus TAD boundaries and overall scores
  \itemize{
- \item Time_TADs - Data frame containing all regions with a TAD boundary
+ \item TAD_Bounds - Data frame containing all regions with a TAD boundary
  at one or more time point
- \item All_Regions - Data frame containing consensus scores for all regions
+ \item All_Bounds - Data frame containing consensus scores for all regions
+ \item Count_Plot - Plot containing the prevelance of each boundary type
 }
 }
 \description{
@@ -40,15 +43,14 @@ Time-varying TAD boundary analysis
 }
 \details{
 Given a list of sparse 3 column, n x n, or n x (n+3) contact
-matrices, TimeCompare identifies TADs and classifies time points based on
-boundary change. A data frame of time points with at least one boundary
-and the corresponding classification is returned.
+matrices representing different time points, TimeCompare identifies all
+regions with at least one TAD. Within each region, we classify TADs based
+on how they change over time into six categories (Common, Dynamic,
+Early/Late Appearing and Early/Late Disappearing).
 }
 \examples{
 #Read in data
-data("rao_chr22_rep")
-data("rao_chr22_prim")
-cont_mats = list(rao_chr22_rep, rao_chr22_prim)
+data("time_mats")
 #Find time varying TAD boundaries
-diff_list <- TimeCompare(cont_mats, resolution = 50000)
+diff_list <- TimeCompare(time_mats, resolution = 50000)
 }

@@ -16,15 +16,18 @@
 #' from the column names of the transformed full matrix. Default is "auto"
 #' @param z_thresh Threshold for differential boundary score. Higher values result in a
 #' higher threshold for differential TAD boundaries. Default is 2.
-#' @param gap_thresh Required \% of non-zero entries before a region will
-#' be considered non-informative and excluded. Default is .2
+#' @param gap_thresh Required \% of non-zero interaction frequencies for a
+#' given bin to be included in the analysis. Default is .2
 #' @return A list containing differential TAD characteristics
 #'  \itemize{
-#'  \item TAD_Frame - Data frame containing any region where a TAD boundary
-#'  was detected.
-#'  \item Boundary_Scores - Boundary scores for the entire genome
+#'  \item TAD_Frame - Data frame containing any bin where a TAD boundary
+#'  was detected. Boundary refers to the genomic coordinates, Gap_Score refers
+#'  to the orresponding differential boundary score. TAD_Score1 and TAD_Score2
+#'  are boundary scores for cont_mat1 and cont_mat2. Differential is the broad
+#'  category of boundary. Enriched_In indicates which matrix contains the
+#'  boundary. Type is the specific type of differential boundary.
+#'  \item Boundary_Scores - Boundary scores for the entire genome.
 #' }
-#' [??? Describe column names]
 #' @export
 #' @details Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
 #' TADCompare identifies differential TAD boundaries. Using a novel boundary

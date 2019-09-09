@@ -4,7 +4,6 @@
 #' @import magrittr
 #' @import PRIMME
 #' @importFrom HiCcompare sparse2full
-#' [??? See comments in TADcompare, additional are added below]
 #' @param cont_mats List of contact matrices in either sparse 3 column, n x n or n x (n+3)
 #' form where the first three columns are coordinates in BED format.
 #' If an n x n matrix is used, the column names must correspond to the start
@@ -41,10 +40,6 @@
 #' data("time_mats")
 #' #Find time varying TAD boundaries
 #' diff_list <- TimeCompare(time_mats, resolution = 50000)
-
-[??? Bad example. It runs but the output has error:
-   $Count_Plot
- Error: Must request at least one colour from a hue palette.]
 
 
 TimeCompare = function(cont_mats, resolution,
