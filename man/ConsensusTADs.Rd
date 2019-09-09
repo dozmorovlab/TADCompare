@@ -27,8 +27,11 @@ be considered non-informative and excluded. Default is .2}
 A list containing consensus TAD boundaries and overall scores
  \itemize{
  \item Consensus - Data frame containing location of all consensus
- boundaries
- \item All_Regions - Data frame containing consensus scores for all regions
+ boundaries. Coordinate is the region of the genome, Sample columns
+ correspond to individual boundary scores. Consensus_Score is consensus
+ boundary score
+ \item All_Regions - Data frame containing consensus scores for all regions.
+ All columns are identiical to the Consensus object.
 }
 }
 \description{

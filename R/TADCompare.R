@@ -27,6 +27,8 @@
 #'  category of boundary. Enriched_In indicates which matrix contains the
 #'  boundary. Type is the specific type of differential boundary.
 #'  \item Boundary_Scores - Boundary scores for the entire genome.
+#'  \item Count_Plot - Stacked barplot containing the number of each type of
+#'  TAD boundary called by TADCompare
 #' }
 #' @export
 #' @details Given two sparse 3 column, n x n , or n x (n+3) contact matrices,

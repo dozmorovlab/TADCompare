@@ -33,7 +33,10 @@ NULL}
 A list containing consensus TAD boundaries and overall scores
  \itemize{
  \item TAD_Bounds - Data frame containing all regions with a TAD boundary
- at one or more time point
+ at one or more time point. Coordinate corresponds to genomic region, sample
+ columns correspond to individual boundary scores for each sample,
+ Consensus_Score is the consensus boundary score across all samples.
+ Category is the differential boundary type.
  \item All_Bounds - Data frame containing consensus scores for all regions
  \item Count_Plot - Plot containing the prevelance of each boundary type
 }

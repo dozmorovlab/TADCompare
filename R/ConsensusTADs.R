@@ -20,8 +20,11 @@
 #' @return A list containing consensus TAD boundaries and overall scores
 #'  \itemize{
 #'  \item Consensus - Data frame containing location of all consensus
-#'  boundaries
-#'  \item All_Regions - Data frame containing consensus scores for all regions
+#'  boundaries. Coordinate is the region of the genome, Sample columns
+#'  correspond to individual boundary scores. Consensus_Score is consensus
+#'  boundary score
+#'  \item All_Regions - Data frame containing consensus scores for all regions.
+#'  All columns are identiical to the Consensus object.
 #' }
 #' @export
 #' @details Given a list of 3 column, n x n , or n x (n+3) contact matrices,

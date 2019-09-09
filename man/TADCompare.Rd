@@ -37,6 +37,8 @@ A list containing differential TAD characteristics
  category of boundary. Enriched_In indicates which matrix contains the
  boundary. Type is the specific type of differential boundary.
  \item Boundary_Scores - Boundary scores for the entire genome.
+ \item Count_Plot - Stacked barplot containing the number of each type of
+ TAD boundary called by TADCompare
 }
 }
 \description{
