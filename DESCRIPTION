@@ -1,17 +1,38 @@
 Package: TADCompare
-Title: What the Package Does (One Line, Title Case)
+Title: TADCompare: Identification and characterization of differential TADs
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com")
-Description: What the package does (one paragraph).
-License: What license it uses
+Author:
+    Kellen Cresswell <cresswellkg@vcu.edu>,
+    Mikhail Dozmorov <mikhail.dozmorov@vcuhealth.org>
+Maintainer: Kellen Cresswell <cresswellkg@vcu.edu>
+Description: 
+    SpectralTAD is an R package designed to identify Topologically Associated 
+    Domains (TADs) from Hi-C contact matrices. It uses a modified version of 
+    spectral clustering that uses a sliding window to quickly detect TADs. 
+    The function works on a range of different formats of contact matrices 
+    and returns a bed file of TAD coordinates. The method does not require 
+    users to adjust any parameters to work and gives them control over 
+    the number of hierarchical levels to be returned.License: What license it uses
+License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 6.1.1
+Imports: 
+    dplyr,
+    PRIMME,
+    cluster,
+    Matrix,
+    magrittr,
+    HiCcompare
 Suggests: 
+    BiocCheck,
+    BiocManager,
+    BiocStyle,
     knitr,
-    rmarkdown
+    rmarkdown,
+    microbenchmark,
+    testthat,
+    covr
+Depends: R (>= 3.6)
 VignetteBuilder: knitr
+biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering
+
