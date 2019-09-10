@@ -6,13 +6,12 @@ Author:
     Mikhail Dozmorov <mikhail.dozmorov@vcuhealth.org>
 Maintainer: Kellen Cresswell <cresswellkg@vcu.edu>
 Description: 
-    SpectralTAD is an R package designed to identify Topologically Associated 
-    Domains (TADs) from Hi-C contact matrices. It uses a modified version of 
-    spectral clustering that uses a sliding window to quickly detect TADs. 
-    The function works on a range of different formats of contact matrices 
-    and returns a bed file of TAD coordinates. The method does not require 
-    users to adjust any parameters to work and gives them control over 
-    the number of hierarchical levels to be returned.License: What license it uses
+    TADCompare is an R package designed to identify and characterize differential Topologically Associated 
+    Domains (TADs) between multiple Hi-C contact matrices. It contains 
+    functions for finding differential TADs between two datasets, finding
+    differential TADs over time and identifying consensus TADs across multiple
+    matrices. It takes all of the main types of HiC input and returns simple,
+    comprehensive, easy to analyze results.
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 6.1.1
