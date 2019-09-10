@@ -62,12 +62,11 @@ We can then print the set of regions with at least one TAD boundary:
 ```
 ## TimeCompare
 
-Another function of the TADCompare package is time course analysis of TAD boundary change. 
-
+`TimeCompare` takes data from at least four time points and identifies all regions with at least one TAD. Using this information, it then classifies each region, based on how they change over time, into 6 categories (Dynamic, Highly Common, Early Appearing/Disappearing and Late Appearing/Disappearing).
 ```
 data("time_mats")
 Time_Mats = TimeCompare(time_mats, resolution = 50000)
-head(Time_Mats$Time_Bounds)
+head(Time_Mats$TAD_Bounds)
 ```
 The resulting output is:
 
@@ -88,6 +87,8 @@ The resulting output is:
 6     Late Appearing TAD
 ```
 
+For each coordinate, we have the individual boundary score for each sample (Sample x), consensus boundary score (Consensus_Score) and category (Category).
+
 ## ConsensusTADs
 
 ConsensusTADs uses a novel metric called the consensus boundary score to identify TAD boundaries summarized across multiple contact matrices. It can operate on an unlimited number of replicates, time points or conditions.
@@ -95,7 +96,7 @@ ConsensusTADs uses a novel metric called the consensus boundary score to identif
 ```
 data("time_mats")
 con_tads = ConsensusTADs(time_mats, resolution = 50000)
-head(con_tads)
+head(con_tads$Consensus)
 ```
 
 ```
@@ -106,6 +107,12 @@ head(con_tads)
 4   32350000 2.6978488 2.455860  3.5131909 3.550942        3.105520
 5   36900000 3.0731406 3.153978  3.1861296 4.489285        3.170054
 ```
+
+The results are a set of coordinates with significant consensus TADs. Columns starting with "Sample" refer to the individual boundary scores. Consensus_Score is the consensus boundary score across all samples.
+
+#Availability 
+
+The developmental version is available at https://github.com/cresswellkg/TADCompare, the stable version is available at https://github.com/dozmorovlab/TADCompare.
 
 # Contributions and Support
 
