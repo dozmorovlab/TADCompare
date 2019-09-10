@@ -24,7 +24,7 @@ options(stringsAsFactors = FALSE)
 
 # Introduction
 
-`TADCompare` is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. `TADCompare` package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` allows for the identification of differential TAD boundaries between [two contact matrices](TADCompare.html).  `TimeCompare` takes a set of contact matrices, one matrix per time point, identifies TAD boundaries and classifies [how they change over time](TimeCompare.html). `ConsensusTADs` takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](ConsensusTADs.html). The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. [??? TBD the following] Instructions on changing the default parameters are provided. 
+`TADCompare` is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. `TADCompare` package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` allows for the identification of differential TAD boundaries between [two contact matrices](TADCompare.html).  `TimeCompare` takes a set of contact matrices, one matrix per time point, identifies TAD boundaries and classifies [how they change over time](TimeCompare.html). `ConsensusTADs` takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](ConsensusTADs.html). The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. Instructions on changing the default parameters are provided. 
 
 # Getting Started
 
@@ -116,16 +116,15 @@ diff_tads = lapply(names(sparse_mat1), function(x) {
 
 HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs which map back to the coordinates in the bed file and the third column contains the number of contacts between the two regions. The steps for analyzing these files is shown below:
 
-[??? Select better data, describe where it came from, include in the package]
 ```{r, eval = FALSE}
 #Read in both files
-mat1 = read.table("amyg_100000.matrix")
-bed1 = read.table("amyg_100000_abs.bed")
+mat1 = read.table("sample1_100000.matrix")
+bed1 = read.table("sample1_100000_abs.bed")
 
 #Matrix 2
 
-mat2 = read.table("dplfc_100000.matrix")
-bed2 = read.table("dplfc_100000_abs.bed")
+mat2 = read.table("sample2_100000.matrix")
+bed2 = read.table("sample2_100000_abs.bed")
 
 #Convert to modified bed format
 sparse_mats1 = HiCcompare::hicpro2bedpe(mat1,bed1)
@@ -201,7 +200,5 @@ summary(bench) %>% dplyr::select(expr, mean, median)
 ```
 
 The table above shows the mean and median of runtimes for different types of contact matrices measured in seconds. As we see, `TADCompare` is extremely fast irrespectively of the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
-
-[??? HiC-Pro data description?]
 
 # References
