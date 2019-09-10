@@ -3,11 +3,10 @@
 #' @import dplyr
 #' @import magrittr
 #' @import PRIMME
-#' [??? See comments in TADcompare, additional are added below]
-#' @param cont_mats List of contact matrices in either sparse 3 column, n x n or n x (n+3)
-#' form where the first three columns are coordinates in BED format.
-#' If an x n matrix is used, the column names must correspond to the start
-#' point of the corresponding bin. Required.
+#' @param cont_mats List of contact matrices in either sparse 3 column,
+#' n x n or n x (n+3) form where the first three columns are coordinates in
+#' BED format. If an x n matrix is used, the column names must correspond to
+#' the start point of the corresponding bin. Required.
 #' @param resolution Resolution of the data. Used to assign TAD boundaries
 #' to genomic regions. If not provided, resolution will be estimated from
 #' column names of the first matrix. Default is "auto"
@@ -79,7 +78,8 @@ ConsensusTADs = function(cont_mats, resolution,
     message("Converting to n x n matrix")
 
     cont_mats = lapply(cont_mats, function(x) {
-      #Find the start coordinates based on the second column of the bed file portion of matrix
+      #Find the start coordinates based on the second column of the
+      #bed file portion of matrix
 
       start_coords = x[,2]
 
@@ -102,7 +102,8 @@ ConsensusTADs = function(cont_mats, resolution,
       return(x)
     })
 
-    } else if (col_test!=3 & (row_test != col_test) & (col_test-row_test != 3)) {
+    } else if (col_test!=3 & (row_test != col_test) &
+               (col_test-row_test != 3)) {
 
     #Throw error if matrix does not correspond to known matrix type
 
@@ -127,7 +128,7 @@ ConsensusTADs = function(cont_mats, resolution,
     dist_sub = .single_dist(cont_mats[[x]], resolution,
                            window_size = window_size,
                            gap_thresh = gap_thresh)
-    dist_sub = data.frame(Sample = paste("Sample", x), dist_sub[,c(2:3)])
+    dist_sub = data.frame(Sample = paste("Sample", x), dist_sub[,c(2,3)])
     dist_sub
   })
 
@@ -135,7 +136,8 @@ ConsensusTADs = function(cont_mats, resolution,
   coord_sum = lapply(bound_scores, function(x) x[,2])
   shared_cols = Reduce(intersect, coord_sum)
   bound_scores = lapply(bound_scores, function(x) x %>%
-                          dplyr::filter(as.numeric(Coordinate) %in% as.numeric(shared_cols)))
+                          dplyr::filter(as.numeric(Coordinate) %in%
+                                          as.numeric(shared_cols)))
 
   #Bind boundary scores
   score_frame = dplyr::bind_rows(bound_scores)
@@ -149,20 +151,23 @@ ConsensusTADs = function(cont_mats, resolution,
     dplyr::mutate(Diff_Score = (base_sample$Boundary-Boundary)) %>%
     dplyr::ungroup() %>% dplyr::mutate(Diff_Score = (Diff_Score-
                            mean(Diff_Score, na.rm = TRUE))/
-                           sd(Diff_Score, na.rm =TRUE)) %>% dplyr::ungroup() %>% dplyr::mutate(
+                           sd(Diff_Score, na.rm =TRUE)) %>%
+                          dplyr::ungroup() %>% dplyr::mutate(
                          TAD_Score = (Boundary-mean(Boundary, na.rm = TRUE))/
                            sd(Boundary, na.rm = TRUE))
 
   #Identify differential boundaries
-  score_frame = score_frame %>% dplyr::mutate(Differential = ifelse(abs(Diff_Score)>z_thresh,
+  score_frame = score_frame %>% dplyr::mutate(Differential =
+                                       ifelse(abs(Diff_Score)>z_thresh,
                                        "Differential", "Non-Differential"),
                                        Differential = ifelse(is.na(Diff_Score),
-                                                             "Non-Differential",
-                                                             Differential))
+                                                            "Non-Differential",
+                                                            Differential))
 
   #Getting a frame summarizing boundaries and subset to only have significant
 
-  score_frame = score_frame %>% dplyr::select(Sample, Coordinate, TAD_Score) %>%
+  score_frame = score_frame %>%
+    dplyr::select(Sample, Coordinate, TAD_Score) %>%
     dplyr::arrange(as.numeric(gsub("Sample", "", Sample))) %>%
     dplyr::mutate(Sample = factor(Sample, levels = unique(Sample)))
 
@@ -200,7 +205,10 @@ ConsensusTADs = function(cont_mats, resolution,
               All_Regions = score_frame))
 }
 
-.single_dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .2) {
+.single_dist = function(cont_mat1,
+                        resolution,
+                        window_size = 15,
+                        gap_thresh = .2) {
 
   #Remove full gaps from matrices
 
@@ -225,7 +233,7 @@ ConsensusTADs = function(cont_mats, resolution,
   while (end_loop == 0) {
 
     #Get windowed portion of matrix
-    sub_filt1 = cont_mat_filt[start:end, start:end]
+    sub_filt1 = cont_mat_filt[seq(start, end, 1), seq(start,end,1)]
 
     #Identify columns with more than the gap threshold of zeros
     Per_Zero1 = (colSums(sub_filt1 != 0)/nrow(sub_filt1))<gap_thresh
@@ -291,7 +299,7 @@ ConsensusTADs = function(cont_mats, resolution,
 
     norm_ones = sqrt(dim(sub_mat1)[2])
 
-    for (i in 1:dim(eig_vecs1)[2]) {
+    for (i in seq_len(dim(eig_vecs1)[2])) {
       eig_vecs1[,i] = (eig_vecs1[,i]/sqrt(sum(eig_vecs1[,i]^2)))  * norm_ones
       if (eig_vecs1[1,i] !=0) {
         eig_vecs1[,i] = -1*eig_vecs1[,i] * sign(eig_vecs1[1,i])
@@ -305,15 +313,19 @@ ConsensusTADs = function(cont_mats, resolution,
 
     #Project eigenvectors onto a unit circle
 
-    vm1 = matrix(kronecker(rep(1,k), as.matrix(sqrt(rowSums(eig_vecs1^2)))),n,k)
+    vm1 = matrix(kronecker(rep(1,k),
+                           as.matrix(sqrt(rowSums(eig_vecs1^2)))),n,k)
     eig_vecs1 = eig_vecs1/vm1
 
     #Get distance between points on circle
 
-    point_dist1 = sqrt(rowSums( (eig_vecs1-rbind(NA,eig_vecs1[-nrow(eig_vecs1),]))^2  ))
+    point_dist1 = sqrt(
+      rowSums( (eig_vecs1-rbind(NA,eig_vecs1[-nrow(eig_vecs1),]))^2)
+      )
 
     #Match column names (Coordinates) with eigenvector distances
-    point_dist1 = cbind( match(colnames(sub_mat1),colnames(cont_mat1) ) , as.numeric(colnames(sub_mat1)), point_dist1)
+    point_dist1 = cbind( match(colnames(sub_mat1),colnames(cont_mat1)),
+                         as.numeric(colnames(sub_mat1)), point_dist1)
 
     #Combine current distances with old distances
     point_dists1 = rbind(point_dists1, point_dist1[-1,])

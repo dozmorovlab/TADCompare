@@ -10,7 +10,7 @@ author:
 output:
     BiocStyle::html_document
 vignette: >
-    %\VignetteIndexEntry{TADCompare}
+    %\VignetteIndexEntry{TAD comparison across time course}
     %\VignetteEncoding{UTF-8}
     %\VignetteEngine{knitr::rmarkdown}
 editor_options:

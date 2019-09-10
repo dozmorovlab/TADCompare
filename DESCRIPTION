@@ -1,6 +1,6 @@
 Package: TADCompare
 Title: TADCompare: Identification and characterization of differential TADs
-Version: 0.0.0.9000
+Version: 1.2.0
 Author:
     Kellen Cresswell <cresswellkg@vcu.edu>,
     Mikhail Dozmorov <mikhail.dozmorov@vcuhealth.org>
@@ -21,7 +21,8 @@ Imports:
     cluster,
     Matrix,
     magrittr,
-    HiCcompare
+    HiCcompare,
+    ggplot2
 Suggests: 
     BiocCheck,
     BiocManager,
@@ -30,8 +31,8 @@ Suggests:
     rmarkdown,
     microbenchmark,
     testthat,
-    covr
+    covr,
+    pheatmap
 Depends: R (>= 3.6)
 VignetteBuilder: knitr
 biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering
-

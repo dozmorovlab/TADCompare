@@ -163,6 +163,8 @@ The type of matrix input into the algorithm can affect runtimes for the algorith
 
 ```{r, message = FALSE, warning=FALSE}
 library(microbenchmark)
+#Reading in the second matrix
+data("rao_chr22_rep")
 #Converting to sparse
 prim_sparse = HiCcompare::full2sparse(rao_chr22_prim)
 rep_sparse = HiCcompare::full2sparse(rao_chr22_rep)
