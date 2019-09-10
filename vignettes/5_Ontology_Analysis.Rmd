@@ -1,8 +1,21 @@
 ---
-title: "Ontology Analysis"
-author: "Kellen Cresswell"
-date: "9/7/2019"
-output: pdf_document
+title: "Gene Ontology Enrichment Analysis"
+author:
+- name: Kellen Cresswell
+  affiliation:
+  - &1 Department of Biostatistics, Virginia Commonwealth University, Richmond, VA
+- name: Mikhail Dozmorov
+  affiliation:
+  - *1
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{TADCompare}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+bibliography: pack_ref.bib
 ---
 
 ```{r setup, include=FALSE}
