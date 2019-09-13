@@ -5,11 +5,11 @@
 \title{Differential TAD boundary detection}
 \usage{
 TADCompare(cont_mat1, cont_mat2, resolution = "auto", z_thresh = 2,
-  window_size = 25, gap_thresh = 0.2)
+  window_size = 15, gap_thresh = 0.2)
 }
 \arguments{
-\item{cont_mat1}{Contact matrix in either sparse 3 column, n x n or n x (n+3)
-form where the first three columns are coordinates in BED format.
+\item{cont_mat1}{Contact matrix in either sparse 3 column, n x n or
+n x (n+3) form where the first three columns are coordinates in BED format.
 If an n x n matrix is used, the column names must correspond to the start
 point of the corresponding bin. Required.}
 
@@ -21,8 +21,11 @@ to genomic regions. If not provided, resolution will be estimated from
 column names of matrix. If matrices are sparse, resolution will be estimated
 from the column names of the transformed full matrix. Default is "auto"}
 
-\item{z_thresh}{Threshold for differential boundary score. Higher values result in a
-higher threshold for differential TAD boundaries. Default is 2.}
+\item{z_thresh}{Threshold for differential boundary score. Higher values
+result in a higher threshold for differential TAD boundaries. Default is 2.}
+
+\item{window_size}{Size of sliding window for TAD detection, measured in bins.
+Results should be consistent regardless of window size. Default is 15.}
 
 \item{gap_thresh}{Required \% of non-zero interaction frequencies for a
 given bin to be included in the analysis. Default is .2}

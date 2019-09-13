@@ -16,6 +16,8 @@
 #' from the column names of the transformed full matrix. Default is "auto"
 #' @param z_thresh Threshold for differential boundary score. Higher values
 #' result in a higher threshold for differential TAD boundaries. Default is 2.
+#' @param  window_size Size of sliding window for TAD detection, measured in bins.
+#' Results should be consistent regardless of window size. Default is 15.
 #' @param gap_thresh Required \% of non-zero interaction frequencies for a
 #' given bin to be included in the analysis. Default is .2
 #' @return A list containing differential TAD characteristics
@@ -49,7 +51,7 @@ TADCompare = function(cont_mat1,
                       cont_mat2,
                       resolution = "auto",
                       z_thresh = 2,
-                      window_size = 25,
+                      window_size = 15,
                       gap_thresh = .2) {
 
   #Pulling out dimensions to test for matrix type

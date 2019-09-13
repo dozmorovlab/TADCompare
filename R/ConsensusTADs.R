@@ -12,7 +12,7 @@
 #' column names of the first matrix. Default is "auto"
 #' @param z_thresh Threshold for boundary score. Higher values result in a
 #' higher threshold for differential TADs. Default is 3.
-#' @window_size Size of sliding window for TAD detection, measured in bins.
+#' @param window_size Size of sliding window for TAD detection, measured in bins.
 #' Results should be consistent Default is 15.
 #' @param gap_thresh Required \% of non-zero entries before a region will
 #' be considered non-informative and excluded. Default is .2

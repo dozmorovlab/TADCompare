@@ -8,8 +8,9 @@ TimeCompare(cont_mats, resolution, z_thresh = 2, window_size = 15,
   gap_thresh = 0.2, groupings = NULL)
 }
 \arguments{
-\item{cont_mats}{List of contact matrices in either sparse 3 column, n x n or n x (n+3)
-form where the first three columns are coordinates in BED format.
+\item{cont_mats}{List of contact matrices in either sparse 3 column,
+n x n or n x (n+3) form where the first three columns are coordinates in
+BED format.
 If an n x n matrix is used, the column names must correspond to the start
 point of the corresponding bin. Required.}
 
@@ -20,14 +21,17 @@ column names of the first matrix. Default is "auto"}
 \item{z_thresh}{Threshold for boundary score. Higher values result in a
 higher threshold for differential TADs. Default is 3.}
 
+\item{window_size}{Size of sliding window for TAD detection, measured in bins.
+Results should be consistent Default is 15.}
+
 \item{gap_thresh}{Required \% of non-zero entries before a region will
 be considered non-informative and excluded. Default is .2}
 
-\item{groupings}{Variable for identifying groups of replicates at a given time point.
-Each group will be combined using consensus boundary scores. It should be a vector of equal length
-to cont_mats where each entry is a label corresponding to the group membership of the corresponding
-matrix. Default is
-NULL}
+\item{groupings}{Variable for identifying groups of replicates at a given
+time point. Each group will be combined using consensus boundary scores.
+It should be a vector of equal length to cont_mats where each entry is a
+label corresponding to the group membership of the corresponding
+matrix. Default is NULL}
 }
 \value{
 A list containing consensus TAD boundaries and overall scores

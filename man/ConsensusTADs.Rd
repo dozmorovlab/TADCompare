@@ -8,10 +8,10 @@ ConsensusTADs(cont_mats, resolution, z_thresh = 3, window_size = 15,
   gap_thresh = 0.2)
 }
 \arguments{
-\item{cont_mats}{List of contact matrices in either sparse 3 column, n x n or n x (n+3)
-form where the first three columns are coordinates in BED format.
-If an x n matrix is used, the column names must correspond to the start
-point of the corresponding bin. Required.}
+\item{cont_mats}{List of contact matrices in either sparse 3 column,
+n x n or n x (n+3) form where the first three columns are coordinates in
+BED format. If an x n matrix is used, the column names must correspond to
+the start point of the corresponding bin. Required.}
 
 \item{resolution}{Resolution of the data. Used to assign TAD boundaries
 to genomic regions. If not provided, resolution will be estimated from
@@ -19,6 +19,9 @@ column names of the first matrix. Default is "auto"}
 
 \item{z_thresh}{Threshold for boundary score. Higher values result in a
 higher threshold for differential TADs. Default is 3.}
+
+\item{window_size}{Size of sliding window for TAD detection, measured in bins.
+Results should be consistent Default is 15.}
 
 \item{gap_thresh}{Required \% of non-zero entries before a region will
 be considered non-informative and excluded. Default is .2}
