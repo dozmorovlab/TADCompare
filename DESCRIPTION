@@ -1,17 +1,38 @@
 Package: TADCompare
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com")
-Description: What the package does (one paragraph).
-License: What license it uses
+Title: TADCompare: Identification and characterization of differential TADs
+Version: 0.99.2
+Author:
+    Kellen Cresswell <cresswellkg@vcu.edu>,
+    Mikhail Dozmorov <mikhail.dozmorov@vcuhealth.org>
+Maintainer: Kellen Cresswell <cresswellkg@vcu.edu>
+Description: 
+    TADCompare is an R package designed to identify and characterize differential Topologically Associated 
+    Domains (TADs) between multiple Hi-C contact matrices. It contains 
+    functions for finding differential TADs between two datasets, finding
+    differential TADs over time and identifying consensus TADs across multiple
+    matrices. It takes all of the main types of HiC input and returns simple,
+    comprehensive, easy to analyze results.
+License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 6.1.1
+Imports: 
+    dplyr,
+    PRIMME,
+    cluster,
+    Matrix,
+    magrittr,
+    HiCcompare,
+    ggplot2
 Suggests: 
+    BiocCheck,
+    BiocManager,
+    BiocStyle,
     knitr,
-    rmarkdown
+    rmarkdown,
+    microbenchmark,
+    testthat,
+    covr,
+    pheatmap
+Depends: R (>= 3.6)
 VignetteBuilder: knitr
+biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering

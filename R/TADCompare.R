@@ -4,53 +4,55 @@
 #' @import magrittr
 #' @import PRIMME
 #' @import ggplot2
-#' @param cont_mat1 Contact matrix in either sparse 3 column, n x n or n x (n+3)
-#' form where the first three columns are coordinates in BED format.
-#' If an x n matrix is used, the column names must correspond to the start
-#' point of the corresponding bin. If large mode is selected, then
-#' this matrix must be a tab-seperated n x n or n x (n+3) and it should be the
-#' path to a contact matrix. Required.
+#' @param cont_mat1 Contact matrix in either sparse 3 column, n x n or
+#' n x (n+3) form where the first three columns are coordinates in BED format.
+#' If an n x n matrix is used, the column names must correspond to the start
+#' point of the corresponding bin. Required.
 #' @param cont_mat2 Second contact matrix, used for differential comparison,
 #' must be in same format as cont_mat1. Required
 #' @param resolution Resolution of the data. Used to assign TAD boundaries
 #' to genomic regions. If not provided, resolution will be estimated from
-#' column names of matrix. Default is "auto"
-#' @param z_thresh Threshold for boundary score. Higher values result in a
-#' higher threshold for differential TADs. Default is 2.
-#' @param gap_thresh Required \% of 0s before a region will be considered a gap
-#' and excluded. Default is .8
-#' @param pre_TADs Set TRUE if a pre-defined set of TAD boundaries will be
-#' tested (Defined by TADs parameter). If FALSE, TADCompare will test all
-#' possible boundaries. Default is FALSE
-#' @param TADs Data frame containing TAD boundaries to be tested. Column with
-#' boundaries must be named "end". Only works if pre_TADs is TRUE. Default is
-#' NULL
+#' column names of matrix. If matrices are sparse, resolution will be estimated
+#' from the column names of the transformed full matrix. Default is "auto"
+#' @param z_thresh Threshold for differential boundary score. Higher values
+#' result in a higher threshold for differential TAD boundaries. Default is 2.
+#' @param  window_size Size of sliding window for TAD detection, measured in bins.
+#' Results should be consistent regardless of window size. Default is 15.
+#' @param gap_thresh Required \% of non-zero interaction frequencies for a
+#' given bin to be included in the analysis. Default is .2
 #' @return A list containing differential TAD characteristics
 #'  \itemize{
-#'  \item TAD_Frame - Data frame containing any region where a TAD boundary
-#'  was detected.
-#'  \item Diff_Loci - Data frame containing any regions with differential
-#'  loci
-#'  \item Boundary_Scores - Boundary scores for the entire genome
+#'  \item TAD_Frame - Data frame containing any bin where a TAD boundary
+#'  was detected. Boundary refers to the genomic coordinates, Gap_Score refers
+#'  to the orresponding differential boundary score. TAD_Score1 and TAD_Score2
+#'  are boundary scores for cont_mat1 and cont_mat2. Differential is the broad
+#'  category of boundary. Enriched_In indicates which matrix contains the
+#'  boundary. Type is the specific type of differential boundary.
+#'  \item Boundary_Scores - Boundary scores for the entire genome.
+#'  \item Count_Plot - Stacked barplot containing the number of each type of
+#'  TAD boundary called by TADCompare
 #' }
 #' @export
 #' @details Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
 #' TADCompare identifies differential TAD boundaries. Using a novel boundary
 #' score metric, TADCompare simultaneously identifies TAD boundaries and
-#' tests for differential enrichment between datasets. Strength of interactions
+#' tests for presence of differential boundaries. Strength of differences
 #' are provided using raw boundary scores and p-values.
 #' @examples
 #' #Read in data
-#' data("rao_chr20_25_rep")
-#' data("rao_chr20_25_prim")
+#' data("rao_chr22_prim")
+#' data("rao_chr22_rep")
 #' #Find differential TADs
-#' diff_list <- TADCompare(rao_chr20_25_rep, rao_chr20_25_prim,
-#' resolution = 25000)
+#' diff_frame <- TADCompare(rao_chr22_prim, rao_chr22_rep,
+#' resolution = 50000)
 
-TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
-                      z_thresh = 2, window_size = 25,
-                      gap_thresh = .8, pre_TADs = FALSE,
-                      TADs = NULL) {
+
+TADCompare = function(cont_mat1,
+                      cont_mat2,
+                      resolution = "auto",
+                      z_thresh = 2,
+                      window_size = 15,
+                      gap_thresh = .2) {
 
   #Pulling out dimensions to test for matrix type
   row_test = dim(cont_mat1)[1]
@@ -93,14 +95,20 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
     }
     if (resolution == "auto") {
       message("Estimating resolution")
-      resolution = as.numeric(names(table(as.numeric(colnames(cont_mat1))-lag(as.numeric(colnames(cont_mat1)))))[1])
+      resolution = as.numeric(names(table(as.numeric(colnames(cont_mat1))-
+                                            lag(
+                                              as.numeric(
+                                                colnames(cont_mat1)
+                                                ))))[1]
+                              )
     }
 
   } else if (col_test-row_test == 3) {
 
     message("Converting to n x n matrix")
 
-    #Find the start coordinates based on the second column of the bed file portion of matrix
+    #Find the start coordinates based on the second column of the
+    #bed file portion of matrix
 
     start_coords = cont_mat1[,2]
 
@@ -138,7 +146,10 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
 
     #Estimating resolution based on most common distance between loci
 
-    resolution = as.numeric(names(table(as.numeric(colnames(cont_mat1))-lag(as.numeric(colnames(cont_mat1)))))[1])
+    resolution = as.numeric(names(table(as.numeric(colnames(cont_mat1))-
+                                          lag(
+                                            as.numeric(colnames(cont_mat1))
+                                            )))[1])
   }
 
   #Make sure contact matrices only include shared columns
@@ -188,17 +199,17 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
 
   while (end_loop == 0) {
     #Subsetting
-    sub_filt1 = cont_mat1[start:end, start:end]
-    sub_filt2 = cont_mat2[start:end, start:end]
+    sub_filt1 = cont_mat1[seq(start,end,1), seq(start,end,1)]
+    sub_filt2 = cont_mat2[seq(start,end,1), seq(start,end,1)]
 
     #Removing gap regions from sub_matrices
 
-    Per_Zero1 = colSums(sub_filt1 ==0)/nrow(sub_filt1)
-    Per_Zero2 = colSums(sub_filt2 ==0)/nrow(sub_filt2)
+    Per_Zero1 = colSums(sub_filt1 !=0)/nrow(sub_filt1)
+    Per_Zero2 = colSums(sub_filt2 !=0)/nrow(sub_filt2)
 
     #Remove columns with more zeros than threshold
-    sub_gaps1 = Per_Zero1<gap_thresh
-    sub_gaps2 = Per_Zero2<gap_thresh
+    sub_gaps1 = Per_Zero1>gap_thresh
+    sub_gaps2 = Per_Zero2>gap_thresh
 
     comp_rows = sub_gaps1 & sub_gaps2
     sub_filt1 = sub_filt1[ comp_rows, comp_rows]
@@ -267,7 +278,7 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
 
     norm_ones = sqrt(dim(sub_mat1)[2])
 
-    for (i in 1:dim(eig_vecs1)[2]) {
+    for (i in seq_len(dim(eig_vecs1)[2])) {
       eig_vecs1[,i] = (eig_vecs1[,i]/sqrt(sum(eig_vecs1[,i]^2)))  * norm_ones
       if (eig_vecs1[1,i] !=0) {
         eig_vecs1[,i] = -1*eig_vecs1[,i] * sign(eig_vecs1[1,i])
@@ -275,7 +286,7 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
     }
 
 
-    for (i in 1:dim(eig_vecs2)[2]) {
+    for (i in seq_len(dim(eig_vecs2)[2])) {
       eig_vecs2[,i] = (eig_vecs2[,i]/sqrt(sum(eig_vecs2[,i]^2)))  * norm_ones
       if (eig_vecs2[1,i] !=0) {
         eig_vecs2[,i] = -1*eig_vecs2[,i] * sign(eig_vecs2[1,i])
@@ -289,16 +300,24 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
 
     #Project eigenvectors onto a unit circle
 
-    vm1 = matrix(kronecker(rep(1,k), as.matrix(sqrt(rowSums(eig_vecs1^2)))),n,k)
+    vm1 = matrix(
+      kronecker(rep(1,k), as.matrix(sqrt(rowSums(eig_vecs1^2)))),n,k
+      )
     eig_vecs1 = eig_vecs1/vm1
 
-    vm2 = matrix(kronecker(rep(1,k), as.matrix(sqrt(rowSums(eig_vecs2^2)))),n,k)
+    vm2 = matrix(
+      kronecker(rep(1,k), as.matrix(sqrt(rowSums(eig_vecs2^2)))),n,k
+      )
     eig_vecs2 = eig_vecs2/vm2
 
     #Get distance between points on circle
 
-    point_dist1 = sqrt(rowSums( (eig_vecs1-rbind(NA,eig_vecs1[-nrow(eig_vecs1),]))^2  ))
-    point_dist2 = sqrt(rowSums( (eig_vecs2-rbind(NA,eig_vecs2[-nrow(eig_vecs2),]))^2  ))
+    point_dist1 = sqrt(
+      rowSums( (eig_vecs1-rbind(NA,eig_vecs1[-nrow(eig_vecs1),]))^2)
+      )
+    point_dist2 = sqrt(
+      rowSums( (eig_vecs2-rbind(NA,eig_vecs2[-nrow(eig_vecs2),]))^2)
+      )
 
     #Remove NA entry at start of windows
 
@@ -331,7 +350,8 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
 
   dist_diff = (point_dists1)-(point_dists2)
   #Getting the z-scores
-  sd_diff = (dist_diff-mean(dist_diff, na.rm = TRUE))/(sd(dist_diff, na.rm = TRUE))
+  sd_diff = (dist_diff-mean(dist_diff, na.rm = TRUE))/(sd(dist_diff,
+                                                          na.rm = TRUE))
 
   TAD_Score1 = (point_dists1-mean(point_dists1, na.rm = TRUE))/
     (sd(point_dists1, na.rm = TRUE))
@@ -343,14 +363,18 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
   gaps = which(abs(sd_diff)>z_thresh)
 
   #Put differential regions into a data frame
-  diff_loci = data.frame(Region = as.numeric(Regions)[gaps],Gap_Score = sd_diff[gaps])
+  diff_loci = data.frame(Region = as.numeric(Regions)[gaps],
+                         Gap_Score = sd_diff[gaps])
 
   #Return differential TAD boundaries
-  Gap_Scores = data.frame(Region = as.numeric(Regions), TAD_Score1 = TAD_Score1,
-                          TAD_Score2 =TAD_Score2,Gap_Score = sd_diff)
+  Gap_Scores = data.frame(Region = as.numeric(Regions),
+                          TAD_Score1 = TAD_Score1,
+                          TAD_Score2 =TAD_Score2,
+                          Gap_Score = sd_diff)
   TAD_Frame = data.frame(Boundary = as.numeric(Regions),
                          Gap_Score = sd_diff,
-                         TAD_Score1, TAD_Score2)
+                         TAD_Score1,
+                         TAD_Score2)
 
   #Assign labels to boundary type and identify which matrix has the boundary
 
@@ -375,68 +399,6 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
                             (lead(Differential) == "Non-Differential"),
                           ifelse(Enriched_In == "Matrix 1", "Split", "Merge"),
                           Differential))
-
-  #See if TADs are pre-specified
-
-  if (pre_TADs == TRUE) {
-
-    #Subset to only include preset TADs
-    Full_TADs = unique(c(TADs$end))
-    TAD_Locs = match(Full_TADs, Regions)
-    TAD_Frame = data.frame(Boundary = Full_TADs, Gap_Score = sd_diff[TAD_Locs])
-    TAD_Frame = TAD_Frame %>% arrange(Boundary)
-
-    #Get gap scores and subset based on pre-defined TADs
-    Ind_Score1 = ((point_dists1-mean(point_dists1, na.rm = TRUE))/
-                    sd(point_dists1, na.rm = TRUE))[sort(TAD_Locs)]
-
-    Ind_Score2 = ((point_dists2-mean(point_dists2, na.rm = TRUE))/
-                    sd(point_dists2, na.rm = TRUE))[sort(TAD_Locs)]
-
-    #Define boundayr types
-    TAD_Frame = TAD_Frame %>%
-      mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
-                                "Non-Differential"),
-             Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
-      arrange(Boundary)
-
-    #Testing if boundaries are within 5 bins in front (Shifted)
-
-    TAD_Frame = TAD_Frame %>%
-      mutate(Bound_Dist = (Boundary-lag(Boundary))/resolution) %>%
-      mutate(Differential = ifelse( (Differential == "Differential") &
-                                    (Bound_Dist<=5) & !is.na(Bound_Dist),
-                                    "Shifted", Differential)) %>%
-                                    dplyr::select(-Bound_Dist)
-
-    #Testing if boundaries are within 5 bins behind
-
-    TAD_Frame = TAD_Frame %>%
-      mutate(Bound_Dist = abs((Boundary-lead(Boundary))/resolution)) %>%
-      mutate(Differential = ifelse( (Differential == "Differential") &
-                                      (Bound_Dist<=5) & !is.na(Bound_Dist),
-                                    "Shifted", Differential)) %>%
-      dplyr::select(-Bound_Dist) %>% filter(!is.na(Differential))
-
-    #Defining merged and split boundaries
-
-    TAD_Frame = TAD_Frame %>%
-      mutate(Type = ifelse( (Differential == "Differential") &
-                              (lag(Differential) == "Non-Differential") &
-                              (lead(Differential) == "Non-Differential"),
-                            ifelse(Enriched_In == "Matrix 1", "Split", "Merge"),
-                            Differential) )
-
-    #Appending TAD Scores
-
-    TAD_Frame = cbind.data.frame(TAD_Frame, Ind_Score1, Ind_Score2)
-    colnames(TAD_Frame)[c(ncol(TAD_Frame)-1, ncol(TAD_Frame))] =
-      c("TAD_Score1", "TAD_Score2")
-
-
-    return(list(TAD_Frame = TAD_Frame,
-                Gap_Scores = Gap_Scores))
-  }
 
   #Add up-down enrichment of TAD boundaries
   TAD_Frame = TAD_Frame %>%
@@ -467,7 +429,7 @@ TADCompare = function(cont_mat1, cont_mat2, resolution = "auto",
     labs(y = "Number of Boundaries")
 
   return(list(TAD_Frame =TAD_Frame,
-              Gap_Scores = Gap_Scores,
+              Boundary_Scores = Gap_Scores,
               Count_Plot = Count_Plot ))
 }
 

@@ -4,43 +4,53 @@
 #' @import magrittr
 #' @import PRIMME
 #' @importFrom HiCcompare sparse2full
-#' @param cont_mats List of contact matrices in either sparse 3 column, n x n or n x (n+3)
-#' form where the first three columns are coordinates in BED format.
-#' If an x n matrix is used, the column names must correspond to the start
+#' @param cont_mats List of contact matrices in either sparse 3 column,
+#' n x n or n x (n+3) form where the first three columns are coordinates in
+#' BED format.
+#' If an n x n matrix is used, the column names must correspond to the start
 #' point of the corresponding bin. Required.
 #' @param resolution Resolution of the data. Used to assign TAD boundaries
 #' to genomic regions. If not provided, resolution will be estimated from
 #' column names of the first matrix. Default is "auto"
 #' @param z_thresh Threshold for boundary score. Higher values result in a
 #' higher threshold for differential TADs. Default is 3.
-#' @window_size Size of sliding window for TAD detection, measured in bins.
+#' @param window_size Size of sliding window for TAD detection, measured in bins.
 #' Results should be consistent Default is 15.
-#' @param gap_thresh Required \% of 0s before a region will be considered a gap
-#' and excluded. Default is .8
-#' @param groupings Vector identifying which group each contact matrix belongs
-#' to. Each group will be combined using consensus boundary scores. Default is
-#' NULL
+#' @param gap_thresh Required \% of non-zero entries before a region will
+#' be considered non-informative and excluded. Default is .2
+#' @param groupings Variable for identifying groups of replicates at a given
+#' time point. Each group will be combined using consensus boundary scores.
+#' It should be a vector of equal length to cont_mats where each entry is a
+#' label corresponding to the group membership of the corresponding
+#' matrix. Default is NULL
 #' @return A list containing consensus TAD boundaries and overall scores
 #'  \itemize{
-#'  \item Time_TADs - Data frame containing all regions with a TAD boundary
-#'  at one or more time point
-#'  \item All_Regions - Data frame containing consensus scores for all regions
+#'  \item TAD_Bounds - Data frame containing all regions with a TAD boundary
+#'  at one or more time point. Coordinate corresponds to genomic region, sample
+#'  columns correspond to individual boundary scores for each sample,
+#'  Consensus_Score is the consensus boundary score across all samples.
+#'  Category is the differential boundary type.
+#'  \item All_Bounds - Data frame containing consensus scores for all regions
+#'  \item Count_Plot - Plot containing the prevelance of each boundary type
 #' }
 #' @export
 #' @details Given a list of sparse 3 column, n x n, or n x (n+3) contact
-#' matrices, TimeCompare identifies TADs and classifies time points based on
-#' boundary change. A data frame of time points with at least one boundary
-#' and the corresponding classification is returned.
+#' matrices representing different time points, TimeCompare identifies all
+#' regions with at least one TAD. Within each region, we classify TADs based
+#' on how they change over time into six categories (Common, Dynamic,
+#' Early/Late Appearing and Early/Late Disappearing).
 #' @examples
 #' #Read in data
-#' data("rao_chr22_rep")
-#' data("rao_chr22_prim")
-#' cont_mats = list(rao_chr22_rep, rao_chr22_prim)
+#' data("time_mats")
 #' #Find time varying TAD boundaries
-#' diff_list <- TimeCompare(cont_mats, resolution = 50000)
+#' diff_list <- TimeCompare(time_mats, resolution = 50000)
 
-TimeCompare = function(cont_mats, resolution,
-                      z_thresh = 3, window_size = 15, gap_thresh = .8,
+
+TimeCompare = function(cont_mats,
+                       resolution,
+                      z_thresh = 2,
+                      window_size = 15,
+                      gap_thresh = .2,
                       groupings = NULL) {
 
   #Get dimensions of first contact matrix
@@ -81,7 +91,8 @@ TimeCompare = function(cont_mats, resolution,
     message("Converting to n x n matrix")
 
     cont_mats = lapply(cont_mats, function(x) {
-      #Find the start coordinates based on the second column of the bed file portion of matrix
+      #Find the start coordinates based on the second column of the bed file
+      #portion of matrix
 
       start_coords = x[,2]
 
@@ -127,7 +138,7 @@ TimeCompare = function(cont_mats, resolution,
   bound_scores = lapply(seq_len(length(cont_mats)), function(x) {
 
     dist_sub = .single_dist(cont_mats[[x]], resolution, window_size = window_size)
-    dist_sub = data.frame(Sample = paste("Sample", x), dist_sub[,c(2:3)])
+    dist_sub = data.frame(Sample = paste("Sample", x), dist_sub[,c(2,3)])
     dist_sub
   })
 
@@ -165,15 +176,18 @@ TimeCompare = function(cont_mats, resolution,
     mutate(Diff_Score = (base_sample$Boundary-Boundary)) %>%
     ungroup() %>% mutate(Diff_Score = (Diff_Score-
                            mean(Diff_Score, na.rm = TRUE))/
-                           sd(Diff_Score, na.rm =TRUE)) %>% ungroup() %>% mutate(
-                         TAD_Score = (Boundary-mean(Boundary, na.rm = TRUE))/
-                           sd(Boundary, na.rm = TRUE))
+                           sd(Diff_Score, na.rm =TRUE)) %>% ungroup() %>%
+                           mutate(
+                           TAD_Score = (Boundary-mean(Boundary, na.rm = TRUE))/
+                           sd(Boundary, na.rm = TRUE)
+                           )
 
   #Determine if boundaries are differential or non-differential
-  score_frame = score_frame %>% mutate(Differential = ifelse(abs(Diff_Score)>z_thresh,
+  score_frame = score_frame %>%
+    mutate(Differential = ifelse(abs(Diff_Score)>z_thresh,
                                        "Differential", "Non-Differential"),
                                        Differential = ifelse(is.na(Diff_Score),
-                                                             "Non-Differential",
+                                                            "Non-Differential",
                                                              Differential))
 
   #Getting a frame summarizing boundaries
@@ -267,7 +281,8 @@ TimeCompare = function(cont_mats, resolution,
   TAD_Frame = TAD_Frame %>% dplyr::mutate(Category = TAD_Cat)
 
   TAD_Frame_Sub = TAD_Frame %>%
-    dplyr::filter_at(dplyr::vars(`Sample 1`:Consensus_Score), dplyr::any_vars(.>3))
+    dplyr::filter_at(dplyr::vars(`Sample 1`:Consensus_Score),
+                     dplyr::any_vars(.>3))
 
   TAD_Sum = TAD_Frame_Sub %>% group_by(Category) %>% summarise(Count = n())
 
@@ -284,7 +299,10 @@ TimeCompare = function(cont_mats, resolution,
               Count_Plot = Count_Plot))
 }
 
-.single_dist = function(cont_mat1, resolution, window_size = 15, gap_thresh = .8) {
+.single_dist = function(cont_mat1,
+                        resolution,
+                        window_size = 15,
+                        gap_thresh = .2) {
 
   #Remove full gaps from matrices
 
@@ -309,10 +327,10 @@ TimeCompare = function(cont_mats, resolution,
   while (end_loop == 0) {
 
     #Get windowed portion of matrix
-    sub_filt1 = cont_mat_filt[start:end, start:end]
+    sub_filt1 = cont_mat_filt[seq(start,end,1), seq(start,end,1)]
 
     #Identify columns with more than the gap threshold of zeros
-    Per_Zero1 = (colSums(sub_filt1 ==0)/nrow(sub_filt1))>gap_thresh
+    Per_Zero1 = (colSums(sub_filt1 !=0)/nrow(sub_filt1))<gap_thresh
 
     #Remove rows and dcolumns with zeros above gap threshold
     sub_filt1 = sub_filt1[!Per_Zero1, !Per_Zero1]
@@ -375,7 +393,7 @@ TimeCompare = function(cont_mats, resolution,
 
     norm_ones = sqrt(dim(sub_mat1)[2])
 
-    for (i in 1:dim(eig_vecs1)[2]) {
+    for (i in seq_len(dim(eig_vecs1)[2])) {
       eig_vecs1[,i] = (eig_vecs1[,i]/sqrt(sum(eig_vecs1[,i]^2)))  * norm_ones
       if (eig_vecs1[1,i] !=0) {
         eig_vecs1[,i] = -1*eig_vecs1[,i] * sign(eig_vecs1[1,i])
@@ -389,15 +407,19 @@ TimeCompare = function(cont_mats, resolution,
 
     #Project eigenvectors onto a unit circle
 
-    vm1 = matrix(kronecker(rep(1,k), as.matrix(sqrt(rowSums(eig_vecs1^2)))),n,k)
+    vm1 = matrix(kronecker(rep(1,k),
+                           as.matrix(sqrt(rowSums(eig_vecs1^2)))),n,k)
     eig_vecs1 = eig_vecs1/vm1
 
     #Get distance between points on circle
 
-    point_dist1 = sqrt(rowSums( (eig_vecs1-rbind(NA,eig_vecs1[-nrow(eig_vecs1),]))^2  ))
+    point_dist1 = sqrt(
+        rowSums( (eig_vecs1-rbind(NA,eig_vecs1[-nrow(eig_vecs1),]))^2)
+                      )
 
     #Match column names (Coordinates) with eigenvector distances
-    point_dist1 = cbind( match(colnames(sub_mat1),colnames(cont_mat1) ) , as.numeric(colnames(sub_mat1)), point_dist1)
+    point_dist1 = cbind( match(colnames(sub_mat1),colnames(cont_mat1)),
+                         as.numeric(colnames(sub_mat1)), point_dist1)
 
     #Combine current distances with old distances
     point_dists1 = rbind(point_dists1, point_dist1[-1,])

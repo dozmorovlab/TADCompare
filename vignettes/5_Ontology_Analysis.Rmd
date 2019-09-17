@@ -1,0 +1,86 @@
+---
+title: "Gene Ontology Enrichment Analysis"
+author:
+- name: Kellen Cresswell
+  affiliation:
+  - &1 Department of Biostatistics, Virginia Commonwealth University, Richmond, VA
+- name: Mikhail Dozmorov
+  affiliation:
+  - *1
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{Gene Ontology Enrichment Analysis}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+bibliography: pack_ref.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+Using the output of `TADCompare` and `TimeCompare`, we can do a range of analyses. One common one is gene ontology enrichment analysis to determine the pathways in which genes near TAD boundaries occur in. To do this, we use [rGREAT](https://bioconductor.org/packages/release/bioc/html/rGREAT.html) an R package for performing gene ontology enrichment analysis. 
+
+## Performing gene ontology analysis using TADCompare
+
+In the first example, we show how to perform gene ontology enrichment using differential boundaries. Here, we perform the analysis on shifted boundaries detected in matrix 1.
+
+```{r, warning=FALSE, message = FALSE}
+BiocManager::install("rGREAT")
+library(rGREAT)
+#Reading in data
+data("rao_chr22_prim")
+data("rao_chr22_rep")
+#Performing differential analysis
+results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
+#Saving the results into its own data frame
+TAD_Frame = results$TAD_Frame
+#Filter data to only include complex boundaries enriched in the first contact matrix
+TAD_Frame = TAD_Frame %>% dplyr::filter( (Type == "Shifted") & (Enriched_In == "Matrix 2")  )
+#Assign a chromosome and convert to a bed format
+TAD_Frame = TAD_Frame %>% dplyr::select(Boundary) %>%
+  mutate(chr = "chr22", start = Boundary, end = Boundary) %>% dplyr::select(chr,start,end)
+#Set up rGREAT job with default parameters
+great_shift = submitGreatJob(TAD_Frame, request_interval = 1, version = "2.0")
+#Submit the job
+enrichment_table = getEnrichmentTables(great_shift)
+#Subset to only include vital information
+enrichment_table = bind_rows(enrichment_table, .id = 'source') %>% dplyr::select(Ontology = `source`, Description = `name`, `P-value` = Hyper_Raw_PValue)
+#Print head organizaed by p-values
+head(enrichment_table %>% dplyr::arrange( `P-value`))
+```
+
+The first column "Ontology" is simply the ontology which the pathway comes from. Here, we use the default which is GO ontologies but for more available ontologies see the [rGREAT vignette](https://bioconductor.org/packages/release/bioc/vignettes/rGREAT/inst/doc/rGREAT.html). "Description" is the pathway itself. "P-value" is the unadjusted hypergeometric p-value, as output by `rGREAT`. `rGREAT` also provides binomial p-values (Binom_Raw_Pvalue, Binom_Adjp_BH) and adjusted hypergeometric p-values (Hyper_Adjp_BH). 
+
+Now we demonstrate how to perform the same analysis but for all boundary types simultaneously. In this case, we use time-varying data. 
+
+```{r}
+#Read in time course data
+data("time_mats")
+#Identifying  boundaries
+results = TimeCompare(time_mats, resolution = 50000)
+#Pulling out the frame of TADs
+TAD_Frame = results$TAD_Bounds
+#Getting sets of coordinates for TAD boundaries and converting into bed format
+Bound_List = lapply(unique(TAD_Frame$Category), function(x) {
+  TAD_Frame %>% filter((Category == x))  %>% mutate(chr = "chr22") %>% dplyr::select(chr, Coordinate) %>%
+  mutate(start = Coordinate, end = Coordinate) %>% dplyr::select(chr,start,end)
+})
+#Performing rGREAT analysis for each boundary Category
+TAD_Enrich = lapply(Bound_List, function(x) getEnrichmentTables(submitGreatJob(x, request_interval = 1, version = "2.0")))
+#Name list of data frames to keep track of which enrichment belongs to which
+names(TAD_Enrich) = unique(TAD_Frame$Category)
+#Bind each category of pathway and create new column for each pathway
+TAD_Enrich = lapply(names(TAD_Enrich), function(x) bind_rows(lapply(TAD_Enrich[[x]], function(y) y %>% mutate(Category = x)), .id = 'source')) 
+#Bind each boundary category together and pull out important variables
+enrichment_table = bind_rows(TAD_Enrich) %>% dplyr::select(Ontology = `source`, Description = `name`, `P-value` = Hyper_Raw_PValue, Category)
+#Get the top enriched pathways
+head(enrichment_table %>% dplyr::arrange(`P-value`))
+```
+
+These columns are the same as the differential analysis but with an extra column, "Category", indicating the type of time-varying TAD boundary. 

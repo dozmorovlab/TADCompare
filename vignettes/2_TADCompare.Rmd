@@ -1,0 +1,80 @@
+---
+title: "TAD comparison between two conditions"
+author:
+- name: Kellen Cresswell
+  affiliation:
+  - &1 Department of Biostatistics, Virginia Commonwealth University, Richmond, VA
+- name: Mikhail Dozmorov
+  affiliation:
+  - *1
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{TAD comparison between two conditions}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+bibliography: pack_ref.bib
+---
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(stringsAsFactors = FALSE)
+```
+
+# Introduction
+
+`TADCompare::TADCompare` is a function that allows users to automatically identify differential TAD boundaries between two datasets. For each differential boundary, we provide unique classification (complex, merge, split, shifted, and strength change) defining how the TAD boundaries change between the datasets.
+
+# Running TADcompare
+
+The only required input is two contact matrices in one of the permitted forms specified in the [Input data vignette](Input_Data.html). TADCompare will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For fastest results, we suggest using $n \times n$ matrices. Additionally, we recommend users to provide resolution of their data. If the resolution is not provided, we estimate it using the numeric column names of contact matrices. 
+
+```{r, warning=FALSE,message=FALSE}
+library(TADCompare)
+library(dplyr)
+```
+
+```{r, message = FALSE, warning = FALSE}
+#Get the rao contact matrices built into the package
+data("rao_chr22_prim")
+data("rao_chr22_rep")
+#We see these are n x n matrices
+dim(rao_chr22_prim)
+dim(rao_chr22_rep)
+#Running the algorithm with resolution specified
+results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
+#Repeating without specifying resolution
+no_res = TADCompare(rao_chr22_prim, rao_chr22_rep)
+#We can see below that resolution can be estimated automatically if necessary
+identical(results$Diff_Loci, no_res$Diff_Loci)
+```
+
+
+## Types of TADCompare output
+
+TADCompare returns a list with 2 data frames and 1 plot. The first data frame contains all regions of the genome containing a TAD boundary in at least one of the contact matrices. The results are shown below:
+
+```{r}
+head(results$TAD_Frame)
+```
+
+The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the data is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. 
+
+The second data frame contains the same information as the first data frame but includes every region of the genome. We show it below:
+
+```{r}
+head(results$Boundary_Scores)
+```
+
+"Region" corresponds to the region of the genome. "TAD_Score1" and "TAD_Score2" correspond to boundary scores for each contact matrix and "Gap_Score" is the differential boundary score. 
+
+
+Finally, we include a plot which contains a stacked barplot indicating the prevalence of each type of TAD boundary. The barplot is created in ggplot2, making it completely customizable. We show this below:
+
+```{r}
+results$Count_Plot
+```
+
+
+

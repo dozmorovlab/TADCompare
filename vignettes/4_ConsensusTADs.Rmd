@@ -1,0 +1,61 @@
+---
+title: "Consensus TAD calling"
+author:
+- name: Kellen Cresswell
+  affiliation:
+  - &1 Department of Biostatistics, Virginia Commonwealth University, Richmond, VA
+- name: Mikhail Dozmorov
+  affiliation:
+  - *1
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{Consensus TAD calling}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+bibliography: pack_ref.bib
+---
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(stringsAsFactors = FALSE)
+```
+
+# Introduction
+
+`ConsensusTADs` is an approach for calling TADs across multiple datasets. It uses the median boundary score across n replicates or cell lines to calculate a consensus of TAD boundaries. This effectively filters out noisy TAD boundaries that may appear in only one or a few replicates or cell lines.
+
+# Running ConsensusTADs
+
+ `ConsensusTADs` takes essentially the same input as `TimeCompare` (a list of contact matrices) and provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these, we can get a single set of TADs summarized across a set of replicates, conditions, or time points. For this example, we use the two replicates from [@Rao:2014aa].
+
+```{r, warning=FALSE, message = FALSE}
+library(TADCompare)
+library(dplyr)
+```
+
+We demonstrate how to run ConsensusTADs by calling consensus TADs on time-varying contact matrices created by treating a single sample with auxin, which destroys its TAD boundaries, and then tracking their return at four time points (20, 40, 60 and 180 minutes) [@Rao:2017aa]. The consensus boundary score is intended to provide a summary of TAD boundaries across all time points.
+
+```{r, message = FALSE, warning = FALSE}
+#Get the rao contact matrices built into the package
+data("time_mats")
+#Running MultiCompare
+con_tads = ConsensusTADs(time_mats, resolution = 50000)
+```
+
+ConsensusTADs returns two data frames. The first contains all regions containing consensus TADs based on the consensus score.
+
+```{r}
+head(con_tads$Consensus)
+```
+
+The columns correspond to the coordinate of the region with a significant boundary score, the individual boundary score for each region and the consensus score.
+
+The second data frame, All_Regions, is identical in format but it includes every region of the genome, which occurs in both matrices.
+
+```{r}
+head(con_tads$All_Regions)
+```
+
+# References

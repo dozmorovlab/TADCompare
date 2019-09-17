@@ -5,46 +5,43 @@
 \title{Differential TAD boundary detection}
 \usage{
 TADCompare(cont_mat1, cont_mat2, resolution = "auto", z_thresh = 2,
-  window_size = 25, gap_thresh = 0.8, pre_TADs = FALSE,
-  TADs = NULL)
+  window_size = 15, gap_thresh = 0.2)
 }
 \arguments{
-\item{cont_mat1}{Contact matrix in either sparse 3 column, n x n or n x (n+3)
-form where the first three columns are coordinates in BED format.
-If an x n matrix is used, the column names must correspond to the start
-point of the corresponding bin. If large mode is selected, then
-this matrix must be a tab-seperated n x n or n x (n+3) and it should be the
-path to a contact matrix. Required.}
+\item{cont_mat1}{Contact matrix in either sparse 3 column, n x n or
+n x (n+3) form where the first three columns are coordinates in BED format.
+If an n x n matrix is used, the column names must correspond to the start
+point of the corresponding bin. Required.}
 
 \item{cont_mat2}{Second contact matrix, used for differential comparison,
 must be in same format as cont_mat1. Required}
 
 \item{resolution}{Resolution of the data. Used to assign TAD boundaries
 to genomic regions. If not provided, resolution will be estimated from
-column names of matrix. Default is "auto"}
+column names of matrix. If matrices are sparse, resolution will be estimated
+from the column names of the transformed full matrix. Default is "auto"}
 
-\item{z_thresh}{Threshold for boundary score. Higher values result in a
-higher threshold for differential TADs. Default is 2.}
+\item{z_thresh}{Threshold for differential boundary score. Higher values
+result in a higher threshold for differential TAD boundaries. Default is 2.}
 
-\item{gap_thresh}{Required \% of 0s before a region will be considered a gap
-and excluded. Default is .8}
+\item{window_size}{Size of sliding window for TAD detection, measured in bins.
+Results should be consistent regardless of window size. Default is 15.}
 
-\item{pre_TADs}{Set TRUE if a pre-defined set of TAD boundaries will be
-tested (Defined by TADs parameter). If FALSE, TADCompare will test all
-possible boundaries. Default is FALSE}
-
-\item{TADs}{Data frame containing TAD boundaries to be tested. Column with
-boundaries must be named "end". Only works if pre_TADs is TRUE. Default is
-NULL}
+\item{gap_thresh}{Required \% of non-zero interaction frequencies for a
+given bin to be included in the analysis. Default is .2}
 }
 \value{
 A list containing differential TAD characteristics
  \itemize{
- \item TAD_Frame - Data frame containing any region where a TAD boundary
- was detected.
- \item Diff_Loci - Data frame containing any regions with differential
- loci
- \item Boundary_Scores - Boundary scores for the entire genome
+ \item TAD_Frame - Data frame containing any bin where a TAD boundary
+ was detected. Boundary refers to the genomic coordinates, Gap_Score refers
+ to the orresponding differential boundary score. TAD_Score1 and TAD_Score2
+ are boundary scores for cont_mat1 and cont_mat2. Differential is the broad
+ category of boundary. Enriched_In indicates which matrix contains the
+ boundary. Type is the specific type of differential boundary.
+ \item Boundary_Scores - Boundary scores for the entire genome.
+ \item Count_Plot - Stacked barplot containing the number of each type of
+ TAD boundary called by TADCompare
 }
 }
 \description{
@@ -54,14 +51,14 @@ Differential TAD boundary detection
 Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
 TADCompare identifies differential TAD boundaries. Using a novel boundary
 score metric, TADCompare simultaneously identifies TAD boundaries and
-tests for differential enrichment between datasets. Strength of interactions
+tests for presence of differential boundaries. Strength of differences
 are provided using raw boundary scores and p-values.
 }
 \examples{
 #Read in data
-data("rao_chr20_25_rep")
-data("rao_chr20_25_prim")
+data("rao_chr22_prim")
+data("rao_chr22_rep")
 #Find differential TADs
-diff_list <- TADCompare(rao_chr20_25_rep, rao_chr20_25_prim,
-resolution = 25000)
+diff_frame <- TADCompare(rao_chr22_prim, rao_chr22_rep,
+resolution = 50000)
 }
