@@ -1,6 +1,6 @@
 Package: TADCompare
 Title: TADCompare: Identification and characterization of differential TADs
-Version: 0.99.4
+Version: 0.99.5
 Author:
     Kellen Cresswell <cresswellkg@vcu.edu>,
     Mikhail Dozmorov <mikhail.dozmorov@vcuhealth.org>
@@ -32,7 +32,8 @@ Suggests:
     microbenchmark,
     testthat,
     covr,
-    pheatmap
+    pheatmap,
+    rGREAT
 Depends: R (>= 3.6)
 VignetteBuilder: knitr
 biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering
