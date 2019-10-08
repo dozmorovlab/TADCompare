@@ -31,7 +31,6 @@ Using the output of `TADCompare` and `TimeCompare`, we can do a range of analyse
 In the first example, we show how to perform gene ontology enrichment using differential boundaries. Here, we perform the analysis on shifted boundaries detected in matrix 1.
 
 ```{r, warning=FALSE, message = FALSE}
-BiocManager::install("rGREAT")
 library(rGREAT)
 #Reading in data
 data("rao_chr22_prim")
