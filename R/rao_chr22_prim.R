@@ -7,3 +7,4 @@
 #' \describe{
 #' }
 #' @source \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525}
+"rao_chr22_prim"

@@ -34,9 +34,6 @@ options(stringsAsFactors = FALSE)
 # if (!requireNamespace("BiocManager", quietly=TRUE))
 #     install.packages("BiocManager")
 # BiocManager::install("TADCompare")
-#install.packages(c("PRIMME","dplyr","ggplot2"))
-#BiocManager::install(c("HiCcompare"))
-#devtools::install_github("cresswellkg/TADCompare")
 library(TADCompare)
 ```
 
@@ -44,12 +41,7 @@ library(TADCompare)
 
 ## Working with $n \times n$ matrices
 
-$n \times n$ contact matrices are most commonly associated with data coming from the Bing Ren lab (http://chromosome.sdsc.edu/mouse/hi-c/download.html). These contact matrices are square and symmetric with entry $ij$ corresponding to the number of contacts between region $i$ and region $j$. Below is an example of a $5 \times 5$ region of an $n \times n$ contact matrix derived from Rao et al. 2014 data, GM12878 cell line [@Rao:2014aa], chromosome 22, 50kb resolution. Note the symmetry around the diagonal - the typical shape of chromatin interaction matrix.
-
-```{r, warning=FALSE,message=FALSE}
-library(dplyr)
-library(TADCompare)
-```
+$n \times n$ contact matrices are most commonly associated with data coming from the Bing Ren lab (http://chromosome.sdsc.edu/mouse/hi-c/download.html). These contact matrices are square and symmetric with entry $ij$ corresponding to the number of contacts between region $i$ and region $j$. Below is an example of a $5 \times 5$ region of an $n \times n$ contact matrix derived from Rao et al. 2014 data, GM12878 cell line [@Rao:2014aa], chromosome 22, 50kb resolution. Note the symmetry around the diagonal - the typical shape of chromatin interaction matrix. The figure was created using the pheatmap package.
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 data("rao_chr22_prim")
@@ -62,7 +54,7 @@ pheatmap::pheatmap(log10(rao_chr22_prim[coords, coords]), cluster_rows = FALSE, 
 
 $n \times (n+3)$ matrices are commonly associated with the `TopDom` TAD caller (http://zhoulab.usc.edu/TopDom/). These matrices consist of an $n \times n$ matrix but with three additional leading columns containing the chromosome, the start of the region and the end of the region. Regions in this case are determined by the resolution of the data. The typical $n \times (n+3)$ matrix is shown below.
 
-```{r, echo = FALSE, warning = FALSE}
+```{r, echo = TRUE, warning = FALSE}
 coords = 50:53
 sub_mat = data.frame(chr = "chr22", 
                      start = as.numeric(colnames(rao_chr22_prim[coords, coords])), 
@@ -114,7 +106,7 @@ diff_tads = lapply(names(sparse_mat1), function(x) {
 
 ## Working with HiC-Pro files
 
-HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs which map back to the coordinates in the bed file and the third column contains the number of contacts between the two regions. The steps for analyzing these files is shown below:
+HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs which map back to the coordinates in the bed file and the third column contains the number of contacts between the two regions. In this example we analyze two matrix files `sample1_100000.matrix` and `sample2_100000.matrix`and their corresponding bed files `sample1_100000_abs.bed` and `sample2_100000_abs.bed`. We do not include HiC-Pro data in the package so these serve as placeholders for the traditional files output by HiC-Pro. The steps for analyzing these files is shown below:
 
 ```{r, eval = FALSE}
 #Read in both files
