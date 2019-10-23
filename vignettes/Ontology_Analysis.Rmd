@@ -22,11 +22,24 @@ bibliography: pack_ref.bib
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Installation
+
+```{r, warning = FALSE, message=FALSE}
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("TADCompare")
+library(TADCompare)
+```
+
+```{r, echo = FALSE, warning = FALSE, message=FALSE}
+library(dplyr)
+```
+
 # Introduction
 
 Using the output of `TADCompare` and `TimeCompare`, we can do a range of analyses. One common one is gene ontology enrichment analysis to determine the pathways in which genes near TAD boundaries occur in. To do this, we use [rGREAT](https://bioconductor.org/packages/release/bioc/html/rGREAT.html) an R package for performing gene ontology enrichment analysis. 
 
-## Performing gene ontology analysis using TADCompare
+# Performing gene ontology analysis using TADCompare
 
 In the first example, we show how to perform gene ontology enrichment using differential boundaries. Here, we perform the analysis on shifted boundaries detected in matrix 1.
 
@@ -58,7 +71,7 @@ The first column "Ontology" is simply the ontology which the pathway comes from.
 
 Now we demonstrate how to perform the same analysis but for all boundary types simultaneously. In this case, we use time-varying data. 
 
-```{r}
+```{r, warning=FALSE, message = FALSE}
 #Read in time course data
 data("time_mats")
 #Identifying  boundaries
@@ -83,3 +96,9 @@ head(enrichment_table %>% dplyr::arrange(`P-value`))
 ```
 
 These columns are the same as the differential analysis but with an extra column, "Category", indicating the type of time-varying TAD boundary. 
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
