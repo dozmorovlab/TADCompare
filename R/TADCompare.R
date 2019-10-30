@@ -20,6 +20,7 @@
 #' Results should be consistent regardless of window size. Default is 15.
 #' @param gap_thresh Required \% of non-zero interaction frequencies for a
 #' given bin to be included in the analysis. Default is .2
+#' @param bed parameter determining if a bed file of results should be output
 #' @return A list containing differential TAD characteristics
 #'  \itemize{
 #'  \item TAD_Frame - Data frame containing any bin where a TAD boundary
@@ -379,7 +380,7 @@ TADCompare = function(cont_mat1,
   #Assign labels to boundary type and identify which matrix has the boundary
 
   TAD_Frame = TAD_Frame %>%
-    filter( (TAD_Score1>3) | TAD_Score2>3) %>%
+    filter( (TAD_Score1>2) | TAD_Score2>2) %>%
     mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
                                  "Non-Differential"),
            Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
