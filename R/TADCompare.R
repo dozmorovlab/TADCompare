@@ -380,7 +380,7 @@ TADCompare = function(cont_mat1,
   #Assign labels to boundary type and identify which matrix has the boundary
 
   TAD_Frame = TAD_Frame %>%
-    filter( (TAD_Score1>2) | TAD_Score2>2) %>%
+    filter( (TAD_Score1>1.5) | TAD_Score2>1.5) %>%
     mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
                                  "Non-Differential"),
            Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
