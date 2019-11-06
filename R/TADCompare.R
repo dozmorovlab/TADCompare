@@ -368,7 +368,7 @@ TADCompare = function(cont_mat1,
                          Gap_Score = sd_diff[gaps])
 
   #Return differential TAD boundaries
-  Gap_Scores = data.frame(Region = as.numeric(Regions),
+  Gap_Scores = data.frame(Boundary = as.numeric(Regions),
                           TAD_Score1 = TAD_Score1,
                           TAD_Score2 =TAD_Score2,
                           Gap_Score = sd_diff)
@@ -418,10 +418,9 @@ TADCompare = function(cont_mat1,
   #Assign labels to boundary type and identify which matrix has the boundary
   
   Gap_Scores = Gap_Scores %>%
-    filter( (TAD_Score1>1.5) | TAD_Score2>1.5) %>%
-    mutate(Differential = ifelse(abs(Gap_Scores)>z_thresh, "Differential",
+    mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
                                  "Non-Differential"),
-           Enriched_In = ifelse(Gap_Scores>0, "Matrix 1", "Matrix 2")) %>%
+           Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
     arrange(Boundary) %>%
     mutate(Bound_Dist = pmin(abs(Boundary-lag(Boundary))/resolution,
                              abs((Boundary-lead(Boundary)))/resolution)) %>%
