@@ -417,11 +417,11 @@ TADCompare = function(cont_mat1,
   
   #Assign labels to boundary type and identify which matrix has the boundary
   
-  Gap_Score = Gap_Score %>%
+  Gap_Scores = Gap_Scores %>%
     filter( (TAD_Score1>1.5) | TAD_Score2>1.5) %>%
-    mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
+    mutate(Differential = ifelse(abs(Gap_Scores)>z_thresh, "Differential",
                                  "Non-Differential"),
-           Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
+           Enriched_In = ifelse(Gap_Scores>0, "Matrix 1", "Matrix 2")) %>%
     arrange(Boundary) %>%
     mutate(Bound_Dist = pmin(abs(Boundary-lag(Boundary))/resolution,
                              abs((Boundary-lead(Boundary)))/resolution)) %>%
@@ -432,7 +432,7 @@ TADCompare = function(cont_mat1,
     dplyr::select(-Bound_Dist)
   
   #Classifying merged-split
-  Gap_Score = Gap_Score %>%
+  Gap_Scores = Gap_Scores %>%
     mutate(Type = ifelse( (Differential == "Differential") &
                             (lag(Differential) == "Non-Differential") &
                             (lead(Differential) == "Non-Differential"),
@@ -440,7 +440,7 @@ TADCompare = function(cont_mat1,
                           Differential))
   
   #Add up-down enrichment of TAD boundaries
-  Gap_Score = Gap_Score %>%
+  Gap_Scores = Gap_Scores %>%
     mutate(Type = ifelse( (TAD_Score1>1.5) &
                             (TAD_Score2>1.5) &
                             (Differential == "Differential"),
@@ -448,7 +448,7 @@ TADCompare = function(cont_mat1,
   
   #Classify leftovers as complex
   
-  Gap_Score = Gap_Score %>% mutate(Type = gsub("^Differential$",
+  Gap_Scores = Gap_Scores %>% mutate(Type = gsub("^Differential$",
                                                "Complex", Type))
 
   TAD_Sum = TAD_Frame %>% group_by(Type) %>% summarise(Count = n())
