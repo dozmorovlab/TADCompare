@@ -53,7 +53,8 @@ TADCompare = function(cont_mat1,
                       resolution = "auto",
                       z_thresh = 2,
                       window_size = 15,
-                      gap_thresh = .2) {
+                      gap_thresh = .2,
+                      pre_tads = NULL) {
 
   #Pulling out dimensions to test for matrix type
   row_test = dim(cont_mat1)[1]
@@ -379,6 +380,22 @@ TADCompare = function(cont_mat1,
 
   #Assign labels to boundary type and identify which matrix has the boundary
 
+  if(!is.null(pre_tads)) {
+    TAD_Frame = TAD_Frame %>% 
+      filter(Boundary %in% pre_tads$end)  %>%
+      mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
+                                   "Non-Differential"),
+             Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
+      arrange(Boundary) %>%
+      mutate(Bound_Dist = pmin(abs(Boundary-lag(Boundary))/resolution,
+                               abs((Boundary-lead(Boundary)))/resolution)) %>%
+      
+      mutate(Differential = ifelse( (Differential == "Differential") &
+                                      (Bound_Dist<=5) & !is.na(Bound_Dist),
+                                    "Shifted", Differential)) %>%
+      dplyr::select(-Bound_Dist)
+  } else {
+  
   TAD_Frame = TAD_Frame %>%
     filter( (TAD_Score1>1.5) | TAD_Score2>1.5) %>%
     mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
@@ -393,6 +410,7 @@ TADCompare = function(cont_mat1,
                                   "Shifted", Differential)) %>%
     dplyr::select(-Bound_Dist)
 
+  }
   #Classifying merged-split
   TAD_Frame = TAD_Frame %>%
     mutate(Type = ifelse( (Differential == "Differential") &
