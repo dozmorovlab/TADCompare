@@ -25,9 +25,9 @@ knitr::opts_chunk$set(echo = TRUE)
 # Installation
 
 ```{r, warning = FALSE, message=FALSE}
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("TADCompare")
+# if(!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install("TADCompare")
 library(TADCompare)
 ```
 
@@ -52,8 +52,8 @@ data("rao_chr22_rep")
 results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
 #Saving the results into its own data frame
 TAD_Frame = results$TAD_Frame
-#Filter data to only include complex boundaries enriched in the first contact matrix
-TAD_Frame = TAD_Frame %>% dplyr::filter( (Type == "Complex") & (Enriched_In == "Matrix 2")  )
+#Filter data to only include complex boundaries enriched in the second contact matrix
+TAD_Frame = TAD_Frame %>% dplyr::filter( (Type == "Shifted") & (Enriched_In == "Matrix 2")  )
 #Assign a chromosome and convert to a bed format
 TAD_Frame = TAD_Frame %>% dplyr::select(Boundary) %>%
   mutate(chr = "chr22", start = Boundary, end = Boundary) %>% dplyr::select(chr,start,end)
