@@ -20,7 +20,10 @@
 #' Results should be consistent regardless of window size. Default is 15.
 #' @param gap_thresh Required \% of non-zero interaction frequencies for a
 #' given bin to be included in the analysis. Default is .2
-#' @param bed parameter determining if a bed file of results should be output
+#' @param pre_tad A list of pre-defined TADs for testing. Must contain two
+#' entries with the first corresponding to matrix 1 and the second to 
+#' matrix 2. Each entry must contain a column that corresponds to TAD start and
+#' end with the names "start" and "end". Optional.
 #' @return A list containing differential TAD characteristics
 #'  \itemize{
 #'  \item TAD_Frame - Data frame containing any bin where a TAD boundary
@@ -379,10 +382,12 @@ TADCompare = function(cont_mat1,
                          TAD_Score2)
 
   #Assign labels to boundary type and identify which matrix has the boundary
-
+  
   if(!is.null(pre_tads)) {
+ 
+    #pre_tads = bind_rows(pre_tads)
     TAD_Frame = TAD_Frame %>% 
-      filter(Boundary %in% pre_tads$end)  %>%
+      filter(Boundary %in% bind_rows(pre_tads)$end)  %>%
       mutate(Differential = ifelse(abs(Gap_Score)>z_thresh, "Differential",
                                    "Non-Differential"),
              Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
@@ -394,6 +399,10 @@ TADCompare = function(cont_mat1,
                                       (Bound_Dist<=5) & !is.na(Bound_Dist),
                                     "Shifted", Differential)) %>%
       dplyr::select(-Bound_Dist)
+    
+    #Pull out non-shared boundaries
+
+
   } else {
   
   TAD_Frame = TAD_Frame %>%
@@ -421,8 +430,8 @@ TADCompare = function(cont_mat1,
 
   #Add up-down enrichment of TAD boundaries
   TAD_Frame = TAD_Frame %>%
-    mutate(Type = ifelse( (TAD_Score1>1.5) &
-                            (TAD_Score2>1.5) &
+    mutate(Type = ifelse( (TAD_Score1>2) &
+                            (TAD_Score2>2) &
                             (Differential == "Differential"),
                           "Strength Change", Type))
 
@@ -431,6 +440,18 @@ TADCompare = function(cont_mat1,
   TAD_Frame = TAD_Frame %>% mutate(Type = gsub("^Differential$",
                                                "Complex", Type))
   
+  #Another step for pre-specified
+  
+  if (!is.null(pre_tads)) {
+    #Pulling out shared ends by overlap
+    shared_ends = ((TAD_Frame$Boundary  %in%
+                      pre_tads[[1]]$end + TAD_Frame$Boundary  %in%
+                      pre_tads[[2]]$end)==1)
+    #Converting non-differential to non-overlap
+    TAD_Frame = TAD_Frame %>% mutate(Type = ifelse(
+      (shared_ends == TRUE)&(Type=="Non-Differential"),
+      "Non-Overlap", Type))
+  }
   #Redo for gap score frame as well
   
   #Assign labels to boundary type and identify which matrix has the boundary
@@ -458,8 +479,8 @@ TADCompare = function(cont_mat1,
   
   #Add up-down enrichment of TAD boundaries
   Gap_Scores = Gap_Scores %>%
-    mutate(Type = ifelse( (TAD_Score1>1.5) &
-                            (TAD_Score2>1.5) &
+    mutate(Type = ifelse( (TAD_Score1>2) &
+                            (TAD_Score2>2) &
                             (Differential == "Differential"),
                           "Strength Change", Type))
   

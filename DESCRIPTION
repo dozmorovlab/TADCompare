@@ -34,7 +34,8 @@ Suggests:
     testthat,
     covr,
     pheatmap,
-    rGREAT
+    rGREAT,
+    SpectralTAD
 Depends: R (>= 3.6)
 VignetteBuilder: knitr
 biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering

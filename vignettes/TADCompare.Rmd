@@ -37,7 +37,6 @@ options(stringsAsFactors = FALSE)
 #install.packages(c("PRIMME","dplyr","ggplot2"))
 #BiocManager::install(c("HiCcompare"))
 #devtools::install_github("cresswellkg/TADCompare")
-library(TADCompare)
 ```
 
 # TADCompare
@@ -53,6 +52,7 @@ The only required input is two contact matrices in one of the permitted forms sp
 ```{r, warning=FALSE,message=FALSE}
 library(TADCompare)
 library(dplyr)
+library(SpectralTAD)
 ```
 
 ```{r, message = FALSE, warning = FALSE}
@@ -70,12 +70,11 @@ no_res = TADCompare(rao_chr22_prim, rao_chr22_rep)
 identical(results$Diff_Loci, no_res$Diff_Loci)
 ```
 
-
 ## Types of TADCompare output
 
 TADCompare returns a list with 2 data frames and 1 plot. The first data frame contains all regions of the genome containing a TAD boundary in at least one of the contact matrices. The results are shown below:
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 head(results$TAD_Frame)
 ```
 
@@ -92,9 +91,84 @@ head(results$Boundary_Scores)
 
 Finally, we include a plot which contains a stacked barplot indicating the prevalence of each type of TAD boundary. The barplot is created in ggplot2, making it completely customizable. We show this below:
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 results$Count_Plot
 ```
+
+## Pre-specification of TADs
+
+We recognize that users may like to use their own TAD caller for identification of TAD boundaries prior to boundary comparison. As a result, we provide the option for pre-specification of TADs. With this option only provided TAD boundaries will be tested. We provide an example below using the SpectralTAD TAD caller:
+
+```{r, message = FALSE, warning = FALSE}
+#Calling TAD boundaries for both datasets
+bed_coords1 = bind_rows(SpectralTAD(rao_chr22_prim, chr = "chr22",
+                                    levels = 3))
+bed_coords2 = bind_rows(SpectralTAD(rao_chr22_rep, chr = "chr22",
+                                    levels=3))
+#Printing the head
+head(bed_coords1)
+```
+
+Above we see the dataset output by SpectralTAD contains a column named "start" and "end" indicating the start and end coordinate of each TAD. This is required, though any TAD caller can be used effectively with some data manipulation.
+
+```{r, message = FALSE, warning = FALSE}
+#Combining the TAD boundaries for both contact matrices
+Combined_Bed = list(bed_coords1, bed_coords2)
+#Running TADCompare with pre-specified TADs
+TD_Compare=TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000, pre_tads= Combined_Bed)
+#Returning the boundaries
+tail(TD_Compare$TAD_Frame)
+#Testing to show that pre-specified boundaries are returned
+table(TD_Compare$TAD_Frame$Boundary %in% Combined_Bed$end)
+```
+
+Here, we see that the only boundaries that are returned are those we pre-specified.
+
+## Visualization of TADCompare Results
+
+We provide tools for visualization using the `DiffPlot`. `DiffPlot` takes the output from `TADCompare` and the original contact matrices, providing a visualization of differential TADs, TAD scores and the matrices themselves. We show the process below:
+
+```{r, message = FALSE, warning = FALSE, fig.width=8,fig.height=8}
+#Calling differential TADs
+results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
+#Checking the location of TADs
+tail(results$TAD_Frame)
+#Plotting the entire contact matrix
+DiffPlot(tad_diff=results, 
+         cont_mat1=rao_chr22_prim,
+         cont_mat2=rao_chr22_rep,
+         resolution=50000,
+         start_coord=45950000,
+         end_coord=50700000)
+```
+
+We can also use pre-specificed TADs by providing a list of TAD coordinates containing TAD boundaries for each contact matrix. The list should be of length 2. We show how to do this below, using SpectralTAD for pre-specification:
+
+```{r, message = FALSE, warning = FALSE, fig.width=8,fig.height=8}
+#Read in data
+data(rao_chr22_prim)
+data(rao_chr22_rep)
+#Calling TAD boundaries for both datasets
+bed_coords1 = bind_rows(SpectralTAD(rao_chr22_prim, chr = "chr22",
+                                    levels = 3))
+bed_coords2 = bind_rows(SpectralTAD(rao_chr22_rep, chr = "chr22",
+                                    levels=3))
+#Placing the data in a list for the plotting procedure
+Combined_Bed = list(bed_coords1, bed_coords2)
+#Running TADCompare with pre-specified TADs
+TD_Compare=TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000, pre_tads= Combined_Bed)
+#Running the plotting algorithm with pre-specified TADs
+DiffPlot(tad_diff=TD_Compare, 
+         cont_mat1=rao_chr22_prim,
+         cont_mat2=rao_chr22_rep,
+         resolution=50000,
+         start_coord=45950000,
+         end_coord=50700000,
+         pre_tad = Combined_Bed)
+
+```
+
+As we can see, pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by TADCompare.
 
 # TimeCompare
 

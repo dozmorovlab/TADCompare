@@ -5,7 +5,7 @@
 \title{Differential TAD boundary detection}
 \usage{
 TADCompare(cont_mat1, cont_mat2, resolution = "auto", z_thresh = 2,
-  window_size = 15, gap_thresh = 0.2)
+  window_size = 15, gap_thresh = 0.2, pre_tads = NULL)
 }
 \arguments{
 \item{cont_mat1}{Contact matrix in either sparse 3 column, n x n or
@@ -29,6 +29,11 @@ Results should be consistent regardless of window size. Default is 15.}
 
 \item{gap_thresh}{Required \% of non-zero interaction frequencies for a
 given bin to be included in the analysis. Default is .2}
+
+\item{pre_tad}{A list of pre-defined TADs for testing. Must contain two
+entries with the first corresponding to matrix 1 and the second to 
+matrix 2. Each entry must contain a column that corresponds to TAD start and
+end with the names "start" and "end". Optional.}
 }
 \value{
 A list containing differential TAD characteristics

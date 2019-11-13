@@ -37,6 +37,8 @@ options(stringsAsFactors = FALSE)
 library(TADCompare)
 ```
 
+
+
 # Working with different types of data
 
 ## Working with $n \times n$ matrices
