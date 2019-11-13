@@ -2,7 +2,6 @@
 
 export(ConsensusTADs)
 export(DiffPlot)
-export(Diff_Plot)
 export(TADCompare)
 export(TimeCompare)
 import(PRIMME)
