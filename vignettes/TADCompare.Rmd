@@ -49,12 +49,6 @@ options(stringsAsFactors = FALSE)
 
 The only required input is two contact matrices in one of the permitted forms specified in the [Input data vignette](Input_Data.html). TADCompare will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For fastest results, we suggest using $n \times n$ matrices. Additionally, we recommend users to provide resolution of their data. If the resolution is not provided, we estimate it using the numeric column names of contact matrices. 
 
-```{r, warning=FALSE,message=FALSE}
-library(TADCompare)
-library(dplyr)
-library(SpectralTAD)
-```
-
 ```{r, message = FALSE, warning = FALSE}
 #Get the rao contact matrices built into the package
 data("rao_chr22_prim")
@@ -180,11 +174,6 @@ As we can see, pre-specification of TADs allows us to outline TAD boundaries enh
 
 `TimeCompare` takes a list of matrices similar in format to `TADCompare`. Like `TADCompare`, `TimeCompare` will estimate resolution and convert matrices to the appropriate format. For this example, we use time-varying sparse 3-column contact matrices from [@Rao:2017aa], representing the HCT-116 cell line. The matrices represent a single chromosome 22 cell sample treated with TAD boundary destroying auxin. The data is then sequenced at four time points (20, 40, 60, and 180 minutes) after the withdrawal of auxin. Once auxin is withdrawn, the TAD boundaries slowly return. Using `TimeCompare`, we can track the return of TADs after withdrawal.
 
-```{r, warning=FALSE,message=FALSE}
-library(TADCompare)
-library(dplyr)
-```
-
 ```{r, message = FALSE, warning = FALSE}
 #Get the list of contact matrices
 data("time_mats")
@@ -224,11 +213,6 @@ time_var$Count_Plot
 ## Running ConsensusTADs
 
  `ConsensusTADs` takes essentially the same input as `TimeCompare` (a list of contact matrices) and provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these, we can get a single set of TADs summarized across a set of replicates, conditions, or time points. For this example, we use the two replicates from [@Rao:2014aa].
-
-```{r, warning=FALSE, message = FALSE}
-library(TADCompare)
-library(dplyr)
-```
 
 We demonstrate how to run ConsensusTADs by calling consensus TADs on time-varying contact matrices created by treating a single sample with auxin, which destroys its TAD boundaries, and then tracking their return at four time points (20, 40, 60 and 180 minutes) [@Rao:2017aa]. The consensus boundary score is intended to provide a summary of TAD boundaries across all time points.
 
