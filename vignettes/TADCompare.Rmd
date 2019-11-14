@@ -28,7 +28,7 @@ library(SpectralTAD)
 
 # Introduction
 
-TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](#tadcompare) [??? Is this the right link? If you cannot link to a specific place in the HTML, remove the link alltogether].  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](TimeCompare.html) [??? Ditto]. `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](ConsensusTADs.html) [??? Ditto]. The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. See [Input data vignette](Input_data.html) for a complete overview of input data formats. Instructions on changing the default parameters are provided. 
+TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](#tadcompare).  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](#timecompare). `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](#consensustads). The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. See [Input data vignette](Input_data.html) for a complete overview of input data formats. Instructions on changing the default parameters are provided. 
 
 # Getting Started
 
@@ -173,7 +173,7 @@ DiffPlot(tad_diff    = TD_Compare,
 
 As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by TADCompare.
 
-# TimeCompare
+# TimeCompare {#timecompare}
 
 ## Introduction
 
@@ -213,7 +213,7 @@ We also include a stacked barplot that includes the number of times each type of
 time_var$Count_Plot
 ```
 
-# ConsensusTAD
+# ConsensusTAD {#consensustads}
 
 ## Introduction
 
