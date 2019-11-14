@@ -192,7 +192,21 @@ DiffPlot = function(tad_diff,
   track_plot = ggplot(track, aes(x = start1, 
                                  y=value,
                                  fill=variable)) +
-    geom_line() + facet_wrap(~variable, nrow = 3)
+    geom_line() + facet_wrap(~variable, nrow = 3) +
+    geom_hline(yintercept = 2,linetype="dashed", color="red")
+    
+  
+  #Getting the desired order of labels
+  d1_triangle = d1_triangle %>% mutate(Type = factor(Type, 
+                                                     levels = c("Non-Differential",
+                                                                "Non-Overlap",
+                                                                "Strength Change",
+                                                                "Merge",
+                                                                "Shifted",
+                                                                "Complex")))
+  #Adding colors
+  colors = c("black", "gray", "red", "yellow", "orange", "green")
+  
   
   if (!is.null(pre_tad)) {
     
@@ -203,20 +217,21 @@ DiffPlot = function(tad_diff,
     tads1 = .Make_Triangles(cont_mat=as.data.frame(cont_mat1), 
                             bed=bed_coords1, resolution=50000,
                             start_coord=start_coord,
-                            end_coord=end_coord)
+                            end_coord=end_coord) %>% filter(complete.cases(.))
     
     tads2 = .Make_Triangles(cont_mat=as.data.frame(cont_mat2), 
                             bed=bed_coords2, resolution=50000,
                             start_coord=start_coord,
-                            end_coord=end_coord)
+                            end_coord=end_coord) %>% filter(complete.cases(.))
     
     
-    #Plotting the ontact matrix
+    #Plotting the contact matrix
     
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
       xlab('Coordinates') +
-      ylab('Coordinates')   + geom_tile(data=tad_comb, aes(x = start1, y = start2, fill =log2(value+.25))) + #geom_point(aes(color =log2(value+.25)), size = 8) + 
+      ylab('Coordinates')   + geom_tile(data=tad_comb, 
+      aes(x = start1, y = start2, fill =log2(value+.25))) +
       scale_fill_distiller(palette = 'RdYlBu', values = c(0, .4, 1)) +
       theme(axis.text.x=element_text(angle=90),
             axis.ticks=element_blank(),
@@ -226,7 +241,7 @@ DiffPlot = function(tad_diff,
       geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, 
                                                                   color = Type), 
                  fill = NA, size = 3)   +
-      scale_color_viridis_d() +  
+      scale_color_manual(values=colors) +  
       geom_polygon(data = tads1 ,
                    aes(x = x, y = y, group = id), 
                    color = "black", fill = NA, size = 1) +  
@@ -238,6 +253,7 @@ DiffPlot = function(tad_diff,
       
     leg = get_legend(plot_3) 
     } else {
+    
     
     #Plotting the ontact matrix
     
@@ -252,8 +268,8 @@ DiffPlot = function(tad_diff,
             panel.border=element_blank(),
             panel.grid.major=element_line(color='#eeeeee'))  +  
       geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, color = Type), 
-                 fill = NA, size = 3)   +
-      scale_color_viridis_d() + labs(fill="Log2(Contacts)")
+                 fill = NA, size = 3) +
+      scale_color_manual(values=colors) + labs(fill="Log2(Contacts)")
  
     
     leg = get_legend(plot_3) 
