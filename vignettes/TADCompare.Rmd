@@ -84,9 +84,7 @@ The second data frame contains the same information as the first data frame but 
 head(results$Boundary_Scores)
 ```
 
-[??? Why the first differential boundary has type "NA"? Also, it induces warning when plotting.]
-
-"Region" corresponds to the region of the genome. "TAD_Score1" and "TAD_Score2" correspond to boundary scores for each contact matrix, and "Gap_Score" is the differential boundary score. 
+"Region" corresponds to the region of the genome. "TAD_Score1" and "TAD_Score2" correspond to boundary scores for each contact matrix, and "Gap_Score" is the differential boundary score. Note: The first boundary will always be classified as "NA" due to the fact that specific classification is impossible without a reference boundary to the left and right.
 
 Finally, we include a plot that contains a stacked barplot indicating the prevalence of each type of TAD boundary. The barplot is created in ggplot2, making it completely customizable. We show this below:
 
@@ -168,16 +166,11 @@ DiffPlot(tad_diff    = TD_Compare,
          pre_tad     = Combined_Bed)
 ```
 
-[??? Explain "Non-overlap". Is the threshold 1.5?]
-
-[??? Plots cannot be drawn with different warning messages:
-In recycle.data(data, FALSE, length(x), units) : reached elapsed time limit
-In is.vector(X) : reached elapsed time limit
-In x$vp : reached elapsed time limit]
+As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by TADCompare. Additionally, a new category is introduced, "Non-Overlap". Non-Overlap corresponds to regions that are determined to be non-differential by TADCompare but do not overlap when called by the TAD caller.
 
 [??? Find region for better visualization. The current one has only non-overlap, need all types]
 
-As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by TADCompare.
+
 
 # TimeCompare {#timecompare}
 

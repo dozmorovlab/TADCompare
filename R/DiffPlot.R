@@ -185,15 +185,20 @@ DiffPlot = function(tad_diff,
                                              ifelse(variable == 
                                                     "TAD_Score2",
                                                     "Boundary Score 2", 
-                                                    "Differential Boundary
-                                                    Score"
+                                                    "Differential Boundary Score"
                                              )))
+  
+  Lines = data.frame(variable = c("Boundary Score 1",
+                                  "Boundary Score 2",
+                                  "Differential Boundary Score"),
+                     line_spot = c(1.5,1.5,2))
   
   track_plot = ggplot(track, aes(x = start1, 
                                  y=value,
                                  fill=variable)) +
-    geom_line() + facet_wrap(~variable, nrow = 3) +
-    geom_hline(yintercept = 2,linetype="dashed", color="red")
+    geom_line() + facet_wrap(~variable, nrow = 3)  +
+    geom_hline(data = Lines, aes(yintercept = line_spot ,
+                                 linetype="dashed", color="red")) + labs(y="")
     
   
   #Getting the desired order of labels

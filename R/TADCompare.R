@@ -430,8 +430,8 @@ TADCompare = function(cont_mat1,
 
   #Add up-down enrichment of TAD boundaries
   TAD_Frame = TAD_Frame %>%
-    mutate(Type = ifelse( (TAD_Score1>2) &
-                            (TAD_Score2>2) &
+    mutate(Type = ifelse( (TAD_Score1>1.5) &
+                            (TAD_Score2>1.5) &
                             (Differential == "Differential"),
                           "Strength Change", Type))
 
@@ -479,8 +479,8 @@ TADCompare = function(cont_mat1,
   
   #Add up-down enrichment of TAD boundaries
   Gap_Scores = Gap_Scores %>%
-    mutate(Type = ifelse( (TAD_Score1>2) &
-                            (TAD_Score2>2) &
+    mutate(Type = ifelse( (TAD_Score1>1.5) &
+                            (TAD_Score2>1.5) &
                             (Differential == "Differential"),
                           "Strength Change", Type))
   
