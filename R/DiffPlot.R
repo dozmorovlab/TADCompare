@@ -197,8 +197,9 @@ DiffPlot = function(tad_diff,
                                  y=value,
                                  fill=variable)) +
     geom_line() + facet_wrap(~variable, nrow = 3)  +
-    geom_hline(data = Lines, aes(yintercept = line_spot ,
-                                 linetype="dashed", color="red")) + labs(y="")
+    geom_hline(data = Lines, aes(yintercept = line_spot), 
+               linetype="dashed", color="red") + 
+    labs(y="") 
     
   
   #Getting the desired order of labels
@@ -210,7 +211,6 @@ DiffPlot = function(tad_diff,
                                                                 "Shifted",
                                                                 "Complex")))
   #Adding colors
-  colors = c("black", "gray", "red", "yellow", "orange", "green")
   
   
   if (!is.null(pre_tad)) {
@@ -231,6 +231,7 @@ DiffPlot = function(tad_diff,
     
     
     #Plotting the contact matrix
+    colors = c("black", "gray", "red", "yellow", "orange", "green")
     
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
@@ -261,7 +262,8 @@ DiffPlot = function(tad_diff,
     
     
     #Plotting the ontact matrix
-    
+    colors = c("black", "red", "yellow", "orange", "green")
+      
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
       xlab('Coordinates') +
