@@ -76,7 +76,7 @@ identical(results$Diff_Loci, no_res$Diff_Loci)
 head(results$TAD_Frame)
 ```
 
-The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the data is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. 
+The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the boundary is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. 
 
 The second data frame contains the same information as the first data frame but includes every region of the genome. We show it below:
 
@@ -141,8 +141,7 @@ DiffPlot(tad_diff    = results,
          end_coord   = 50700000)
 ```
 
-[??? Explain why there are just a few points. This is very confusing]
-[??? The plot does not have dashed red lines on score panels]
+[??? Explain why there are just a few points. This is very confusing. Do you use 1.5 threshold? Then, lines should be at that level]
 
 We can also use pre-specified TADs by providing a list of TAD coordinates containing TAD boundaries for each contact matrix. The list should be of length 2. We show how to do this below, using SpectralTAD for pre-specification:
 
@@ -169,7 +168,14 @@ DiffPlot(tad_diff    = TD_Compare,
          pre_tad     = Combined_Bed)
 ```
 
-[??? Change color for "Non-overlap". Yellow dots are impossible to see on yellow background]
+[??? Explain "Non-overlap". Is the threshold 1.5?]
+
+[??? Plots cannot be drawn with different warning messages:
+In recycle.data(data, FALSE, length(x), units) : reached elapsed time limit
+In is.vector(X) : reached elapsed time limit
+In x$vp : reached elapsed time limit]
+
+[??? Find region for better visualization. The current one has only non-overlap, need all types]
 
 As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by TADCompare.
 
