@@ -28,7 +28,7 @@ library(SpectralTAD)
 
 # Introduction
 
-TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](TADCompare.html) [??? Is this the right link? If you cannot link to a specific place in the HTML, remove the link alltogether].  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](TimeCompare.html) [??? Ditto]. `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](ConsensusTADs.html) [??? Ditto]. The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. See [Input data vignette](Input_data.html) for a complete overview of input data formats. Instructions on changing the default parameters are provided. 
+TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](#tadcompare) [??? Is this the right link? If you cannot link to a specific place in the HTML, remove the link alltogether].  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](TimeCompare.html) [??? Ditto]. `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](ConsensusTADs.html) [??? Ditto]. The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. See [Input data vignette](Input_data.html) for a complete overview of input data formats. Instructions on changing the default parameters are provided. 
 
 # Getting Started
 
@@ -43,7 +43,7 @@ TADCompare is an R package for differential analysis of TAD boundaries. It is de
 #devtools::install_github("cresswellkg/TADCompare")
 ```
 
-# TADCompare
+# TADCompare {#tadcompare}
 
 ## Introduction
 
@@ -76,7 +76,7 @@ identical(results$Diff_Loci, no_res$Diff_Loci)
 head(results$TAD_Frame)
 ```
 
-The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the data is differential or not differential. [??? Why we output non-differential ones?] "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. 
+The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the data is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. 
 
 The second data frame contains the same information as the first data frame but includes every region of the genome. We show it below:
 
