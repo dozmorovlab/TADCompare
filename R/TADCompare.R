@@ -392,13 +392,7 @@ TADCompare = function(cont_mat1,
                                    "Non-Differential"),
              Enriched_In = ifelse(Gap_Score>0, "Matrix 1", "Matrix 2")) %>%
       arrange(Boundary) %>%
-      mutate(Bound_Dist = pmin(abs(Boundary-lag(Boundary))/resolution,
-                               abs((Boundary-lead(Boundary)))/resolution)) %>%
-      
-      mutate(Differential = ifelse( (Differential == "Differential") &
-                                      (Bound_Dist<=5) & (!is.na(Bound_Dist)),
-                                    "Shifted", Differential)) %>%
-      dplyr::select(-Bound_Dist) %>%
+      mutate(Bound_Dist =  abs(Boundary-lag(Boundary))/resolution) %>%
       mutate(Differential = ifelse( (Differential == "Differential") &
                                       (Bound_Dist<=5) & !is.na(Bound_Dist) & 
                                       (   Enriched_In!=lag(Enriched_In)) &

@@ -199,7 +199,10 @@ DiffPlot = function(tad_diff,
     geom_line() + facet_wrap(~variable, nrow = 3)  +
     geom_hline(data = Lines, aes(yintercept = line_spot), 
                linetype="dashed", color="red") + 
-    labs(y="") 
+    labs(y="") +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank())
     
   
   #Getting the desired order of labels
@@ -256,7 +259,10 @@ DiffPlot = function(tad_diff,
                    aes(x = x, y = -y, group = id), 
                    color = "black", fill = NA, size = 1) + 
       coord_cartesian(ylim = c(-max(tads1$y, tads2$y),max(tads1$y, tads2$y)))+
-      labs(fill="Log2(Contacts)")
+      labs(fill="Log2(Contacts)") +
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
+            axis.ticks.x=element_blank())
       
     leg = get_legend(plot_3) 
     } else {
@@ -277,7 +283,10 @@ DiffPlot = function(tad_diff,
             panel.grid.major=element_line(color='#eeeeee'))  +  
       geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, color = Type), 
                  fill = NA, size = 3) +
-      scale_color_manual(values=colors) + labs(fill="Log2(Contacts)")
+      scale_color_manual(values=colors) + labs(fill="Log2(Contacts)") +
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
+            axis.ticks.x=element_blank())
  
     
     leg = get_legend(plot_3) 
