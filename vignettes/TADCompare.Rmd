@@ -120,11 +120,11 @@ TD_Compare = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000, pre_t
 #Returning the boundaries
 tail(TD_Compare$TAD_Frame)
 #Testing to show that pre-specified boundaries are returned
-table(TD_Compare$TAD_Frame$Boundary %in% Combined_Bed$end) # ??? This doesn't work, return FALSE
-# ??? The below doesn't work either
-# ??? TADCompare seem to return different boundaries than pre-specified
-table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)[, "end"] %>% unlist() %>% unname)
-table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)[, "start"] %>% unlist() %>% unname)
+table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)$end) # ??? This doesn't work, return FALSE
+# # ??? The below doesn't work either
+# # ??? TADCompare seem to return different boundaries than pre-specified
+# table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)[, "end"] %>% unlist() %>% unname)
+# table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)[, "start"] %>% unlist() %>% unname)
 ```
 
 Here, we see that the only boundaries that are returned are those we pre-specified. [??? NO!]
