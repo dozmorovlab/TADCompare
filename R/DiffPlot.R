@@ -208,6 +208,7 @@ DiffPlot = function(tad_diff,
                                                                 "Non-Overlap",
                                                                 "Strength Change",
                                                                 "Merge",
+                                                                "Split",
                                                                 "Shifted",
                                                                 "Complex")))
   #Adding colors
@@ -231,7 +232,7 @@ DiffPlot = function(tad_diff,
     
     
     #Plotting the contact matrix
-    colors = c("black", "gray", "red", "yellow", "orange", "green")
+    colors = c("black", "gray", "red", "yellow", "orange", "green", "blue")
     
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
@@ -262,7 +263,7 @@ DiffPlot = function(tad_diff,
     
     
     #Plotting the ontact matrix
-    colors = c("black", "red", "yellow", "orange", "green")
+    colors = c("black", "red", "yellow", "orange", "green", "blue")
       
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +

@@ -126,27 +126,36 @@ Here, we see that the only boundaries that are returned are those we pre-specifi
 We provide tools for visualization using the `DiffPlot` function. `DiffPlot` takes the output from the `TADCompare` function and the original contact matrices, providing a visualization of differential TADs, TAD scores and the matrices themselves. We show the process below:
 
 ```{r, message = FALSE, warning = FALSE, fig.width=8,fig.height=8}
+rao_chr22_prim =as.matrix(read.table("file:///C:/Users/cresswellkg/Documents/differentialTADs/Data/npc.rep1.nor.chr22.mat"))
+
+rao_chr22_rep = as.matrix(read.table("file:///C:/Users/cresswellkg/Documents/differentialTADs/Data/mes.rep2.nor.chr22.mat"))
+
+colnames(rao_chr22_prim) = colnames(rao_chr22_rep)= seq(0, (nrow(rao_chr22_prim)-1)*40000, 40000 )
+
+
 #Calling differential TADs
-results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
+results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 40000)
 #Checking the location of TADs
 tail(results$TAD_Frame)
 #Plotting the entire contact matrix
 DiffPlot(tad_diff    = results, 
          cont_mat1   = rao_chr22_prim,
          cont_mat2   = rao_chr22_rep,
-         resolution  = 50000,
-         start_coord = 45950000,
-         end_coord   = 50700000)
+         resolution  = 40000,
+         start_coord = 25000000
+,
+         end_coord   = 27560000
+)
 ```
 
-[??? Explain why there are just a few points. This is very confusing. Do you use 1.5 threshold? Then, lines should be at that level]
+From these results, we can see that the vast majority of regions are below our threshold of 1.5 for TAD boundary detection (First two horizontal red lines).
 
 We can also use pre-specified TADs by providing a list of TAD coordinates containing TAD boundaries for each contact matrix. The list should be of length 2. We show how to do this below, using SpectralTAD for pre-specification:
 
 ```{r, message = FALSE, warning = FALSE, fig.width=8,fig.height=8}
 #Read in data
-data(rao_chr22_prim)
-data(rao_chr22_rep)
+# data(rao_chr22_prim)
+# data(rao_chr22_rep)
 #Calling TAD boundaries for both datasets
 bed_coords1 = bind_rows(SpectralTAD(rao_chr22_prim, chr = "chr22",
                                     levels = 3))
@@ -160,9 +169,9 @@ TD_Compare=TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000, pre_tad
 DiffPlot(tad_diff    = TD_Compare, 
          cont_mat1   = rao_chr22_prim,
          cont_mat2   = rao_chr22_rep,
-         resolution  = 50000,
-         start_coord = 45950000,
-         end_coord   = 50700000,
+         resolution  = 40000,
+         start_coord = 24360000,
+         end_coord   = 26600000,
          pre_tad     = Combined_Bed)
 ```
 
