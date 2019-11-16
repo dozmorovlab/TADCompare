@@ -120,27 +120,16 @@ TD_Compare = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000, pre_t
 #Returning the boundaries
 tail(TD_Compare$TAD_Frame)
 #Testing to show that pre-specified boundaries are returned
-table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)$end) # ??? This doesn't work, return FALSE
-# # ??? The below doesn't work either
-# # ??? TADCompare seem to return different boundaries than pre-specified
-# table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)[, "end"] %>% unlist() %>% unname)
-# table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)[, "start"] %>% unlist() %>% unname)
+table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)$end) 
 ```
 
-Here, we see that the only boundaries that are returned are those we pre-specified. [??? NO!]
+Here, we see that the only boundaries that are returned are those we pre-specified.
 
 ## Visualization of TADCompare Results
 
 We provide tools for visualization using the `DiffPlot` function. `DiffPlot` takes the output from the `TADCompare` function and the original contact matrices, providing a visualization of differential TADs, TAD scores and the matrices themselves. We show the process below:
 
 ```{r, message = FALSE, warning = FALSE, fig.width=8,fig.height=8}
-rao_chr22_prim =as.matrix(read.table("file:///C:/Users/cresswellkg/Documents/differentialTADs/Data/npc.rep1.nor.chr22.mat"))
-
-rao_chr22_rep = as.matrix(read.table("file:///C:/Users/cresswellkg/Documents/differentialTADs/Data/mes.rep2.nor.chr22.mat"))
-
-colnames(rao_chr22_prim) = colnames(rao_chr22_rep)= seq(0, (nrow(rao_chr22_prim)-1)*40000, 40000 )
-
-
 #Calling differential TADs
 results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 40000)
 #Checking the location of TADs
@@ -150,8 +139,7 @@ DiffPlot(tad_diff    = results,
          cont_mat1   = rao_chr22_prim,
          cont_mat2   = rao_chr22_rep,
          resolution  = 40000,
-         start_coord = 25000000
-,
+         start_coord = 25000000,
          end_coord   = 27560000
 )
 ```
