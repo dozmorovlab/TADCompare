@@ -93,7 +93,7 @@ DiffPlot = function(tad_diff,
   tad_mat_1$variable = as.numeric(gsub("X", "", tad_mat_1$variable))
   tad_mat_2$variable = as.numeric(gsub("X", "", tad_mat_2$variable))
   
-  if (nrow(tad_mat_1 == 0) | nrow(tad_mat_2==0)) {
+  if (nrow(tad_mat_1)==0 | nrow(tad_mat_2)==0) {
     stop("TAD boundaries missing from at least one matrix")
   }
   colnames(tad_mat_1) = colnames(tad_mat_2) = c("start1", "start2", "value") 
@@ -342,6 +342,10 @@ DiffPlot = function(tad_diff,
   tad_mat = na.omit(reshape2::melt(tad_mat, 'regions', variable_name='location'))
   
   tad_mat$variable = as.numeric(gsub("X", "", tad_mat$variable))
+  
+  if (nrow(tad_mat)==0) {
+    stop("TAD boundaries missing from at least one matrix")
+  }
   
   colnames(tad_mat) = c("start1", "start2", "value") 
   
