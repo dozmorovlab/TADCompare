@@ -26,6 +26,11 @@
 #' "end" corresponding to the start and end of each TAD. For 
 #' accurate annotations, TADCompare results with pre-defined TADs should be
 #' used. Optional
+#' @param point_size Parameter used to adjust the size of boundary points on 
+#' heatmap plot. Default is 3.
+#' @param palette Parameter used to adjust color palette. For list of palettes
+#' see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Default is 
+#' 'RdYlBu'
 #' @return A plot containing a visualization of the upper diagonal both 
 #' contact matrices with types of non-/differential boundaries labeled.
 #' The first matrix is shown on top and the second on the bottom. If pre_tad

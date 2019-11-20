@@ -5,7 +5,7 @@
 \title{Visualization of differential TAD boundaries}
 \usage{
 DiffPlot(tad_diff, cont_mat1, cont_mat2, resolution, start_coord,
-  end_coord, pre_tad = NULL)
+  end_coord, pre_tad = NULL, point_size = 3, palette = "RdYlBu")
 }
 \arguments{
 \item{tad_diff}{Raw object output by TADCompare. Required}
@@ -36,6 +36,13 @@ and contact matrix 2. The matrices must contain columns named "start" and
 "end" corresponding to the start and end of each TAD. For 
 accurate annotations, TADCompare results with pre-defined TADs should be
 used. Optional}
+
+\item{point_size}{Parameter used to adjust the size of boundary points on 
+heatmap plot. Default is 3.}
+
+\item{palette}{Parameter used to adjust color palette. For list of palettes
+see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Default is 
+'RdYlBu'}
 }
 \value{
 A plot containing a visualization of the upper diagonal both 
