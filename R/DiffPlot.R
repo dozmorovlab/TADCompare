@@ -193,8 +193,9 @@ DiffPlot = function(tad_diff,
   
   Lines = data.frame(variable = c("Boundary Score 1",
                                   "Boundary Score 2",
+                                  "Differential Boundary Score",
                                   "Differential Boundary Score"),
-                     line_spot = c(1.5,1.5,2))
+                     line_spot = c(1.5,1.5,2,-2))
   
   track_plot = ggplot(track, aes(x = start1, 
                                  y=value,
