@@ -93,6 +93,9 @@ DiffPlot = function(tad_diff,
   tad_mat_1$variable = as.numeric(gsub("X", "", tad_mat_1$variable))
   tad_mat_2$variable = as.numeric(gsub("X", "", tad_mat_2$variable))
   
+  if (nrow(tad_mat_1 == 0) | nrow(tad_mat_2==0)) {
+    stop("TAD boundaries missing from at least one matrix")
+  }
   colnames(tad_mat_1) = colnames(tad_mat_2) = c("start1", "start2", "value") 
   
   tad_mat_1$orig_regx = tad_mat_1$start1
