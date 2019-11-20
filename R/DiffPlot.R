@@ -217,10 +217,18 @@ DiffPlot = function(tad_diff,
                                                                 "Split",
                                                                 "Shifted",
                                                                 "Complex")))
-  #Adding colors
+  #Hard coding colors
   
+  colors = c("black", "gray", "red", "yellow", "orange", "green", "blue")
+  names(colors) =   c("Non-Differential",
+                      "Non-Overlap",
+                      "Strength Change",
+                      "Merge",
+                      "Split",
+                      "Shifted",
+                      "Complex")
   
-  if (!is.null(pre_tad)) {
+   if (!is.null(pre_tad)) {
     
     bed_coords1 = pre_tad[[1]]
     bed_coords2 = pre_tad[[2]]
@@ -238,7 +246,7 @@ DiffPlot = function(tad_diff,
     
     
     #Plotting the contact matrix
-    colors = c("black", "gray", "red", "yellow", "orange", "green", "blue")
+
     
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
@@ -273,6 +281,12 @@ DiffPlot = function(tad_diff,
     
     #Plotting the ontact matrix
     colors = c("black", "red", "yellow", "orange", "green", "blue")
+    names(colors) =   c("Non-Differential",
+                        "Strength Change",
+                        "Merge",
+                        "Split",
+                        "Shifted",
+                        "Complex")
       
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
