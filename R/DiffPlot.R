@@ -54,7 +54,9 @@ DiffPlot = function(tad_diff,
                      resolution, 
                      start_coord, 
                      end_coord,
-                     pre_tad=NULL) {
+                     pre_tad=NULL,
+                    point_size=3,
+                    palette='RdYlBu') {
   
   bed_coords = tad_diff$TAD_Frame %>% dplyr::select(start=Boundary, Enriched_In, Type = Type)
   
@@ -229,6 +231,8 @@ DiffPlot = function(tad_diff,
                       "Shifted",
                       "Complex")
   
+  #Set heatmap palette
+  
    if (!is.null(pre_tad)) {
     
     bed_coords1 = pre_tad[[1]]
@@ -248,13 +252,12 @@ DiffPlot = function(tad_diff,
     
     #Plotting the contact matrix
 
-    
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
       xlab('Coordinates') +
       ylab('Coordinates')   + geom_tile(data=tad_comb, 
       aes(x = start1, y = start2, fill =log2(value+.25))) +
-      scale_fill_distiller(palette = 'RdYlBu', values = c(0, .4, 1)) +
+      scale_fill_distiller(palette = palette, values = c(0, .4, 1)) +
       theme(axis.text.x=element_text(angle=90),
             axis.ticks=element_blank(),
             axis.line=element_blank(),
@@ -262,7 +265,7 @@ DiffPlot = function(tad_diff,
             panel.grid.major=element_line(color='#eeeeee'))  +  
       geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, 
                                                                   color = Type), 
-                 fill = NA, size = 3)   +
+                 fill = NA, size =  point_size)  +
       scale_color_manual(values=colors) +  
       geom_polygon(data = tads1 ,
                    aes(x = x, y = y, group = id), 
@@ -293,14 +296,14 @@ DiffPlot = function(tad_diff,
       theme_bw() +
       xlab('Coordinates') +
       ylab('Coordinates')   + geom_tile(data=tad_comb, aes(x = start1, y = start2, fill =log2(value+.25))) + #geom_point(aes(color =log2(value+.25)), size = 8) + 
-      scale_fill_distiller(palette = 'RdYlBu', values = c(0, .4, 1)) +
+      scale_fill_distiller(palette = palette, values = c(0, .4, 1)) +
       theme(axis.text.x=element_text(angle=90),
             axis.ticks=element_blank(),
             axis.line=element_blank(),
             panel.border=element_blank(),
             panel.grid.major=element_line(color='#eeeeee'))  +  
       geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, color = Type), 
-                 fill = NA, size = 3) +
+                 fill = NA, size = point_size) +
       scale_color_manual(values=colors) + labs(fill="Log2(Contacts)") +
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
