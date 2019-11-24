@@ -29,8 +29,8 @@
 #' @param point_size Parameter used to adjust the size of boundary points on 
 #' heatmap plot. Default is 3.
 #' @param palette Parameter used to adjust color palette. For list of palettes
-#' see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Default is 
-#' 'RdYlBu'
+#' see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
+#' users can define a vector of color names or hex codes.  Default is 'RdYlBu'
 #' @return A plot containing a visualization of the upper diagonal both 
 #' contact matrices with types of non-/differential boundaries labeled.
 #' The first matrix is shown on top and the second on the bottom. If pre_tad
@@ -100,7 +100,8 @@ DiffPlot = function(tad_diff,
   tad_mat_1$variable = as.numeric(gsub("X", "", tad_mat_1$variable))
   tad_mat_2$variable = as.numeric(gsub("X", "", tad_mat_2$variable))
   
-  if (nrow(tad_mat_1)==0 | nrow(tad_mat_2)==0) {
+  
+  if ( (nrow(tad_mat_1)==0) | nrow(tad_mat_2)==0) {
     stop("TAD boundaries missing from at least one matrix")
   }
   colnames(tad_mat_1) = colnames(tad_mat_2) = c("start1", "start2", "value") 
@@ -257,6 +258,7 @@ DiffPlot = function(tad_diff,
     
     #Plotting the contact matrix
 
+    if (length(palette) == 1) {
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
       xlab('Coordinates') +
@@ -283,6 +285,34 @@ DiffPlot = function(tad_diff,
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
+    } else {
+      plot_3 = ggplot(tad_comb, aes(start1, start2)) +
+        theme_bw() +
+        xlab('Coordinates') +
+        ylab('Coordinates')   + geom_tile(data=tad_comb, 
+                                          aes(x = start1, y = start2, fill =log2(value+.25))) +
+        scale_fill_gradientn(colors = palette) +
+        theme(axis.text.x=element_text(angle=90),
+              axis.ticks=element_blank(),
+              axis.line=element_blank(),
+              panel.border=element_blank(),
+              panel.grid.major=element_line(color='#eeeeee'))  +  
+        geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, 
+                                                                    color = Type), 
+                   fill = NA, size =  point_size)  +
+        scale_color_manual(values=colors) +  
+        geom_polygon(data = tads1 ,
+                     aes(x = x, y = y, group = id), 
+                     color = "black", fill = NA, size = 1) +  
+        geom_polygon(data = tads2 ,
+                     aes(x = x, y = -y, group = id), 
+                     color = "black", fill = NA, size = 1) + 
+        coord_cartesian(ylim = c(-max(tads1$y, tads2$y),max(tads1$y, tads2$y)))+
+        labs(fill="Log2(Contacts)") +
+        theme(axis.title.x=element_blank(),
+              axis.text.x=element_blank(),
+              axis.ticks.x=element_blank())
+    }
       
     leg = get_legend(plot_3) 
     } else {
@@ -297,6 +327,7 @@ DiffPlot = function(tad_diff,
                         "Shifted",
                         "Complex")
       
+    if (length(palette) == 1) {
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
       xlab('Coordinates') +
@@ -313,6 +344,34 @@ DiffPlot = function(tad_diff,
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
+    } else {
+      plot_3 = ggplot(tad_comb, aes(start1, start2)) +
+        theme_bw() +
+        xlab('Coordinates') +
+        ylab('Coordinates')   + geom_tile(data=tad_comb, 
+                                          aes(x = start1, y = start2, fill =log2(value+.25))) +
+        scale_fill_gradientn(colors = palette) +
+        theme(axis.text.x=element_text(angle=90),
+              axis.ticks=element_blank(),
+              axis.line=element_blank(),
+              panel.border=element_blank(),
+              panel.grid.major=element_line(color='#eeeeee'))  +  
+        geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, 
+                                                                    color = Type), 
+                   fill = NA, size =  point_size)  +
+        scale_color_manual(values=colors) +  
+        geom_polygon(data = tads1 ,
+                     aes(x = x, y = y, group = id), 
+                     color = "black", fill = NA, size = 1) +  
+        geom_polygon(data = tads2 ,
+                     aes(x = x, y = -y, group = id), 
+                     color = "black", fill = NA, size = 1) + 
+        coord_cartesian(ylim = c(-max(tads1$y, tads2$y),max(tads1$y, tads2$y)))+
+        labs(fill="Log2(Contacts)") +
+        theme(axis.title.x=element_blank(),
+              axis.text.x=element_blank(),
+              axis.ticks.x=element_blank())
+    }
  
     
     leg = get_legend(plot_3) 
