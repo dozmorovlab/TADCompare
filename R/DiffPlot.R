@@ -225,6 +225,7 @@ DiffPlot = function(tad_diff,
                                                                 "Merge",
                                                                 "Split",
                                                                 "Shifted",
+                                                                "Differential",
                                                                 "Complex")))
   #Hard coding colors
   
@@ -240,6 +241,14 @@ DiffPlot = function(tad_diff,
   #Set heatmap palette
   
    if (!is.null(pre_tad)) {
+     
+     #Setting simplified colors for diffTAD
+     
+     colors = c("black", "gray", "blue", "red")
+     names(colors) =   c("Non-Differential",
+                         "Non-Overlap",
+                         "Shifted",
+                         "Differential")
     
     bed_coords1 = pre_tad[[1]]
     bed_coords2 = pre_tad[[2]]

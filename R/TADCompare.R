@@ -493,6 +493,13 @@ TADCompare = function(cont_mat1,
   Gap_Scores = Gap_Scores %>% mutate(Type = gsub("^Differential$",
                                                "Complex", Type))
 
+  #Revert all differential boundaries to differential label for pre tads
+  
+  if (!is.null(pre_tads)) {
+      TAD_Frame = TAD_Frame %>%
+        mutate(Type = ifelse(Differential == "Differential", "Differential", Type))
+  }
+  
   TAD_Sum = TAD_Frame %>% group_by(Type) %>% summarise(Count = n())
 
   #Fix double counting of shifted boundaries
