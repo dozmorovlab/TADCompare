@@ -4,8 +4,17 @@
 \alias{DiffPlot}
 \title{Visualization of differential TAD boundaries}
 \usage{
-DiffPlot(tad_diff, cont_mat1, cont_mat2, resolution, start_coord,
-  end_coord, pre_tad = NULL, point_size = 3, palette = "RdYlBu")
+DiffPlot(
+  tad_diff,
+  cont_mat1,
+  cont_mat2,
+  resolution,
+  start_coord,
+  end_coord,
+  pre_tad = NULL,
+  point_size = 3,
+  palette = "RdYlBu"
+)
 }
 \arguments{
 \item{tad_diff}{Raw object output by TADCompare. Required}
