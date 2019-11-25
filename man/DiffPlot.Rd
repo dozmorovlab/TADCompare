@@ -41,8 +41,8 @@ used. Optional}
 heatmap plot. Default is 3.}
 
 \item{palette}{Parameter used to adjust color palette. For list of palettes
-see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Default is 
-'RdYlBu'}
+see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
+users can define a vector of color names or hex codes.  Default is 'RdYlBu'}
 }
 \value{
 A plot containing a visualization of the upper diagonal both 
