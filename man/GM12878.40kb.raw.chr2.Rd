@@ -15,5 +15,6 @@ GM12878.40kb.raw.chr2
 }
 \description{
 A 1001x1001 contact matrix from the GM12878 cell line, chr2:8000000-48000000,
+40kb Resolution, data from Schmitt et al. 2016.
 }
 \keyword{datasets}
