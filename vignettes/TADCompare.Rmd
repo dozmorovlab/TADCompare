@@ -76,7 +76,7 @@ identical(results$Diff_Loci, no_res$Diff_Loci)
 head(results$TAD_Frame)
 ```
 
-The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the boundary is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. 
+The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the boundary is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. Note: The first boundary will always be classified as "NA" due to the fact that specific classification is impossible without a reference boundary to the left and right.
 
 The second data frame contains the same information as the first data frame but includes every region of the genome. We show it below:
 
@@ -84,42 +84,38 @@ The second data frame contains the same information as the first data frame but 
 head(results$Boundary_Scores)
 ```
 
-"Region" corresponds to the region of the genome. "TAD_Score1" and "TAD_Score2" correspond to boundary scores for each contact matrix, and "Gap_Score" is the differential boundary score. Note: The first boundary will always be classified as "NA" due to the fact that specific classification is impossible without a reference boundary to the left and right.
-
 Finally, we include a plot that contains a stacked barplot indicating the prevalence of each type of TAD boundary. The barplot is created in ggplot2, making it completely customizable. We show this below:
 
 ```{r, message = FALSE, warning = FALSE}
-results$Count_Plot
+p <- results$Count_Plot
+class(p)
+plot(p)
 ```
 
 ## Pre-specification of TADs
 
-We recognize that users may like to use their own TAD caller for identification of TAD boundaries prior to boundary comparison. As a result, we provide the option for pre-specification of TADs. With this option only provided TAD boundaries will be tested. We provide an example below using the [SpectralTAD](https://bioconductor.org/packages/release/bioc/html/SpectralTAD.html) TAD caller:
+We recognize that users may like to use their own TAD caller for identification of TAD boundaries prior to boundary comparison. As a result, we provide the option for pre-specification of TADs in a form of two data frames with chromosome, start, and end coordinates of TAD boundaries for the two contact matrices. With this option, only provided TAD boundaries will be tested. We provide an example below using the [SpectralTAD](https://bioconductor.org/packages/release/bioc/html/SpectralTAD.html) TAD caller [@Cresswell:2019aa]:
 
 ```{r, message = FALSE, warning = FALSE}
-#Calling TAD boundaries for both datasets
-bed_coords1 = bind_rows(SpectralTAD(rao_chr22_prim, chr = "chr22",
-                                    levels = 3))
-bed_coords2 = bind_rows(SpectralTAD(rao_chr22_rep, chr = "chr22",
-                                    levels=3))
-#Printing the head
-head(bed_coords1)
+# Call TADs using SpectralTAD
+bed_coords1 = bind_rows(SpectralTAD(rao_chr22_prim, chr = "chr22", levels = 3))
+bed_coords2 = bind_rows(SpectralTAD(rao_chr22_rep,  chr = "chr22", levels = 3))
+#Combining the TAD boundaries for both contact matrices
+Combined_Bed = list(bed_coords1, bed_coords2)
+
+#Printing the combined list of TAD boundaries
+Combined_Bed
 ```
 
 Above, we see the dataset output by SpectralTAD contains a column named "start" and "end" indicating the start and end coordinate of each TAD. This is required, though any TAD caller can be used effectively with some data manipulation. The "Level" column indicates the level of TAD in a hierarchy.
 
 ```{r, message = FALSE, warning = FALSE}
-#Combining the TAD boundaries for both contact matrices
-Combined_Bed = list(bed_coords1, bed_coords2)
 #Running TADCompare with pre-specified TADs
 TD_Compare = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000, pre_tads = Combined_Bed)
 
-# Error in ifelse((Differential == "Differential") & (Bound_Dist <= 5) &  : 
-#  object 'Bound_Dist' not found
-
 #Returning the boundaries
-tail(TD_Compare$TAD_Frame)
-#Testing to show that pre-specified boundaries are returned
+head(TD_Compare$TAD_Frame)
+#Testing to show that all pre-specified boundaries are returned
 table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)$end) 
 ```
 
@@ -127,55 +123,77 @@ Here, we see that the only boundaries that are returned are those we pre-specifi
 
 ## Visualization of TADCompare Results
 
-We provide tools for visualization using the `DiffPlot` function. `DiffPlot` takes the output from the `TADCompare` function and the original contact matrices, providing a visualization of differential TADs, TAD scores and the matrices themselves. We show the process below:
+We provide tools for visualization using the `DiffPlot` function. As an input, `DiffPlot` takes the output from the `TADCompare` function and the original contact matrices, providing a visualization of differential TADs, TAD scores and the matrices themselves. As an output, it returns a ggplot object that can be further customized, if necessary. We demonstrate visualization of the differences between GM12878 and IMR90 cell lines, on the subset of chromosome 2, 40kb resolution data processed in Schmitt et al. [@Schmitt:2016aa]:
 
-```{r, message = FALSE, warning = FALSE, fig.width=8,fig.height=8}
-#Calling differential TADs
-results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 40000)
-#Checking the location of TADs
-tail(results$TAD_Frame)
-#Plotting the entire contact matrix
-DiffPlot(tad_diff    = results, 
-         cont_mat1   = rao_chr22_prim,
-         cont_mat2   = rao_chr22_rep,
-         resolution  = 40000,
-         start_coord = 25000000,
-         end_coord   = 27560000
-)
+```{r}
+data("GM12878.40kb.raw.chr2")
+data("IMR90.40kb.raw.chr2")
+mtx1 <- GM12878.40kb.raw.chr2
+mtx2 <- IMR90.40kb.raw.chr2
+res <- 40000 # Set resolution
+# Globally normalize matrices for better visual comparison (does not affect TAD calling)
+(mtx1_total <- sum(mtx1))
+(mtx2_total <- sum(mtx2))
+(scaling_factor <- mtx1_total / mtx2_total)
+# Rescale matrices depending on which matrix is smaller
+if (mtx1_total > mtx2_total) {
+  mtx2 <- mtx2 * scaling_factor
+} else {
+  mtx1 <- mtx1 * (1 / scaling_factor)
+}
+# Coordinates of interesting regions
+start_coord <- 8000000
+end_coord   <- 16000000
+# start_coord <- 40000000
+# end_coord   <- 48000000
 ```
 
-From these results, we can see that the vast majority of regions are below our threshold of 1.5 for TAD boundary detection (First two horizontal red lines).
+### Comparing TAD boundary scores
+
+```{r, message = FALSE, warning = FALSE, fig.width=8,fig.height=8}
+#Running TADCompare as-is
+TD_Compare=TADCompare(mtx1, mtx2, resolution = res)
+#Running the plotting algorithm with pre-specified TADs
+p <- DiffPlot(tad_diff    = TD_Compare, 
+              cont_mat1   = mtx1,
+              cont_mat2   = mtx2,
+              resolution  = res,
+              start_coord = start_coord,
+              end_coord   = end_coord,
+              point_size  = 5,
+              palette     = "RdYlBu")
+plot(p)
+```
+
+From these results, we can see that boundary scores from both matrices ("Boundary score 1" and "Boundary score 2") frequently detected as significant boundaries in both matrices (boundary scores above 1.5 threshold), but are non-differential (black dots). The differential boundaries correspond to the "Differential boundary score" track, where absolute boundary score differences above 2.0 threshold are detected. The different types of differential boundaries are defined according to a schema described in the TADCompare manuscript. 
+
+### Comparing pre-defined TAD boundaries
 
 We can also use pre-specified TADs by providing a list of TAD coordinates containing TAD boundaries for each contact matrix. The list should be of length 2. We show how to do this below, using SpectralTAD for pre-specification:
 
 ```{r, message = FALSE, warning = FALSE, fig.width=8,fig.height=8}
-#Read in data
-# data(rao_chr22_prim)
-# data(rao_chr22_rep)
-#Calling TAD boundaries for both datasets
-bed_coords1 = bind_rows(SpectralTAD(rao_chr22_prim, chr = "chr22",
-                                    levels = 3))
-bed_coords2 = bind_rows(SpectralTAD(rao_chr22_rep, chr = "chr22",
-                                    levels = 3))
+# Call TADs using SpectralTAD
+bed_coords1 = bind_rows(SpectralTAD(mtx1, chr = "chr2", levels = 3))
+bed_coords2 = bind_rows(SpectralTAD(mtx2, chr = "chr2", levels = 3))
 #Placing the data in a list for the plotting procedure
 Combined_Bed = list(bed_coords1, bed_coords2)
+
 #Running TADCompare with pre-specified TADs
-TD_Compare=TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000, pre_tads = Combined_Bed)
+TD_Compare=TADCompare(mtx1, mtx2, resolution = res, pre_tads = Combined_Bed)
 #Running the plotting algorithm with pre-specified TADs
-DiffPlot(tad_diff    = TD_Compare, 
-         cont_mat1   = rao_chr22_prim,
-         cont_mat2   = rao_chr22_rep,
-         resolution  = 40000,
-         start_coord = 24360000,
-         end_coord   = 26600000,
-         pre_tad     = Combined_Bed)
+p <- DiffPlot(tad_diff    = TD_Compare, 
+              cont_mat1   = mtx1,
+              cont_mat2   = mtx2,
+              resolution  = res,
+              start_coord = start_coord,
+              end_coord   = end_coord,
+              pre_tad     = Combined_Bed,
+              point_size  = 5,
+              palette     = "RdYlBu")
+plot(p)
 ```
 
-As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by TADCompare. Additionally, a new category is introduced, "Non-Overlap". Non-Overlap corresponds to regions that are determined to be non-differential by TADCompare but do not overlap when called by the TAD caller.
-
-[??? Find region for better visualization. The current one has only non-overlap, need all types]
-
-
+As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by TADCompare using boundary scores. Given that the pre-specified TAD boundaries are not necesserily correspond to the boundary scores, the classification schema of the differences shows whether a boundary is differential or not. Additionally, a new category is introduced, called "Non-Overlap". Non-Overlap corresponds to boundaries that are determined to be non-differential by TADCompare but do not overlap when called by the TAD caller.
 
 # TimeCompare {#timecompare}
 
