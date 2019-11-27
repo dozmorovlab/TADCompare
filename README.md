@@ -69,6 +69,7 @@ head(TD_Compare$TAD_Frame)
 And, visualize a specific region on a chromosome:
 
 ```
+# Visualizing the results
 DiffPlot(tad_diff    = TD_Compare, 
          cont_mat1   = GM12878.40kb.raw.chr2,
          cont_mat2   = IMR90.40kb.raw.chr2,
@@ -94,6 +95,15 @@ Combined_Bed = list(bed_coords1, bed_coords2)
 TD_Compare <-  TADCompare(GM12878.40kb.raw.chr2, IMR90.40kb.raw.chr2, resolution = 40000, pre_tads = Combined_Bed)
 
 # Visualizing the results
+DiffPlot(tad_diff    = TD_Compare, 
+         cont_mat1   = GM12878.40kb.raw.chr2,
+         cont_mat2   = IMR90.40kb.raw.chr2,
+         resolution  = 40000,
+         start_coord = 8000000,
+         end_coord   = 16000000,
+         pre_tad     = Combined_Bed,
+         point_size  = 5,
+         palette     = "RdYlBu")
 ```
 
 ![](/vignettes/plot_predefined.png)
