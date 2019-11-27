@@ -1,14 +1,14 @@
-`TADCompare` is an R package providing tools for differential Topologically Associated Domain (TAD) detection and TAD boundary calling across multiple replicates. It has three main functions, `TADCompare` for differential TAD analysis, `TimeCompare` for time course analysis and `ConsensusTADs` for consensus boundary identification. 
+`TADCompare` is an R package for differential Topologically Associated Domain (TAD) detection between two Hi-C contact matrices and across a time course, and TAD boundary calling across multiple Hi-C replicates. It has three main functions, `TADCompare` for differential TAD analysis, `TimeCompare` for time course analysis, and `ConsensusTADs` for consensus boundary identification. The `DiffPlot` function allows for visualizing the differences between two contact matrices.
+
+# Installation
 
 ```
-install.packages(c('dplyr', 'PRIMME', 'cluster',
-    'Matrix',
-    'magrittr',
-    'HiCcompare'))
+install.packages(c('dplyr', 'PRIMME', 'cluster', 'Matrix', 'magrittr', 'HiCcompare'))
 
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 ```
+
 The latest version of `TADCompare` can be directly installed from Github:
 
 ```
@@ -33,36 +33,85 @@ There are three types of input accepted:
 2. n x (n+3) contact matrices
 3. 3-column sparse contact matrices
 
-It is required that the same format be used for each of the inputs to a given function or an error will occur. These formats are explained in depth in the [vignette](vignettes/Data_Input.Rmd).
+It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](vignettes/Input_Data.Rmd).
 
 # Usage
+
+Please, refer to the [TADCompare vignette](vignettes/TADCompare.Rmd) for an in depth tutorial.
 
 ## TADcompare
 
 Differential TAD detection (`TADCompare`) involves identifying differing TAD boundaries between two contact matrices. Accordingly, the input is the two contact matrices that we would like to find these boundaries in and their corresponding resolution. The output is a dataset containing boundary scores for all regions and a dataset containing all differential and non-differential TAD boundaries. 
 
 ```
-#Load example contact matrices
-data("rao_chr22_prim")
-data("rao_chr22_rep")
-#Find differential TADs
-tads = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
-head(tads$TAD_Frame)
+# Load example contact matrices
+data("GM12878.40kb.raw.chr2")
+data("IMR90.40kb.raw.chr2")
+
+# Find differential TADs
+TD_Compare <- TADCompare(GM12878.40kb.raw.chr2, IMR90.40kb.raw.chr2, resolution = 40000)
 ```
+
 We can then print the set of regions with at least one TAD boundary:
 
 ```
-  Boundary Gap_Score TAD_Score1 TAD_Score2 Differential Enriched_In            Type
-16800000 -8.616720   1.447318   4.923084 Differential    Matrix 2    Differential
-17200000  3.006105   3.037070   2.012388 Differential    Matrix 1 Strength Change
-17250000  2.259350   6.080978   5.512345      Shifted    Matrix 1         Shifted
-18700000 15.333645  10.385900   4.888309 Differential    Matrix 1 Strength Change
-18750000 -6.981617   3.360815   6.293102      Shifted    Matrix 2         Shifted
-18800000 -8.491078   1.021460   4.425071      Shifted    Matrix 2         Shifted
+head(TD_Compare$TAD_Frame)
+
+  Boundary  Gap_Score TAD_Score1 TAD_Score2     Differential Enriched_In             Type
+1  8200000 -2.0245884 0.02537611   1.596684     Differential    Matrix 2             <NA>
+2  8240000  0.8091967 2.08454863   1.258245 Non-Differential    Matrix 1 Non-Differential
+3  8880000  2.1191814 3.44450158   1.471221     Differential    Matrix 1            Split
+4  8960000 -1.6590363 0.46678509   1.712167 Non-Differential    Matrix 2 Non-Differential
+5  9560000 -2.3232567 0.56031218   2.313139     Differential    Matrix 2            Merge
+6  9600000  0.2375074 1.91851750   1.552303 Non-Differential    Matrix 1 Non-Differential
 ```
+
+And, visualize a specific region on a chromosome:
+
+```
+# Visualizing the results
+DiffPlot(tad_diff    = TD_Compare, 
+         cont_mat1   = GM12878.40kb.raw.chr2,
+         cont_mat2   = IMR90.40kb.raw.chr2,
+         resolution  = 40000,
+         start_coord = 8000000,
+         end_coord   = 16000000,
+         point_size  = 5,
+         palette     = "RdYlBu")
+```
+
+![](/vignettes/plot_original.png)
+
+`TADCompare` detects TAD boundaries by selecting regions with TAD boundary scores above a threshold (1.5 by default). An alternative way of running `TADCompare` is to call TAD boundaries using a separate TAD caller, and then compare those pre-defined TAD boundaries. The example below uses the [SpectralTAD](https://bioconductor.org/packages/devel/bioc/html/SpectralTAD.html) TAD caller to pre-define TAD boundaries.
+
+```
+# Call TADs using SpectralTAD
+bed_coords1 = bind_rows(SpectralTAD(GM12878.40kb.raw.chr2, chr = "chr2", levels = 3))
+bed_coords2 = bind_rows(SpectralTAD(IMR90.40kb.raw.chr2,   chr = "chr2", levels = 3))
+# Placing the data in a list for the plotting procedure
+Combined_Bed = list(bed_coords1, bed_coords2)
+
+# Running TADCompare with pre-specified TADs
+TD_Compare <-  TADCompare(GM12878.40kb.raw.chr2, IMR90.40kb.raw.chr2, resolution = 40000, pre_tads = Combined_Bed)
+
+# Visualizing the results
+DiffPlot(tad_diff    = TD_Compare, 
+         cont_mat1   = GM12878.40kb.raw.chr2,
+         cont_mat2   = IMR90.40kb.raw.chr2,
+         resolution  = 40000,
+         start_coord = 8000000,
+         end_coord   = 16000000,
+         pre_tad     = Combined_Bed,
+         point_size  = 5,
+         palette     = "RdYlBu")
+```
+
+![](/vignettes/plot_predefined.png)
+
 ## TimeCompare
 
-`TimeCompare` takes data from at least four time points and identifies all regions with at least one TAD. Using this information, it then classifies each region, based on how they change over time, into 6 categories (Dynamic, Highly Common, Early Appearing/Disappearing and Late Appearing/Disappearing).
+`TimeCompare` takes data from at least four time points and identifies all regions with at least one TAD. Using this information, it then classifies each region, based on how they change over time, into 6 categories (Dynamic, Highly Common, Early Appearing/Disappearing, and Late Appearing/Disappearing).
+
 ```
 data("time_mats")
 Time_Mats = TimeCompare(time_mats, resolution = 50000)
@@ -71,27 +120,20 @@ head(Time_Mats$TAD_Bounds)
 The resulting output is:
 
 ```
- Coordinate   Sample 1   Sample 2   Sample 3   Sample 4 Consensus_Score
-1   16900000 -0.6733709 -0.7751516 -0.7653696 15.1272253     -0.71937026
-2   17350000  3.6406563  2.3436229  3.0253018  0.7840556      2.68446232
-3   18850000  0.6372268  6.3662245 -0.7876844  6.9255446      3.50172563
-4   20700000  1.5667926  3.0968633  2.9130479  2.8300136      2.87153075
-5   22000000 -1.0079676 -0.7982571  0.6007264  3.1909178     -0.09876534
-6   22050000 -1.0405532 -0.9892242 -0.2675822  4.2737511     -0.62840320
-                Category
-1     Late Appearing TAD
-2 Early Disappearing TAD
-3    Early Appearing TAD
-4            Dynamic TAD
-5     Late Appearing TAD
-6     Late Appearing TAD
+  Coordinate   Sample 1   Sample 2   Sample 3   Sample 4 Consensus_Score               Category
+1   16900000 -0.6733709 -0.7751516 -0.7653696 15.1272253     -0.71937026     Late Appearing TAD
+2   17350000  3.6406563  2.3436229  3.0253018  0.7840556      2.68446232 Early Disappearing TAD
+3   18850000  0.6372268  6.3662245 -0.7876844  6.9255446      3.50172563    Early Appearing TAD
+4   20700000  1.5667926  3.0968633  2.9130479  2.8300136      2.87153075            Dynamic TAD
+5   22000000 -1.0079676 -0.7982571  0.6007264  3.1909178     -0.09876534     Late Appearing TAD
+6   22050000 -1.0405532 -0.9892242 -0.2675822  4.2737511     -0.62840320     Late Appearing TAD
 ```
 
-For each coordinate, we have the individual boundary score for each sample (Sample x), consensus boundary score (Consensus_Score) and category (Category).
+For each coordinate, we have the individual boundary score for each sample (Sample x), consensus boundary score (Consensus_Score), and category (Category).
 
 ## ConsensusTADs
 
-ConsensusTADs uses a novel metric called the consensus boundary score to identify TAD boundaries summarized across multiple contact matrices. It can operate on an unlimited number of replicates, time points or conditions.
+`ConsensusTADs` uses a novel metric called the consensus boundary score to identify TAD boundaries consistently defined across multiple contact matrices. It can operate on an unlimited number of replicates, time points, or conditions.
 
 ```
 data("time_mats")
@@ -110,7 +152,7 @@ head(con_tads$Consensus)
 
 The results are a set of coordinates with significant consensus TADs. Columns starting with "Sample" refer to the individual boundary scores. Consensus_Score is the consensus boundary score across all samples.
 
-#Availability 
+# Availability 
 
 The developmental version is available at https://github.com/cresswellkg/TADCompare, the stable version is available at https://github.com/dozmorovlab/TADCompare.
 

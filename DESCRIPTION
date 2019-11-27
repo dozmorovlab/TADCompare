@@ -14,7 +14,7 @@ Description:
     comprehensive, easy to analyze results.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.1
 Lazydata: false
 BugReports: https://github.com/dozmorovlab/TADCompare/issues
 Imports: 
