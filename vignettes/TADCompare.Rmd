@@ -28,7 +28,7 @@ library(SpectralTAD)
 
 # Introduction
 
-TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](#tadcompare).  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](#timecompare). `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](#consensustads). The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. See [Input data vignette](Input_data.html) for a complete overview of input data formats. Instructions on changing the default parameters are provided. 
+TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains four functions: `TADCompare`, `TimeCompare`, `ConsensusTADs`, and `DiffPlot`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](#tadcompare).  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](#timecompare). `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](#consensustads). `DiffPlot` allows for [visualization of TAD boundary differences](#visualization) between two matrices. The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. See [Input data vignette](Input_data.html) for a complete overview of input data formats. Instructions on changing the default parameters are provided. 
 
 # Getting Started
 
@@ -124,7 +124,7 @@ table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)$end)
 
 Here, we see that the only boundaries that are returned are those we pre-specified.
 
-## Visualization of TADCompare Results
+## Visualization of TADCompare Results {#visualization}
 
 We provide means for visualizing differential TAD boundaries using the `DiffPlot` function. As an input, `DiffPlot` takes the output from the `TADCompare` function and the original contact matrices. As an output, it returns a `ggplot2` object that can be further customized. We demonstrate visualization of the differences between GM12878 and IMR90 cell lines, on the subset of chromosome 2, 40kb resolution data processed in Schmitt et al. [@Schmitt:2016aa]:
 
