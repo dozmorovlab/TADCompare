@@ -154,7 +154,7 @@ end_coord   <- 16000000
 
 ### Comparing TAD boundary scores
 
-```{r fig.width=8, fig.height=8}
+```{r fig.width=10, fig.height=5}
 # Running TADCompare as-is
 TD_Compare <- TADCompare(mtx1, mtx2, resolution = res)
 # Running the plotting algorithm with pre-specified TADs
@@ -175,7 +175,7 @@ From these results, we can see that boundary scores from both matrices ("Boundar
 
 We can also use pre-specified TADs by providing a list of TAD coordinates containing TAD boundaries for each contact matrix. The list should be of length 2. We show how to do this below, using SpectralTAD for pre-specification:
 
-```{r fig.width=8, fig.height=5}
+```{r fig.width=10, fig.height=5}
 # Call TADs using SpectralTAD
 bed_coords1 = bind_rows(SpectralTAD(mtx1, chr = "chr2", levels = 3))
 bed_coords2 = bind_rows(SpectralTAD(mtx2, chr = "chr2", levels = 3))
