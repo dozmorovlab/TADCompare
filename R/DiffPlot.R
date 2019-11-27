@@ -29,7 +29,7 @@
 #' @param point_size Parameter used to adjust the size of boundary points on 
 #' heatmap plot. Default is 3.
 #' @param max_height Maximum height in bins that should be displayed on the
-#' plot. Default is 20.
+#' plot. Default is 25.
 #' @param palette Parameter used to adjust color palette. For list of palettes
 #' see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
 #' users can define a vector of color names or hex codes.  Default is 'RdYlBu'
