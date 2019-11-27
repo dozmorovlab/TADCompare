@@ -1,5 +1,5 @@
 ---
-title: "Input Data"
+title: "Input data formats"
 author:
 - name: Kellen Cresswell
   affiliation:
@@ -10,7 +10,7 @@ author:
 output:
     BiocStyle::html_document
 vignette: >
-    %\VignetteIndexEntry{TADCompare}
+    %\VignetteIndexEntry{Input data formats}
     %\VignetteEncoding{UTF-8}
     %\VignetteEngine{knitr::rmarkdown}
 editor_options:
