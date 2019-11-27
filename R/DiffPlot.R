@@ -336,7 +336,11 @@ DiffPlot = function(tad_diff,
                         "Shifted",
                         "Complex")
       
+    max_coord = unique(abs(tad_comb$start2[which( ((tad_comb$orig_regy-tad_comb$orig_regx)/resolution )==20 )]))
+                       
     if (length(palette) == 1) {
+      #Getting coordinate of 25th highest coordinate
+      
     plot_3 = ggplot(tad_comb, aes(start1, start2)) +
       theme_bw() +
       xlab('Coordinates') +
@@ -350,6 +354,8 @@ DiffPlot = function(tad_diff,
       geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, color = Type), 
                  fill = NA, size = point_size) +
       scale_color_manual(values=colors) + labs(fill="Log2(Contacts)") +
+      coord_cartesian(ylim = c(-max_coord,
+                               max_coord)) +
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
             axis.ticks.x=element_blank())
@@ -367,7 +373,9 @@ DiffPlot = function(tad_diff,
               panel.grid.major=element_line(color='#eeeeee'))  +  
         geom_point(data = d1_triangle %>% filter(!is.na(Type)), aes(x = x, y = y, 
                                                                     color = Type), 
-                   fill = NA, size =  point_size)  +
+                   fill = NA, size =  point_size) +
+        coord_cartesian(ylim = c(-max_coord,
+                                 max_coord)) +
         scale_color_manual(values=colors) +  
         geom_polygon(data = tads1 ,
                      aes(x = x, y = y, group = id), 
@@ -375,7 +383,7 @@ DiffPlot = function(tad_diff,
         geom_polygon(data = tads2 ,
                      aes(x = x, y = -y, group = id), 
                      color = "black", fill = NA, size = 1) + 
-        coord_cartesian(ylim = c(-max(tads1$y, tads2$y),max(tads1$y, tads2$y)))+
+        coord_cartesian(ylim = c(-max(orig_regy, orig_regy)))+
         labs(fill="Log2(Contacts)") +
         theme(axis.title.x=element_blank(),
               axis.text.x=element_blank(),
