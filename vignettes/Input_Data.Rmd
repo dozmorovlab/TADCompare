@@ -19,60 +19,54 @@ bibliography: pack_ref.bib
 ---
 
 ```{r set-options, echo=FALSE, cache=FALSE}
-options(stringsAsFactors = FALSE)
+options(stringsAsFactors = FALSE, warning = FALSE, message = FALSE)
 library(dplyr)
 ```
 
 # Introduction
 
-`TADCompare` is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. `TADCompare` package contains three functions: `TADCompare`, `TimeCompare` and `ConsensusTADs`. `TADCompare` allows for the identification of differential TAD boundaries between [two contact matrices](TADCompare.html).  `TimeCompare` takes a set of contact matrices, one matrix per time point, identifies TAD boundaries and classifies [how they change over time](TimeCompare.html). `ConsensusTADs` takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](ConsensusTADs.html). The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. Instructions on changing the default parameters are provided. 
+TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains four functions: `TADCompare`, `TimeCompare`, `ConsensusTADs`, and `DiffPlot`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](TADCompare.html#tadcompare).  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](TADCompare.html#timecompare). `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](TADCompare.html#consensustads). `DiffPlot` allows for [visualization of TAD boundary differences](TADCompare.html#visualization) between two matrices. The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. This vignette provides a complete overview of input data formats.
 
 # Getting Started
 
 ## Installation
 
-```{r, message=FALSE}
+```{r}
 # if (!requireNamespace("BiocManager", quietly=TRUE))
 #     install.packages("BiocManager")
 # BiocManager::install("TADCompare")
 library(TADCompare)
 ```
 
-
-
 # Working with different types of data
 
 ## Working with $n \times n$ matrices
 
-$n \times n$ contact matrices are most commonly associated with data coming from the Bing Ren lab (http://chromosome.sdsc.edu/mouse/hi-c/download.html). These contact matrices are square and symmetric with entry $ij$ corresponding to the number of contacts between region $i$ and region $j$. Below is an example of a $5 \times 5$ region of an $n \times n$ contact matrix derived from Rao et al. 2014 data, GM12878 cell line [@Rao:2014aa], chromosome 22, 50kb resolution. Note the symmetry around the diagonal - the typical shape of chromatin interaction matrix. The figure was created using the pheatmap package.
+$n \times n$ contact matrices are most commonly associated with data coming from the Bing Ren lab (http://chromosome.sdsc.edu/mouse/hi-c/download.html). These contact matrices are square and symmetric with entry $ij$ corresponding to the number of contacts between region $i$ and region $j$. Below is an example of a $5 \times 5$ region of an $n \times n$ contact matrix derived from Rao et al. 2014 data, GM12878 cell line [@Rao:2014aa], chromosome 22, 50kb resolution. Note the symmetry around the diagonal - the typical shape of chromatin interaction matrix. The figure was created using the [pheatmap](https://cran.r-project.org/web/packages/pheatmap/index.html) package.
 
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
+```{r echo = FALSE}
 data("rao_chr22_prim")
-row.names(rao_chr22_prim) = colnames(rao_chr22_prim) = format(as.numeric(row.names(rao_chr22_prim)), scientific = FALSE)
+row.names(rao_chr22_prim) <- colnames(rao_chr22_prim) <- format(as.numeric(row.names(rao_chr22_prim)), scientific = FALSE)
 coords <- 200:275
 pheatmap::pheatmap(log10(rao_chr22_prim[coords, coords]), cluster_rows = FALSE, cluster_cols = FALSE)
 ```
 
 ## Working with $n \times (n+3)$ matrices
 
-$n \times (n+3)$ matrices are commonly associated with the `TopDom` TAD caller (http://zhoulab.usc.edu/TopDom/). These matrices consist of an $n \times n$ matrix but with three additional leading columns containing the chromosome, the start of the region and the end of the region. Regions in this case are determined by the resolution of the data. The typical $n \times (n+3)$ matrix is shown below.
+$n \times (n+3)$ matrices are commonly associated with the `TopDom` TAD caller (http://zhoulab.usc.edu/TopDom/). These matrices consist of an $n \times n$ matrix but with three additional leading columns containing the chromosome, the start of the region and the end of the region. Regions in this case are determined by the resolution of the data. The subset of a typical $n \times (n+3)$ matrix is shown below.
 
-```{r, echo = TRUE, warning = FALSE}
-coords = 50:53
-sub_mat = data.frame(chr = "chr22", 
-                     start = as.numeric(colnames(rao_chr22_prim[coords, coords])), 
-                     end = as.numeric(colnames(rao_chr22_prim[coords, coords])) + 50000, 
-                     rao_chr22_prim[coords, coords]) 
+```{r echo = FALSE}
+coords  <- 50:53
+sub_mat <- data.frame(chr = "chr22", start = as.numeric(colnames(rao_chr22_prim[coords, coords])), end   = as.numeric(colnames(rao_chr22_prim[coords, coords])) + 50000, rao_chr22_prim[coords, coords]) 
 row.names(sub_mat) = NULL
 sub_mat
 ```
 
-
 ## Working with sparse 3-column matrices
 
-Sparse 3-column matrices are matrices where the first and second column refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html) package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix are shown below.
+Sparse 3-column matrices are matrices where the first and second columns refer to region $i$ and region $j$ of the chromosome, and the third column is the number of contacts between them.  This style is becoming increasingly popular and is associated with raw data from Lieberman-Aiden lab (e.g., https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525), and is the data output produced by the Juicer tool [@Durand:2016aa]. 3-column matrices are handled internally in the package by converting them to $n \times n$ matrices using the [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html) package's `sparse2full()` function. The first 5 rows of a typical sparse 3-column matrix are shown below.
 
-```{r, echo = FALSE, warning = FALSE}
+```{r echo = FALSE}
 data("rao_chr22_prim") 
 head(HiCcompare::full2sparse(rao_chr22_prim))
 ```
@@ -92,16 +86,16 @@ The cooler software can be downloaded from https://mirnylab.github.io/cooler/. A
 5. Convert the matrix to a text file using `cooler dump --join Zuin2014-HEK293CtcfDepleted-HindIII-allreps-filtered.50kb.cool > Zuin.HEK293.50kb.Depleted.txt`
 6. Run the code below
 
-```{r, eval = FALSE}
-#Read in data
-cool_mat1 = read.table("Zuin.HEK293.50kb.Control.txt")
-cool_mat2 = read.table("Zuin.HEK293.50kb.Depleted.txt")
+```{r eval = FALSE}
+# Read in data
+cool_mat1 <- read.table("Zuin.HEK293.50kb.Control.txt")
+cool_mat2 <- read.table("Zuin.HEK293.50kb.Depleted.txt")
 
-#Convert to sparse 3-column matrix using cooler2sparse from HiCcompare
-sparse_mat1 = HiCcompare::cooler2sparse(cool_mat1)
-sparse_mat2 = HiCcompare::cooler2sparse(cool_mat2)
+# Convert to sparse 3-column matrix using cooler2sparse from HiCcompare
+sparse_mat1 <- HiCcompare::cooler2sparse(cool_mat1)
+sparse_mat2 <- HiCcompare::cooler2sparse(cool_mat2)
 
-#Run TADCompare
+# Run TADCompare
 diff_tads = lapply(names(sparse_mat1), function(x) {
   TADCompare(sparse_mat1[[x]], sparse_mat2[[x]], resolution = 50000)
 })
@@ -109,91 +103,93 @@ diff_tads = lapply(names(sparse_mat1), function(x) {
 
 ## Working with HiC-Pro files
 
-HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs which map back to the coordinates in the bed file and the third column contains the number of contacts between the two regions. In this example we analyze two matrix files `sample1_100000.matrix` and `sample2_100000.matrix`and their corresponding bed files `sample1_100000_abs.bed` and `sample2_100000_abs.bed`. We do not include HiC-Pro data in the package so these serve as placeholders for the traditional files output by HiC-Pro. The steps for analyzing these files is shown below:
+HiC-Pro data is represented as two files, the `.matrix` file and the `.bed` file. The `.bed` file contains four columns (chromosome, start, end, ID). The `.matrix` file is a three-column matrix where the 1^st^ and 2^nd^ columns contain region IDs that map back to the coordinates in the bed file, and the third column contains the number of contacts between the two regions. In this example we analyze two matrix files `sample1_100000.matrix` and `sample2_100000.matrix`and their corresponding bed files `sample1_100000_abs.bed` and `sample2_100000_abs.bed`. We do not include HiC-Pro data in the package, so these serve as placeholders for the traditional files output by HiC-Pro. The steps for analyzing these files is shown below:
 
-```{r, eval = FALSE}
-#Read in both files
-mat1 = read.table("sample1_100000.matrix")
-bed1 = read.table("sample1_100000_abs.bed")
+```{r eval = FALSE}
+# Read in both files
+mat1 <- read.table("sample1_100000.matrix")
+bed1 <- read.table("sample1_100000_abs.bed")
 
-#Matrix 2
+# Matrix 2
 
-mat2 = read.table("sample2_100000.matrix")
-bed2 = read.table("sample2_100000_abs.bed")
+mat2 <- read.table("sample2_100000.matrix")
+bed2 <- read.table("sample2_100000_abs.bed")
 
-#Convert to modified bed format
-sparse_mats1 = HiCcompare::hicpro2bedpe(mat1,bed1)
-sparse_mats2 = HiCcompare::hicpro2bedpe(mat2,bed2)
+# Convert to modified bed format
+sparse_mats1 <- HiCcompare::hicpro2bedpe(mat1,bed1)
+sparse_mats2 <- HiCcompare::hicpro2bedpe(mat2,bed2)
 
-#Remove empty matrices if necessary
-#sparse_mats$cis = sparse_mats$cis[sapply(sparse_mats, nrow) != 0]
+# Remove empty matrices if necessary
+# sparse_mats$cis = sparse_mats$cis[sapply(sparse_mats, nrow) != 0]
 
 
-#Go through all pairwise chromosomes and run TADCompare
+# Go through all pairwise chromosomes and run TADCompare
 sparse_tads = lapply(1:length(sparse_mats1$cis), function(z) {
-  x = sparse_mats1$cis[[z]]
-  y = sparse_mats2$cis[[z]]
+  x <- sparse_mats1$cis[[z]]
+  y <- sparse_mats2$cis[[z]]
   
   #Pull out chromosome
-  chr = x[,1][1]
+  chr <- x[, 1][1]
   #Subset to make three column matrix
-  x = x[,c(2,5,7)]
-  y = y[,c(2,5,7)]
+  x <- x[, c(2, 5, 7)]
+  y <- y[, c(2, 5, 7)]
   #Run SpectralTAD
-  comp = TADCompare(x,y, resolution = 100000)
+  comp <- TADCompare(x, y, resolution = 100000)
   return(list(comp, chr))
 })
 
-#Pull out differential TAD results
-diff_res = lapply(sparse_tads, function(x) x$comp)
-#Pull out chromosomes
-chr = lapply(sparse_tads, function(x) x$chr)
-#Name list by corresponding chr
-names(diff_res) = chr
+# Pull out differential TAD results
+diff_res <- lapply(sparse_tads, function(x) x$comp)
+# Pull out chromosomes
+chr      <- lapply(sparse_tads, function(x) x$chr)
+# Name list by corresponding chr
+names(diff_res) <- chr
 ```
 
 ## Effect of matrix type on runtime
 
 The type of matrix input into the algorithm can affect runtimes for the algorithm. $n \times n$ matrices require no conversion and are the fastest. Meanwhile, $n \times (n+3)$ matrices take slightly longer to run due to the need to remove the first 3 columns. Sparse 3-column matrices have the highest runtimes due to the complexity of converting them to an $n \times n$ matrix. The times are summarized below, holding all other parameters constant.
 
-```{r, message = FALSE, warning=FALSE}
+```{r message=FALSE}
 library(microbenchmark)
-#Reading in the second matrix
+# Reading in the second matrix
 data("rao_chr22_rep")
-#Converting to sparse
-prim_sparse = HiCcompare::full2sparse(rao_chr22_prim)
-rep_sparse = HiCcompare::full2sparse(rao_chr22_rep)
-#Converting to nxn+3
-#Primary
-prim_n_n_3 = data.frame(chr = "chr22",
-                        start = as.numeric(colnames(rao_chr22_prim)),
-                        end = as.numeric(colnames(rao_chr22_prim))+50000, 
-                        rao_chr22_prim)
+# Converting to sparse
+prim_sparse <- HiCcompare::full2sparse(rao_chr22_prim)
+rep_sparse  <- HiCcompare::full2sparse(rao_chr22_rep)
+# Converting to nxn+3
+# Primary
+prim_n_n_3 <- data.frame(chr = "chr22",
+                         start = as.numeric(colnames(rao_chr22_prim)),
+                         end = as.numeric(colnames(rao_chr22_prim))+50000, 
+                         rao_chr22_prim)
 
-#Replicate
-rep_n_n_3 = data.frame(chr = "chr22", 
-                       start = as.numeric(colnames(rao_chr22_rep)),
-                       end = as.numeric(colnames(rao_chr22_rep))+50000,
-                       rao_chr22_rep)
-#Defining each function
-#Sparse
-sparse = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000)
-#NxN
-n_by_n = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000)
-#Nx(N+3)
-n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000)
+# Replicate
+rep_n_n_3 <- data.frame(chr = "chr22", 
+                        start = as.numeric(colnames(rao_chr22_rep)),
+                        end = as.numeric(colnames(rao_chr22_rep))+50000,
+                        rao_chr22_rep)
+# Defining each function
+# Sparse
+sparse <- TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000)
+# NxN
+n_by_n <- TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000)
+# Nx(N+3)
+n_by_n_3 <- TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000)
 
-#Benchmarking different parameters
-bench = microbenchmark(
-#Sparse
-sparse = TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000),
-#NxN
-n_by_n = TADCompare(cont_mat1 = rao_chr22_prim, cont_mat2 = rao_chr22_rep, resolution = 50000),
-#Nx(N+3)
-n_by_n_3 = TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000), times = 5, unit = "s"
+# Benchmarking different parameters
+bench <- microbenchmark(
+# Sparse
+sparse <- TADCompare(cont_mat1 = prim_sparse, cont_mat2 = rep_sparse, resolution = 50000),
+# NxN
+n_by_n <- TADCompare(cont_mat1 = rao_chr22_prim, cont_mat2 = rao_chr22_rep, resolution = 50000),
+# Nx(N+3)
+n_by_n_3 <- TADCompare(cont_mat1 = prim_n_n_3, cont_mat2 = rep_n_n_3, resolution = 50000), times = 5, unit = "s"
 ) 
 
-summary(bench) %>% dplyr::select(expr, mean, median)
+summary_bench <- summary(bench) %>% dplyr::select(mean, median)
+rownames(summary_bench) <- c("sparse", "n_by_n", "n_by_n_3")
+summary_bench
 ```
 
 The table above shows the mean and median of runtimes for different types of contact matrices measured in seconds. As we see, `TADCompare` is extremely fast irrespectively of the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
