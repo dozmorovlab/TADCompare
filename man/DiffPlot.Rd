@@ -4,17 +4,9 @@
 \alias{DiffPlot}
 \title{Visualization of differential TAD boundaries}
 \usage{
-DiffPlot(
-  tad_diff,
-  cont_mat1,
-  cont_mat2,
-  resolution,
-  start_coord,
-  end_coord,
-  pre_tad = NULL,
-  point_size = 3,
-  palette = "RdYlBu"
-)
+DiffPlot(tad_diff, cont_mat1, cont_mat2, resolution, start_coord,
+  end_coord, pre_tad = NULL, point_size = 3, max_height = 25,
+  palette = "RdYlBu")
 }
 \arguments{
 \item{tad_diff}{Raw object output by TADCompare. Required}
@@ -48,6 +40,9 @@ used. Optional}
 
 \item{point_size}{Parameter used to adjust the size of boundary points on 
 heatmap plot. Default is 3.}
+
+\item{max_height}{Maximum height in bins that should be displayed on the
+plot. Default is 20.}
 
 \item{palette}{Parameter used to adjust color palette. For list of palettes
 see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
