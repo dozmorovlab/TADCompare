@@ -28,6 +28,8 @@
 #' used. Optional
 #' @param point_size Parameter used to adjust the size of boundary points on 
 #' heatmap plot. Default is 3.
+#' @param max_height Maximum height in bins that should be displayed on the
+#' plot. Default is 20.
 #' @param palette Parameter used to adjust color palette. For list of palettes
 #' see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
 #' users can define a vector of color names or hex codes.  Default is 'RdYlBu'
@@ -61,6 +63,7 @@ DiffPlot = function(tad_diff,
                      end_coord,
                      pre_tad=NULL,
                     point_size=3,
+                    max_height = 25,
                     palette='RdYlBu') {
   
   bed_coords = tad_diff$TAD_Frame %>% dplyr::select(start=Boundary, Enriched_In, Type = Type)
@@ -336,7 +339,9 @@ DiffPlot = function(tad_diff,
                         "Shifted",
                         "Complex")
       
-    max_coord = unique(abs(tad_comb$start2[which( ((tad_comb$orig_regy-tad_comb$orig_regx)/resolution )==20 )]))
+    max_coord = unique(abs(
+      tad_comb$start2[which(
+        ((tad_comb$orig_regy-tad_comb$orig_regx)/resolution )==max_height )]))
                        
     if (length(palette) == 1) {
       #Getting coordinate of 25th highest coordinate
