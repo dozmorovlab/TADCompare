@@ -4,13 +4,19 @@
 \alias{ConsensusTADs}
 \title{Consensus boundary identification}
 \usage{
-ConsensusTADs(cont_mats, resolution, z_thresh = 3, window_size = 15,
-  gap_thresh = 0.2)
+ConsensusTADs(
+  cont_mats,
+  resolution,
+  z_thresh = 3,
+  window_size = 15,
+  gap_thresh = 0.2
+)
 }
 \arguments{
 \item{cont_mats}{List of contact matrices in either sparse 3 column,
 n x n or n x (n+3) form where the first three columns are coordinates in
-BED format. If an x n matrix is used, the column names must correspond to
+BED format. See "Input_Data" vignette for more information. 
+If an x n matrix is used, the column names must correspond to
 the start point of the corresponding bin. Required.}
 
 \item{resolution}{Resolution of the data. Used to assign TAD boundaries
@@ -32,7 +38,7 @@ A list containing consensus TAD boundaries and overall scores
  \item Consensus - Data frame containing location of all consensus
  boundaries. Coordinate is the region of the genome, Sample columns
  correspond to individual boundary scores. Consensus_Score is consensus
- boundary score
+ boundary score.
  \item All_Regions - Data frame containing consensus scores for all regions.
  All columns are identiical to the Consensus object.
 }
@@ -41,14 +47,14 @@ A list containing consensus TAD boundaries and overall scores
 Consensus boundary identification
 }
 \details{
-Given a list of 3 column, n x n , or n x (n+3) contact matrices,
+Given a list of sparse 3 column, n x n , or n x (n+3) contact matrices,
 ConsensusTADs provides the set of consensus TAD boundaries across
-all matrices. Consensus TADs are defined by the consensus boundary score,
+them. Consensus TADs are defined by the consensus boundary score,
 a score measuring TAD boundary likelihood across all matrices.
 }
 \examples{
-#Read in data
+# Read in data
 data("time_mats")
-#Find consensus TAD boundaries
+# Find consensus TAD boundaries
 diff_list <- ConsensusTADs(time_mats, resolution = 50000)
 }

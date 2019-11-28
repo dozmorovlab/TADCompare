@@ -4,17 +4,25 @@
 \alias{TADCompare}
 \title{Differential TAD boundary detection}
 \usage{
-TADCompare(cont_mat1, cont_mat2, resolution = "auto", z_thresh = 2,
-  window_size = 15, gap_thresh = 0.2, pre_tads = NULL)
+TADCompare(
+  cont_mat1,
+  cont_mat2,
+  resolution = "auto",
+  z_thresh = 2,
+  window_size = 15,
+  gap_thresh = 0.2,
+  pre_tads = NULL
+)
 }
 \arguments{
 \item{cont_mat1}{Contact matrix in either sparse 3 column, n x n or
-n x (n+3) form where the first three columns are coordinates in BED format.
+n x (n+3) form where the first three columns are coordinates in BED format. 
+See "Input_Data" vignette for more information. 
 If an n x n matrix is used, the column names must correspond to the start
 point of the corresponding bin. Required.}
 
 \item{cont_mat2}{Second contact matrix, used for differential comparison,
-must be in same format as cont_mat1. Required}
+must be in same format as cont_mat1. Required.}
 
 \item{resolution}{Resolution of the data. Used to assign TAD boundaries
 to genomic regions. If not provided, resolution will be estimated from
@@ -31,9 +39,11 @@ Results should be consistent regardless of window size. Default is 15.}
 given bin to be included in the analysis. Default is .2}
 
 \item{pre_tad}{A list of pre-defined TADs for testing. Must contain two
-entries with the first corresponding to matrix 1 and the second to 
-matrix 2. Each entry must contain a column that corresponds to TAD start and
-end with the names "start" and "end". Optional.}
+entries with the first corresponding to TADs detected in matrix 1 
+and the second to those detected in matrix 2. Each entry must contain a BED-like
+data frame with columns "chr", "start", and "end", corresponding to coordinates
+of TADs. If provided, differential TAD boundaries are defined only at these 
+coordinates. Optional.}
 }
 \value{
 A list containing differential TAD characteristics
@@ -41,9 +51,9 @@ A list containing differential TAD characteristics
  \item TAD_Frame - Data frame containing any bin where a TAD boundary
  was detected. Boundary refers to the genomic coordinates, Gap_Score refers
  to the orresponding differential boundary score. TAD_Score1 and TAD_Score2
- are boundary scores for cont_mat1 and cont_mat2. Differential is the broad
- category of boundary. Enriched_In indicates which matrix contains the
- boundary. Type is the specific type of differential boundary.
+ are boundary scores for cont_mat1 and cont_mat2. Differential is the indicator
+ column whether a boundary is differential. Enriched_In indicates which matrix 
+ contains the boundary. Type is the specific type of differential boundary.
  \item Boundary_Scores - Boundary scores for the entire genome.
  \item Count_Plot - Stacked barplot containing the number of each type of
  TAD boundary called by TADCompare
@@ -55,15 +65,15 @@ Differential TAD boundary detection
 \details{
 Given two sparse 3 column, n x n , or n x (n+3) contact matrices,
 TADCompare identifies differential TAD boundaries. Using a novel boundary
-score metric, TADCompare simultaneously identifies TAD boundaries and
-tests for presence of differential boundaries. Strength of differences
-are provided using raw boundary scores and p-values.
+score metric, TADCompare simultaneously identifies TAD boundaries (unless 
+provided with the pre-defined TAD boundaries), and tests for the presence 
+of differential boundaries. The magnitude of differences is provided 
+using raw boundary scores and p-values.
 }
 \examples{
-#Read in data
+# Read in data
 data("rao_chr22_prim")
 data("rao_chr22_rep")
-#Find differential TADs
-diff_frame <- TADCompare(rao_chr22_prim, rao_chr22_rep,
-resolution = 50000)
+# Find differential TADs
+diff_frame <- TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
 }
