@@ -5,7 +5,8 @@
 #' @import PRIMME
 #' @param cont_mats List of contact matrices in either sparse 3 column,
 #' n x n or n x (n+3) form where the first three columns are coordinates in
-#' BED format. If an x n matrix is used, the column names must correspond to
+#' BED format. See "Input_Data" vignette for more information. 
+#' If an x n matrix is used, the column names must correspond to
 #' the start point of the corresponding bin. Required.
 #' @param resolution Resolution of the data. Used to assign TAD boundaries
 #' to genomic regions. If not provided, resolution will be estimated from
@@ -21,19 +22,19 @@
 #'  \item Consensus - Data frame containing location of all consensus
 #'  boundaries. Coordinate is the region of the genome, Sample columns
 #'  correspond to individual boundary scores. Consensus_Score is consensus
-#'  boundary score
+#'  boundary score.
 #'  \item All_Regions - Data frame containing consensus scores for all regions.
 #'  All columns are identiical to the Consensus object.
 #' }
 #' @export
-#' @details Given a list of 3 column, n x n , or n x (n+3) contact matrices,
+#' @details Given a list of sparse 3 column, n x n , or n x (n+3) contact matrices,
 #' ConsensusTADs provides the set of consensus TAD boundaries across
-#' all matrices. Consensus TADs are defined by the consensus boundary score,
+#' them. Consensus TADs are defined by the consensus boundary score,
 #' a score measuring TAD boundary likelihood across all matrices.
 #' @examples
-#' #Read in data
+#' # Read in data
 #' data("time_mats")
-#' #Find consensus TAD boundaries
+#' # Find consensus TAD boundaries
 #' diff_list <- ConsensusTADs(time_mats, resolution = 50000)
 
 
