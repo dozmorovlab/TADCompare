@@ -4,10 +4,11 @@
 #' @import RColorBrewer
 #' @import ggplot2
 #' @importFrom ggpubr get_legend
-#' @param tad_diff Raw object output by TADCompare. Required
+#' @param tad_diff Raw object output by TADCompare. Required.
 #' @param cont_mat1 contact matrix in either sparse 3 column,
 #' n x n or n x (n+3) form where the first three columns are coordinates in
-#' BED format. If an x n matrix is used, the column names must correspond to
+#' BED format. See "Input_Data" vignette for more information. 
+#' If an x n matrix is used, the column names must correspond to
 #' the start point of the corresponding bin. Should correspond
 #' to the first contact matrix input into TADCompare. Required.
 #' @param cont_mat2 contact matrix in either sparse 3 column,
@@ -15,31 +16,29 @@
 #' BED format. If an x n matrix is used, the column names must correspond to
 #' the start point of the corresponding bin. Should correspond
 #' to the second contact matrix input into TADCompare. Required.
-#' @param resolution Resolution of the data. Required
-#' @param start_coord The earliest coordinate of the contact matrix to 
-#' plot. Required
-#' @param end_coord The final coordinate of the contact matrix to 
-#' plot. Required
-#' @param pre_tad Parameter allowing for drawing of pre-defined TADs. Input
-#' is a list with two entries corresponding to the TADs for contact matrix 1
-#' and contact matrix 2. The matrices must contain columns named "start" and 
-#' "end" corresponding to the start and end of each TAD. For 
-#' accurate annotations, TADCompare results with pre-defined TADs should be
-#' used. Optional
+#' @param resolution Resolution of the data. Required.
+#' @param start_coord The start coordinate defining a region to plot. Required.
+#' @param end_coord The end coordinate defining a region to plot. Required.
+#' @param pre_tad A list of pre-defined TADs for drawing. Must contain two
+#' entries with the first corresponding to TADs detected in matrix 1 
+#' and the second to those detected in matrix 2. Each entry must contain a BED-like
+#' data frame with columns "chr", "start", and "end", corresponding to coordinates
+#' of TADs. Must correspond to TADCompare results obtained for the same pre-defined 
+#' TADs. Optional
 #' @param point_size Parameter used to adjust the size of boundary points on 
 #' heatmap plot. Default is 3.
 #' @param max_height Maximum height in bins that should be displayed on the
-#' plot. Default is 25.
-#' @param rel_heights Proportion of the size of the heatmap to track plot.
-#' Should be a vector containing the relative size of each plot with the 
-#' heatmap coming first and the track plot second. Default is c(2,1).
+#' heatmap plot. Default is 25.
+#' @param rel_heights Proportion of the size of the heatmap and score panels.
+#' Should be a vector containing the relative size of each panel with the 
+#' heatmap panel coming first and the score panel second. Default is c(2, 1).
 #' @param palette Parameter used to adjust color palette. For list of palettes
 #' see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
 #' users can define a vector of color names or hex codes.  Default is 'RdYlBu'
-#' @return A plot containing a visualization of the upper diagonal both 
+#' @return A ggplot plot containing a visualization of the upper diagonal both 
 #' contact matrices with types of non-/differential boundaries labeled.
 #' The first matrix is shown on top and the second on the bottom. If pre_tad
-#' is provided then the outline of the pre-defined TADs are shown. Individual
+#' is provided, then the outline of the pre-defined TADs are shown. Individual
 #' TAD score and differential TAD scores are shown below the contact matrix
 #' plots.
 #' @export
@@ -48,23 +47,22 @@
 #' with accompanying differential annotations, TAD scores and differential
 #' TAD scores
 #' @examples
-#' #Read in data
+#' # Read in data
 #' data("rao_chr22_prim")
 #' data("rao_chr22_rep")
-#' #Find differential TAD boundaries
-#' tad_diff <- TADCompare(rao_chr22_prim, rao_chr22_rep,
-#' resolution = 50000)
-#' #Create plot
-#' Diff_Plot(tad_diff,cont_mat1, cont_mat2,resolution=50000, 
-#' start_coord=49750000, end_coord=50700000)
+#' # Find differential TAD boundaries
+#' tad_diff <- TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
+#' # Create plot
+#' Diff_Plot(tad_diff,cont_mat1, cont_mat2, resolution = 50000, 
+#' start_coord = 49750000, end_coord = 50700000)
 
 DiffPlot = function(tad_diff,
-                     cont_mat1, 
-                     cont_mat2, 
-                     resolution, 
-                     start_coord, 
-                     end_coord,
-                     pre_tad=NULL,
+                    cont_mat1, 
+                    cont_mat2, 
+                    resolution, 
+                    start_coord, 
+                    end_coord,
+                    pre_tad=NULL,
                     point_size=3,
                     max_height = 25,
                     rel_heights = c(2,1),
