@@ -30,6 +30,9 @@
 #' heatmap plot. Default is 3.
 #' @param max_height Maximum height in bins that should be displayed on the
 #' plot. Default is 25.
+#' @param rel_heights Proportion of the size of the heatmap to track plot.
+#' Should be a vector containing the relative size of each plot with the 
+#' heatmap coming first and the track plot second. Default is c(2,1).
 #' @param palette Parameter used to adjust color palette. For list of palettes
 #' see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
 #' users can define a vector of color names or hex codes.  Default is 'RdYlBu'
@@ -64,6 +67,7 @@ DiffPlot = function(tad_diff,
                      pre_tad=NULL,
                     point_size=3,
                     max_height = 25,
+                    rel_heights = c(2,1),
                     palette='RdYlBu') {
   
   bed_coords = tad_diff$TAD_Frame %>% dplyr::select(start=Boundary, Enriched_In, Type = Type)
@@ -402,7 +406,7 @@ DiffPlot = function(tad_diff,
                                      guides(fill=FALSE, 
                                             color=FALSE),  
                                    track_plot, ncol=1,
-                                   align = "v", rel_heights = c(2,1)),
+                                   align = "v", rel_heights = rel_heights),
                                    cowplot::plot_grid(leg, ncol=1), 
                                    rel_widths = c(1,.2), align="h")
   
