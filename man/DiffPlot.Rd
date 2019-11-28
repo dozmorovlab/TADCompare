@@ -6,7 +6,7 @@
 \usage{
 DiffPlot(tad_diff, cont_mat1, cont_mat2, resolution, start_coord,
   end_coord, pre_tad = NULL, point_size = 3, max_height = 25,
-  palette = "RdYlBu")
+  rel_heights = c(2, 1), palette = "RdYlBu")
 }
 \arguments{
 \item{tad_diff}{Raw object output by TADCompare. Required}
@@ -42,7 +42,11 @@ used. Optional}
 heatmap plot. Default is 3.}
 
 \item{max_height}{Maximum height in bins that should be displayed on the
-plot. Default is 20.}
+plot. Default is 25.}
+
+\item{rel_heights}{Proportion of the size of the heatmap to track plot.
+Should be a vector containing the relative size of each plot with the 
+heatmap coming first and the track plot second. Default is c(2,1).}
 
 \item{palette}{Parameter used to adjust color palette. For list of palettes
 see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
