@@ -74,6 +74,8 @@ DiffPlot = function(tad_diff,
   
   
   if (show_types == FALSE) {
+    tad_diff$TAD_Frame = tad_diff$TAD_Frame %>%
+      mutate(Differential = ifelse(Type == "Non-Overlap", "Non-Overlap", Differential))
     bed_coords = tad_diff$TAD_Frame %>% dplyr::select(start=Boundary, Enriched_In, Type = Differential)
     
   } else {
