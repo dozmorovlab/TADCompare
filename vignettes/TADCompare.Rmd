@@ -164,6 +164,7 @@ p <- DiffPlot(tad_diff    = TD_Compare,
               resolution  = res,
               start_coord = start_coord,
               end_coord   = end_coord,
+              show_types  = TRUE, 
               point_size  = 5,
               max_height  = 5,
               rel_heights = c(1, 2),
@@ -171,7 +172,7 @@ p <- DiffPlot(tad_diff    = TD_Compare,
 plot(p)
 ```
 
-From these results, we can see that boundary scores from both matrices ("Boundary score 1" and "Boundary score 2") frequently detected as significant boundaries in both matrices (boundary scores above the 1.5 threshold), but are non-differential (black dots). The differential boundaries correspond to the "Differential boundary score" track, where absolute boundary score differences above the 2.0 threshold are detected. The different types of differential boundaries are defined according to a schema described in the `TADCompare` manuscript. 
+From these results, we can see that boundary scores from both matrices ("Boundary score 1" and "Boundary score 2") frequently detected as significant boundaries in both matrices (boundary scores above the 1.5 threshold), but are non-differential (black dots). The differential boundaries correspond to the "Differential boundary score" track, where absolute boundary score differences above the 2.0 threshold are detected. The different types of differential boundaries are defined according to a schema described in the `TADCompare` manuscript. Note that coloring by types may be disabled by setting "show_types" to FALSE; only differential and non-differential labels will be shown.
 
 ### Comparing pre-defined TAD boundaries
 
@@ -194,6 +195,7 @@ p <- DiffPlot(tad_diff    = TD_Compare,
               start_coord = start_coord,
               end_coord   = end_coord,
               pre_tad     = Combined_Bed,
+              show_types  = FALSE, 
               point_size  = 5,
               max_height  = 10,
               rel_heights = c(1.5, 2),
@@ -201,7 +203,7 @@ p <- DiffPlot(tad_diff    = TD_Compare,
 plot(p)
 ```
 
-As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by TADCompare using boundary scores. Given that the pre-specified TAD boundaries do not necessarily correspond to the boundary scores, the classification schema of the differences shows whether a boundary is differential or not. Additionally, a new category is introduced, called "Non-Overlap". Non-Overlap corresponds to boundaries that are determined to be non-differential by `TADCompare` but do not overlap when called by the TAD caller.
+As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by `TADCompare` using boundary scores. Note that the pre-specified TAD boundaries do not necessarily correspond to the boundary scores; consequently, the classification schema is applied with respect to the pre-specified TAD boundaries. Howevery, using pre-specified TADs makes it is easier to visually interpret the differences of the differences. Therefore, we recommend setting "show_types" to FALSE.<!-- Additionally, a new category is introduced, called "Non-Overlap". Non-Overlap corresponds to boundaries that are determined to be non-differential by `TADCompare` but do not overlap when called by the TAD caller.-->
 
 # TimeCompare {#timecompare}
 

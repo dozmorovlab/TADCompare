@@ -59,8 +59,6 @@
 #' Diff_Plot(tad_diff,cont_mat1, cont_mat2, resolution = 50000, 
 #' start_coord = 49750000, end_coord = 50700000)
 
-tad_diff = TADCompare(rao_chr22_prim, rao_chr22_rep, pre_tad = pre_tads)
-
 DiffPlot = function(tad_diff,
                      cont_mat1, 
                      cont_mat2, 
