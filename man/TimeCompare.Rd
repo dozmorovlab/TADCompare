@@ -10,28 +10,28 @@ TimeCompare(cont_mats, resolution, z_thresh = 2, window_size = 15,
 \arguments{
 \item{cont_mats}{List of contact matrices in either sparse 3 column,
 n x n or n x (n+3) form where the first three columns are coordinates in
-BED format.
+BED format. See "Input_Data" vignette for more information. 
 If an n x n matrix is used, the column names must correspond to the start
 point of the corresponding bin. Required.}
 
 \item{resolution}{Resolution of the data. Used to assign TAD boundaries
 to genomic regions. If not provided, resolution will be estimated from
-column names of the first matrix. Default is "auto"}
+column names of the first matrix. Default is "auto".}
 
 \item{z_thresh}{Threshold for boundary score. Higher values result in a
-higher threshold for differential TADs. Default is 3.}
+more stringent detection of differential TADs. Default is 3.}
 
 \item{window_size}{Size of sliding window for TAD detection, measured in bins.
-Results should be consistent Default is 15.}
+Results should be consistent. Default is 15.}
 
 \item{gap_thresh}{Required \% of non-zero entries before a region will
 be considered non-informative and excluded. Default is .2}
 
-\item{groupings}{Variable for identifying groups of replicates at a given
+\item{groupings}{Variable for defining groups of replicates at a given
 time point. Each group will be combined using consensus boundary scores.
 It should be a vector of equal length to cont_mats where each entry is a
 label corresponding to the group membership of the corresponding
-matrix. Default is NULL}
+matrix. Default is NULL, implying one matrix per time point.}
 }
 \value{
 A list containing consensus TAD boundaries and overall scores
@@ -51,13 +51,13 @@ Time-varying TAD boundary analysis
 \details{
 Given a list of sparse 3 column, n x n, or n x (n+3) contact
 matrices representing different time points, TimeCompare identifies all
-regions with at least one TAD. Within each region, we classify TADs based
-on how they change over time into six categories (Common, Dynamic,
-Early/Late Appearing and Early/Late Disappearing).
+TAD boundaries. Each TAD boundary is classified  into six categories 
+(Common, Dynamic,  Early/Late Appearing and Early/Late Disappearing),
+based on how it changes over time.
 }
 \examples{
-#Read in data
+# Read in data
 data("time_mats")
-#Find time varying TAD boundaries
+# Find time varying TAD boundaries
 diff_list <- TimeCompare(time_mats, resolution = 50000)
 }
