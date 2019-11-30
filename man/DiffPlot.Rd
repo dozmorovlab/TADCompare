@@ -5,8 +5,8 @@
 \title{Visualization of differential TAD boundaries}
 \usage{
 DiffPlot(tad_diff, cont_mat1, cont_mat2, resolution, start_coord,
-  end_coord, pre_tad = NULL, point_size = 3, max_height = 25,
-  rel_heights = c(2, 1), palette = "RdYlBu")
+  end_coord, pre_tad = NULL, show_type = TRUE, point_size = 3,
+  max_height = 25, rel_heights = c(2, 1), palette = "RdYlBu")
 }
 \arguments{
 \item{tad_diff}{Raw object output by TADCompare. Required}
@@ -37,6 +37,10 @@ and contact matrix 2. The matrices must contain columns named "start" and
 "end" corresponding to the start and end of each TAD. For 
 accurate annotations, TADCompare results with pre-defined TADs should be
 used. Optional}
+
+\item{show_type}{If false only the labels "Differential" and 
+"Non-Differential" will be used. More in-depth differential boundary types
+will be excluded. Default is TRUE.}
 
 \item{point_size}{Parameter used to adjust the size of boundary points on 
 heatmap plot. Default is 3.}
@@ -77,6 +81,6 @@ data("rao_chr22_rep")
 tad_diff <- TADCompare(rao_chr22_prim, rao_chr22_rep,
 resolution = 50000)
 #Create plot
-Diff_Plot(tad_diff,cont_mat1, cont_mat2,resolution=50000, 
+Diff_Plot(tad_diff,rao_chr22_prim, rao_chr22_rep, resolution=50000, 
 start_coord=49750000, end_coord=50700000)
 }

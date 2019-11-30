@@ -26,6 +26,9 @@
 #' "end" corresponding to the start and end of each TAD. For 
 #' accurate annotations, TADCompare results with pre-defined TADs should be
 #' used. Optional
+#' @param show_type If false only the labels "Differential" and 
+#' "Non-Differential" will be used. More in-depth differential boundary types
+#' will be excluded. Default is TRUE.
 #' @param point_size Parameter used to adjust the size of boundary points on 
 #' heatmap plot. Default is 3.
 #' @param max_height Maximum height in bins that should be displayed on the
@@ -55,7 +58,7 @@
 #' tad_diff <- TADCompare(rao_chr22_prim, rao_chr22_rep,
 #' resolution = 50000)
 #' #Create plot
-#' Diff_Plot(tad_diff,cont_mat1, cont_mat2,resolution=50000, 
+#' Diff_Plot(tad_diff,rao_chr22_prim, rao_chr22_rep, resolution=50000, 
 #' start_coord=49750000, end_coord=50700000)
 
 DiffPlot = function(tad_diff,
@@ -65,12 +68,20 @@ DiffPlot = function(tad_diff,
                      start_coord, 
                      end_coord,
                      pre_tad=NULL,
+                    show_type = TRUE,
                     point_size=3,
                     max_height = 25,
                     rel_heights = c(2,1),
                     palette='RdYlBu') {
   
-  bed_coords = tad_diff$TAD_Frame %>% dplyr::select(start=Boundary, Enriched_In, Type = Type)
+  
+  if (show_types == FALSE) {
+    bed_coords = tad_diff$TAD_Frame %>% dplyr::select(start=Boundary, Enriched_In, Type = Differential)
+    
+  } else {
+    bed_coords = tad_diff$TAD_Frame %>% dplyr::select(start=Boundary, Enriched_In, Type = Type)
+    
+  }
   
   present_coords_1 = as.numeric(colnames(cont_mat1))<=end_coord & as.numeric(colnames(cont_mat1))>=start_coord
   present_coords_2 = as.numeric(colnames(cont_mat2))<=end_coord & as.numeric(colnames(cont_mat2))>=start_coord
@@ -225,6 +236,8 @@ DiffPlot = function(tad_diff,
     
   
   #Getting the desired order of labels
+  
+  if (is.null(pre_tad) & show_types) {
   d1_triangle = d1_triangle %>% mutate(Type = factor(Type, 
                                                      levels = c("Non-Differential",
                                                                 "Non-Overlap",
@@ -244,18 +257,28 @@ DiffPlot = function(tad_diff,
                       "Split",
                       "Shifted",
                       "Complex")
+  }
+
+  #Replacing shifted with differential when appropriate
+  
   
   #Set heatmap palette
   
-   if (!is.null(pre_tad)) {
+   if (!is.null(pre_tad) | show_types == FALSE) {
      
      #Setting simplified colors for diffTAD
+     d1_triangle = d1_triangle %>% 
+       mutate(Type = ifelse(Type == "Shifted", "Differential", Type)) %>%
+       mutate(Type = factor(Type,  
+                            levels = c("Non-Differential", "Non-Overlap", "Differential")))
      
-     colors = c("black", "gray", "blue", "red")
+     colors = c("black", "gray", "red")
      names(colors) =   c("Non-Differential",
                          "Non-Overlap",
-                         "Shifted",
                          "Differential")
+   }
+  
+  if (!is.null(pre_tad)) {
     
     bed_coords1 = pre_tad[[1]]
     bed_coords2 = pre_tad[[2]]
@@ -271,6 +294,7 @@ DiffPlot = function(tad_diff,
                             start_coord=start_coord,
                             end_coord=end_coord) %>% filter(complete.cases(.))
     
+  
     
     #Plotting the contact matrix
 
@@ -332,17 +356,7 @@ DiffPlot = function(tad_diff,
       
     leg = get_legend(plot_3) 
     } else {
-    
-    
-    #Plotting the ontact matrix
-    colors = c("black", "red", "yellow", "orange", "green", "blue")
-    names(colors) =   c("Non-Differential",
-                        "Strength Change",
-                        "Merge",
-                        "Split",
-                        "Shifted",
-                        "Complex")
-      
+  
     max_coord = unique(abs(
       tad_comb$start2[which(
         ((tad_comb$orig_regy-tad_comb$orig_regx)/resolution )==max_height )]))
