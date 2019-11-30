@@ -77,7 +77,8 @@ DiffPlot(tad_diff    = TD_Compare,
          start_coord = 8000000,
          end_coord   = 16000000,
          point_size  = 5,
-         palette     = "RdYlBu")
+         palette     = "RdYlBu",
+         rel_heights = c(1, 2))
 ```
 
 ![](/vignettes/plot_original.png)
@@ -103,7 +104,8 @@ DiffPlot(tad_diff    = TD_Compare,
          end_coord   = 16000000,
          pre_tad     = Combined_Bed,
          point_size  = 5,
-         palette     = "RdYlBu")
+         palette     = "RdYlBu",
+         rel_heights = c(1, 1))
 ```
 
 ![](/vignettes/plot_predefined.png)
