@@ -238,6 +238,9 @@ DiffPlot = function(tad_diff,
   #Getting the desired order of labels
   
   if (show_types) {
+  
+  d1_triangle = d1_triangle %>% 
+    mutate(Type = ifelse(Type == "Non-Overlap", "Non-Differential", Type))
   d1_triangle = d1_triangle %>% mutate(Type = factor(Type, 
                                                      levels = c("Non-Differential",
                                                                 "Non-Overlap",
