@@ -59,6 +59,8 @@
 #' Diff_Plot(tad_diff,cont_mat1, cont_mat2, resolution = 50000, 
 #' start_coord = 49750000, end_coord = 50700000)
 
+tad_diff = TADCompare(rao_chr22_prim, rao_chr22_rep, pre_tad = pre_tads)
+
 DiffPlot = function(tad_diff,
                      cont_mat1, 
                      cont_mat2, 
@@ -235,7 +237,7 @@ DiffPlot = function(tad_diff,
   
   #Getting the desired order of labels
   
-  if (is.null(pre_tad) & show_types) {
+  if (show_types) {
   d1_triangle = d1_triangle %>% mutate(Type = factor(Type, 
                                                      levels = c("Non-Differential",
                                                                 "Non-Overlap",
@@ -262,7 +264,7 @@ DiffPlot = function(tad_diff,
   
   #Set heatmap palette
   
-   if (!is.null(pre_tad) | show_types == FALSE) {
+   if (show_types == FALSE) {
      
      #Setting simplified colors for diffTAD
      d1_triangle = d1_triangle %>% 
