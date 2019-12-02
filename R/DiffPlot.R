@@ -22,9 +22,9 @@
 #' @param pre_tad A list of pre-defined TADs for drawing. Must contain two
 #' entries with the first corresponding to TADs detected in matrix 1 
 #' and the second to those detected in matrix 2. Each entry must contain a BED-like
-#' data frame with columns "chr", "start", and "end", corresponding to coordinates
-#' of TADs. Must correspond to TADCompare results obtained for the same pre-defined 
-#' TADs. Optional
+#' data frame or GenomicRanges object with columns "chr", "start", and "end", 
+#' corresponding to coordinates of TADs. Must correspond to TADCompare results
+#' obtained for the same pre-defined TADs. Optional
 #' @param show_type If FALSE only the labels "Differential" and 
 #' "Non-Differential" will be used. More in-depth differential boundary types
 #' will be excluded. Default is TRUE.
@@ -282,6 +282,8 @@ DiffPlot = function(tad_diff,
    }
   
   if (!is.null(pre_tad)) {
+    
+    pre_tad = lapply(pre_tad, as.data.frame)
     
     bed_coords1 = pre_tad[[1]]
     bed_coords2 = pre_tad[[2]]
