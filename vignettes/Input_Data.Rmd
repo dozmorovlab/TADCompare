@@ -73,9 +73,40 @@ head(HiCcompare::full2sparse(rao_chr22_prim))
 
 ## Working with other data types
 
-Users can also find TADs from data output by `cooler` (http://cooler.readthedocs.io/en/latest/index.html) and HiC-Pro (https://github.com/nservant/HiC-Pro) with minor pre-processing using the [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html) package.
+## Working with .hic files
+
+.hic files are a common form of files generally associated with the lab of Erez Lieberman-Aiden (http://aidenlab.org/data.html). To use .hic files you must use the following steps. 
+
+1. Download `straw` from https://github.com/aidenlab/straw/ and follow instalation instructions. 
+2. Download .hic data files. Here, we use data from Rao 2014 and download them using the following commands:
+
+`wget ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63525/suppl/GSE63525_GM12878_insitu_primary_30.hic`
+
+`wget ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE63nnn/GSE63525/suppl/GSE63525_GM12878_insitu_replicate.hic`
+
+3. Extract chromosome 22 at 50kb resolution with no normalization:
+
+`./straw NONE GSE63525_GM12878_insitu_primary_30.hic  22 22 BP 50000 > primary.chr22.50kb.txt`
+
+`./straw NONE GSE63525_GM12878_insitu_replicate_30.hic  22 22 BP 50000 > replicate.chr22.50kb.txt`
+
+4. Analyze normally:
+
+```{r, eval=FALSE}
+#Read in data
+primary = read.table('primary.chr22.50kb.txt', header = FALSE)
+replicate = read.table('replicate.chr22.50kb.txt', header = FALSE)
+#Run TADCompare
+tad_diff=TADCompare(primary, replicate, resolution=50000)
+```
+
+
+
+
 
 ## Working with .cool files
+
+Users can also find TADs from data output by `cooler` (http://cooler.readthedocs.io/en/latest/index.html) and HiC-Pro (https://github.com/nservant/HiC-Pro) with minor pre-processing using the [HiCcompare](https://bioconductor.org/packages/release/bioc/html/HiCcompare.html) package.
 
 The cooler software can be downloaded from https://mirnylab.github.io/cooler/. A catalog of popular HiC datasets can be found at ftp://cooler.csail.mit.edu/coolers. We can extract chromatin interaction data from .cool files using the following steps:
 
