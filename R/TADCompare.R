@@ -24,9 +24,9 @@
 #' @param pre_tad A list of pre-defined TADs for testing. Must contain two
 #' entries with the first corresponding to TADs detected in matrix 1 
 #' and the second to those detected in matrix 2. Each entry must contain a BED-like
-#' data frame with columns "chr", "start", and "end", corresponding to coordinates
-#' of TADs. If provided, differential TAD boundaries are defined only at these 
-#' coordinates. Optional.
+#' data frame or GenomicRanges object with columns "chr", "start", and "end", 
+#' corresponding to coordinates of TADs. If provided, differential TAD 
+#' boundaries are defined only at these coordinates. Optional.
 #' @return A list containing differential TAD characteristics
 #'  \itemize{
 #'  \item TAD_Frame - Data frame containing any bin where a TAD boundary
@@ -387,6 +387,8 @@ TADCompare = function(cont_mat1,
   #Assign labels to boundary type and identify which matrix has the boundary
   
   if(!is.null(pre_tads)) {
+    
+    pre_tads = lapply(pre_tads, as.data.frame)
  
     #pre_tads = bind_rows(pre_tads)
     TAD_Frame = TAD_Frame %>% 
