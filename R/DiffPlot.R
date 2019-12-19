@@ -185,7 +185,7 @@ DiffPlot = function(tad_diff,
   
   #Adding ID variables to each matrix to get in proper form for geom_polygon and combining the vectors of x and y axes
   
-  d1_triangle = cbind.data.frame(id = rep(1:(length(d1_x_1)/3), 3), x = d1_x_1, y = d1_y_1)
+  d1_triangle = cbind.data.frame(id = rep(seq_len((length(d1_x_1))/3), 3), x = d1_x_1, y = d1_y_1)
   
   d1_triangle = left_join(d1_triangle,cat_map %>%
                             filter(!is.na(start1)),
@@ -507,6 +507,6 @@ DiffPlot = function(tad_diff,
   
   #Adding ID variables to each matrix to get in proper form for geom_polygon and combining the vectors of x and y axes
   
-  d1_triangle = cbind.data.frame(id = rep(1:(length(d1_x)/3), 3), x = d1_x, y = d1_y)
+  d1_triangle = cbind.data.frame(id = rep(seq_len((length(d1_x)/3)), 3), x = d1_x, y = d1_y)
   return(d1_triangle)
 }
