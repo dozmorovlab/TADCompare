@@ -25,7 +25,9 @@ Imports:
     magrittr,
     HiCcompare,
     ggplot2,
-    tidyr
+    tidyr,
+    ggpubr,
+    RColorBrewer
 Suggests: 
     BiocStyle,
     knitr,
