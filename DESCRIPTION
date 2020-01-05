@@ -38,6 +38,6 @@ Suggests:
     pheatmap,
     rGREAT,
     SpectralTAD
-Depends: R (>= 3.6)
+Depends: R (>= 4.0)
 VignetteBuilder: knitr
 biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering
