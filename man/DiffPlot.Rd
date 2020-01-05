@@ -33,9 +33,13 @@ to the second contact matrix input into TADCompare. Required.}
 \item{pre_tad}{A list of pre-defined TADs for drawing. Must contain two
 entries with the first corresponding to TADs detected in matrix 1 
 and the second to those detected in matrix 2. Each entry must contain a BED-like
-data frame with columns "chr", "start", and "end", corresponding to coordinates
-of TADs. Must correspond to TADCompare results obtained for the same pre-defined 
-TADs. Optional}
+data frame or GenomicRanges object with columns "chr", "start", and "end", 
+corresponding to coordinates of TADs. Must correspond to TADCompare results
+obtained for the same pre-defined TADs. Optional}
+
+\item{show_types}{If FALSE only the labels "Differential" and 
+"Non-Differential" will be used. More in-depth differential boundary types
+will be excluded. Default is TRUE.}
 
 \item{point_size}{Parameter used to adjust the size of boundary points on 
 heatmap plot. Default is 3.}
@@ -50,10 +54,6 @@ heatmap panel coming first and the score panel second. Default is c(2, 1).}
 \item{palette}{Parameter used to adjust color palette. For list of palettes
 see https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html. Alternatively,
 users can define a vector of color names or hex codes.  Default is 'RdYlBu'}
-
-\item{show_type}{If FALSE only the labels "Differential" and 
-"Non-Differential" will be used. More in-depth differential boundary types
-will be excluded. Default is TRUE.}
 }
 \value{
 A ggplot plot containing a visualization of the upper diagonal both 

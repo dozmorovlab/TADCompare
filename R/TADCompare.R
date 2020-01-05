@@ -21,7 +21,7 @@
 #' Results should be consistent regardless of window size. Default is 15.
 #' @param gap_thresh Required \% of non-zero interaction frequencies for a
 #' given bin to be included in the analysis. Default is .2
-#' @param pre_tad A list of pre-defined TADs for testing. Must contain two
+#' @param pre_tads A list of pre-defined TADs for testing. Must contain two
 #' entries with the first corresponding to TADs detected in matrix 1 
 #' and the second to those detected in matrix 2. Each entry must contain a BED-like
 #' data frame or GenomicRanges object with columns "chr", "start", and "end", 

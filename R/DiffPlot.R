@@ -25,7 +25,7 @@
 #' data frame or GenomicRanges object with columns "chr", "start", and "end", 
 #' corresponding to coordinates of TADs. Must correspond to TADCompare results
 #' obtained for the same pre-defined TADs. Optional
-#' @param show_type If FALSE only the labels "Differential" and 
+#' @param show_types If FALSE only the labels "Differential" and 
 #' "Non-Differential" will be used. More in-depth differential boundary types
 #' will be excluded. Default is TRUE.
 #' @param point_size Parameter used to adjust the size of boundary points on 
