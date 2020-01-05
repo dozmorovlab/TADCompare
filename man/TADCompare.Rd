@@ -31,12 +31,12 @@ Results should be consistent regardless of window size. Default is 15.}
 \item{gap_thresh}{Required \% of non-zero interaction frequencies for a
 given bin to be included in the analysis. Default is .2}
 
-\item{pre_tad}{A list of pre-defined TADs for testing. Must contain two
+\item{pre_tads}{A list of pre-defined TADs for testing. Must contain two
 entries with the first corresponding to TADs detected in matrix 1 
 and the second to those detected in matrix 2. Each entry must contain a BED-like
-data frame with columns "chr", "start", and "end", corresponding to coordinates
-of TADs. If provided, differential TAD boundaries are defined only at these 
-coordinates. Optional.}
+data frame or GenomicRanges object with columns "chr", "start", and "end", 
+corresponding to coordinates of TADs. If provided, differential TAD 
+boundaries are defined only at these coordinates. Optional.}
 }
 \value{
 A list containing differential TAD characteristics
