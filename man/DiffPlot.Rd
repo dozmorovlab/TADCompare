@@ -79,6 +79,6 @@ data("rao_chr22_rep")
 # Find differential TAD boundaries
 tad_diff <- TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
 # Create plot
-DiffPlot(tad_diff,cont_mat1, cont_mat2, resolution = 50000, 
+DiffPlot(tad_diff,rao_chr22_prim, rao_chr22_rep, resolution = 50000, 
 start_coord = 49750000, end_coord = 50700000)
 }
