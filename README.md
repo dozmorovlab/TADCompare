@@ -158,7 +158,7 @@ The results are a set of coordinates with significant consensus TADs. Columns st
 
 # Availability 
 
-The developmental version is available at https://github.com/cresswellkg/TADCompare, the stable version is available at https://github.com/dozmorovlab/TADCompare.
+The developmental version is available at https://github.com/cresswellkg/TADCompare, the stable version is available at https://github.com/dozmorovlab/TADCompare. The `master` branch contains code that can be installed into the current R version 3.6 and above. The `Bioconductor` branch contains code with the `Depends: R (>= 4.0)` requirement needed for the Bioconductor submission.
 
 # Contributions and Support
 
