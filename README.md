@@ -33,11 +33,11 @@ There are three types of input accepted:
 2. n x (n+3) contact matrices
 3. 3-column sparse contact matrices
 
-It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](vignettes/Input_Data.Rmd).
+It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](vignettes/Input_Data.html).
 
 # Usage
 
-Please, refer to the [TADCompare vignette](vignettes/TADCompare.Rmd) for an in depth tutorial.
+Please, refer to the [TADCompare vignette](vignettes/TADCompare.html) for an in depth tutorial.
 
 ## TADcompare
 
