@@ -156,9 +156,13 @@ head(con_tads$Consensus)
 
 The results are a set of coordinates with significant consensus TADs. Columns starting with "Sample" refer to the individual boundary scores. Consensus_Score is the consensus boundary score across all samples.
 
+## Downstream analysis
+
+The output of `TADcompare` and `TimeCompare` functions may be used for a range of analyses on genomic regions. One common one is gene ontology enrichment analysis to determine the pathways in which genes near TAD boundaries occur in. An example is shown in the [Ontology_Analysis vignette](vignettes/Ontology_Analysis.Rmd)
+
 # Availability 
 
-The developmental version is available at https://github.com/cresswellkg/TADCompare, the stable version is available at https://github.com/dozmorovlab/TADCompare.
+The developmental version is available at https://github.com/cresswellkg/TADCompare, the stable version is available at https://github.com/dozmorovlab/TADCompare. The `master` branch contains code that can be installed into the current R version 3.6 and above. The `Bioconductor` branch contains code with the `Depends: R (>= 4.0)` requirement needed for the Bioconductor submission.
 
 # Contributions and Support
 
