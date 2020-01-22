@@ -73,6 +73,104 @@ DiffPlot = function(tad_diff,
                      palette='RdYlBu') {
   
   
+  #Pulling out dimensions to test for matrix type
+  row_test = dim(cont_mat1)[1]
+  col_test = dim(cont_mat1)[2]
+  
+  if (row_test == col_test) {
+    if (all(is.finite(cont_mat1)) == FALSE) {
+      stop("Contact matrix 1 contains non-numeric entries")
+    }
+    
+    if (all(is.finite(cont_mat2)) == FALSE) {
+      stop("Contact matrix 2 contains non-numeric entries")
+    }
+  }
+  
+  if (col_test == 3) {
+    
+    
+    #Convert sparse matrix to n x n matrix
+    
+    message("Converting to n x n matrix")
+    
+    if (nrow(cont_mat1) == 1) {
+      stop("Matrix 1 is too small to convert to full")
+    }
+    
+    if (nrow(cont_mat2) == 1) {
+      stop("Matrix 2 is too small to convert to full")
+    }
+    
+    cont_mat1 = HiCcompare::sparse2full(cont_mat1)
+    cont_mat2 = HiCcompare::sparse2full(cont_mat2)
+    
+    if (all(is.finite(cont_mat1)) == FALSE) {
+      stop("Contact matrix 1 contains non-numeric entries")
+    }
+    
+    if (all(is.finite(cont_mat2)) == FALSE) {
+      stop("Contact matrix 2 contains non-numeric entries")
+    }
+    if (resolution == "auto") {
+      message("Estimating resolution")
+      resolution = as.numeric(names(table(as.numeric(colnames(cont_mat1))-
+                                            lag(
+                                              as.numeric(
+                                                colnames(cont_mat1)
+                                              ))))[1]
+      )
+    }
+    
+  } else if (col_test-row_test == 3) {
+    
+    message("Converting to n x n matrix")
+    
+    #Find the start coordinates based on the second column of the
+    #bed file portion of matrix
+    
+    start_coords = cont_mat1[,2]
+    
+    #Calculate resolution based on given bin size in bed file
+    
+    resolution = as.numeric(cont_mat1[1,3])-as.numeric(cont_mat1[1,2])
+    
+    #Remove bed file portion
+    
+    cont_mat1 = as.matrix(cont_mat1[,-c(seq_len(3))])
+    cont_mat2 = as.matrix(cont_mat2[,-c(seq_len(3))])
+    
+    if (all(is.finite(cont_mat1)) == FALSE) {
+      stop("Contact matrix 1 contains non-numeric entries")
+    }
+    
+    if (all(is.finite(cont_mat2)) == FALSE) {
+      stop("Contact matrix 2 contains non-numeric entries")
+    }
+    
+    #Make column names correspond to bin start
+    
+    colnames(cont_mat1) = start_coords
+    colnames(cont_mat2) = start_coords
+    
+    
+  } else if (col_test!=3 & (row_test != col_test) & (col_test-row_test != 3)) {
+    
+    #Throw error if matrix does not correspond to known matrix type
+    
+    stop("Contact matrix must be sparse or n x n or n x (n+3)!")
+    
+  } else if ( (resolution == "auto") & (col_test-row_test == 0) ) {
+    message("Estimating resolution")
+    
+    #Estimating resolution based on most common distance between loci
+    
+    resolution = as.numeric(names(table(as.numeric(colnames(cont_mat1))-
+                                          lag(
+                                            as.numeric(colnames(cont_mat1))
+                                          )))[1])
+  }
+  
   if (show_types == FALSE) {
     tad_diff$TAD_Frame = tad_diff$TAD_Frame %>%
       mutate(Differential = ifelse(Type == "Non-Overlap", "Non-Overlap", Differential))
@@ -290,12 +388,12 @@ DiffPlot = function(tad_diff,
     
     #Get triangles
     tads1 = .Make_Triangles(cont_mat=as.data.frame(cont_mat1), 
-                            bed=bed_coords1, resolution=50000,
+                            bed=bed_coords1, resolution=resolution,
                             start_coord=start_coord,
                             end_coord=end_coord) %>% filter(complete.cases(.))
     
     tads2 = .Make_Triangles(cont_mat=as.data.frame(cont_mat2), 
-                            bed=bed_coords2, resolution=50000,
+                            bed=bed_coords2, resolution=resolution,
                             start_coord=start_coord,
                             end_coord=end_coord) %>% filter(complete.cases(.))
     
