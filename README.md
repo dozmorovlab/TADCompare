@@ -33,11 +33,11 @@ There are three types of input accepted:
 2. n x (n+3) contact matrices
 3. 3-column sparse contact matrices
 
-It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](vignettes/Input_Data.Rmd).
+It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](https://htmlpreview.github.io/?https://github.com/dozmorovlab/TADCompare/blob/master/vignettes/Input_Data.html).
 
 # Usage
 
-Please, refer to the [TADCompare vignette](vignettes/TADCompare.Rmd) for an in depth tutorial.
+Please, refer to the [TADCompare vignette](https://htmlpreview.github.io/?https://github.com/dozmorovlab/TADCompare/blob/master/vignettes/TADCompare.html) for an in depth tutorial.
 
 ## TADcompare
 
@@ -158,7 +158,7 @@ The results are a set of coordinates with significant consensus TADs. Columns st
 
 ## Downstream analysis
 
-The output of `TADcompare` and `TimeCompare` functions may be used for a range of analyses on genomic regions. One common one is gene ontology enrichment analysis to determine the pathways in which genes near TAD boundaries occur in. An example is shown in the [Ontology_Analysis vignette](vignettes/Ontology_Analysis.Rmd)
+The output of `TADcompare` and `TimeCompare` functions may be used for a range of analyses on genomic regions. One common one is gene ontology enrichment analysis to determine the pathways in which genes near TAD boundaries occur in. An example is shown in the [Ontology_Analysis vignette](https://htmlpreview.github.io/?https://github.com/dozmorovlab/TADCompare/blob/master/vignettes/Ontology_Analysis.html)
 
 # Availability 
 
