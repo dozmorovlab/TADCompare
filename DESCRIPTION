@@ -37,7 +37,8 @@ Suggests:
     covr,
     pheatmap,
     rGREAT,
-    SpectralTAD
+    SpectralTAD,
+    cowplot
 Depends: R (>= 3.6)
 VignetteBuilder: knitr
 biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering

@@ -3,7 +3,9 @@
 #' @import dplyr
 #' @import RColorBrewer
 #' @import ggplot2
+#' @importFrom cowplot plot_grid
 #' @importFrom ggpubr get_legend
+#' @importFrom reshape2 melt
 #' @param tad_diff Raw object output by TADCompare. Required.
 #' @param cont_mat1 contact matrix in either sparse 3 column,
 #' n x n or n x (n+3) form where the first three columns are coordinates in
@@ -457,7 +459,7 @@ DiffPlot = function(tad_diff,
               axis.ticks.x=element_blank())
     }
       
-    leg = get_legend(plot_3) 
+    leg = ggpubr::get_legend(plot_3) 
     } else {
   
     max_coord = unique(abs(
@@ -517,7 +519,7 @@ DiffPlot = function(tad_diff,
     }
  
     
-    leg = get_legend(plot_3) 
+    leg = ggpubr::get_legend(plot_3) 
   }  
   arranged_plot=cowplot::plot_grid(cowplot::plot_grid(plot_3 +
                                      guides(fill=FALSE, 
