@@ -1,0 +1,288 @@
+---
+title: "TAD comparison between two conditions"
+author:
+- name: Kellen Cresswell
+  affiliation:
+  - &1 Department of Biostatistics, Virginia Commonwealth University, Richmond, VA
+- name: Mikhail Dozmorov
+  affiliation:
+  - *1
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{TAD comparison between two conditions}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+    chunk_output_type: console
+bibliography: pack_ref.bib
+---
+
+```{r set-options, echo=FALSE, cache=FALSE, message=FALSE, warning = FALSE}
+options(stringsAsFactors = FALSE, warning = FALSE, message = FALSE)
+library(dplyr)
+library(ggplot2)
+library(TADCompare)
+library(SpectralTAD)
+```
+
+# Introduction
+
+TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains four functions: `TADCompare`, `TimeCompare`, `ConsensusTADs`, and `DiffPlot`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](#tadcompare).  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](#timecompare). `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](#consensustads). `DiffPlot` allows for [visualization of TAD boundary differences](#visualization) between two matrices. The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. See [Input data vignette](Input_data.html) for a complete overview of input data formats. Instructions on changing the default parameters are provided. 
+
+# Getting Started
+
+## Installation
+
+```{r, eval = FALSE}
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+install.packages(c("PRIMME","dplyr","ggplot2"))
+BiocManager::install(c("HiCcompare"))
+BiocManager::install("TADCompare")
+# Or, for the latest version
+devtools::install_github("cresswellkg/TADCompare")
+```
+
+# TADCompare {#tadcompare}
+
+## Introduction
+
+`TADCompare` is a function that allows users to automatically identify differential TAD boundaries between two datasets. For each differential boundary, we provide unique classification (complex, merge, split, shifted, and strength change) defining how the TAD boundaries change between the datasets.
+
+## Running TADcompare
+
+The only required input is two contact matrices in one of the permitted forms specified in the [Input data vignette](Input_Data.html). `TADCompare` function will automatically determine the type of matrix and convert it to an appropriate form, given it is one of the supported formats. The only requirement is that all matrices be in the same format. For the fastest results, we suggest using $n \times n$ matrices. Additionally, we recommend users to provide resolution of their data. If the resolution is not provided, we estimate it using the numeric column names of contact matrices. We illustrate running `TADCompare` using the data from GM12878 cell line, chromosome 22, 50kb resolution [@Rao:2014aa].
+
+```{r}
+# Get the rao contact matrices built into the package
+data("rao_chr22_prim")
+data("rao_chr22_rep")
+# We see these are n x n matrices
+dim(rao_chr22_prim)
+dim(rao_chr22_rep)
+# And, get a glimpse how the data looks like
+rao_chr22_prim[100:105, 100:105]
+# Running the algorithm with resolution specified
+results = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
+# Repeating without specifying resolution
+no_res = TADCompare(rao_chr22_prim, rao_chr22_rep)
+# We can see below that resolution can be estimated automatically if necessary
+identical(results$Diff_Loci, no_res$Diff_Loci)
+```
+
+## Types of TADCompare output
+
+`TADCompare` function returns a list with two data frames and one plot. The first data frame contains all regions of the genome containing a TAD boundary in at least one of the contact matrices. The results are shown below:
+
+```{r}
+head(results$TAD_Frame)
+```
+
+The "Boundary" column contains genomic coordinates of the given boundary. "Gap_Score" corresponds to the differential boundary score (Z-score of the difference between boundary scores). "TAD_Score1" and "TAD_Score2" corresponds to the boundary score of the two contact matrices. "Differential" simply indicates whether the boundary is differential or not differential. "Enriched_In" indicates which matrix contains the TAD boundary. "Type" identifies the type of TAD boundary change. Note: The first boundary will always be classified as "NA" since specific classification is impossible without a reference boundary to the left and right.
+
+The second data frame contains the same information as the first data frame but includes every region of the genome. We show it below:
+
+```{r}
+head(results$Boundary_Scores)
+```
+
+Finally, we include a plot that contains a stacked barplot indicating the prevalence of each type of TAD boundary. The barplot is a `ggplot2` object, making it completely customizable. We show this below:
+
+```{r}
+p <- results$Count_Plot
+class(p)
+plot(p)
+```
+
+## Pre-specification of TADs
+
+We recognize that users may like to use their own TAD caller for the identification of TAD boundaries prior to boundary comparison. As a result, we provide the option for pre-specification of TADs in a form of two data frames with chromosome, start, and end coordinates of TAD boundaries for the two contact matrices. With this option, only provided TAD boundaries will be tested. We provide an example below using the [SpectralTAD](https://bioconductor.org/packages/release/bioc/html/SpectralTAD.html) TAD caller [@Cresswell:2019aa]:
+
+```{r}
+# Call TADs using SpectralTAD
+bed_coords1 = bind_rows(SpectralTAD(rao_chr22_prim, chr = "chr22", levels = 3))
+bed_coords2 = bind_rows(SpectralTAD(rao_chr22_rep,  chr = "chr22", levels = 3))
+# Combining the TAD boundaries for both contact matrices
+Combined_Bed = list(bed_coords1, bed_coords2)
+
+# Printing the combined list of TAD boundaries
+```
+
+Above, we see the dataset output by SpectralTAD contains a column named "start" and "end" indicating the start and end coordinate of each TAD. This is required, though the output of any TAD caller can be used effectively with some data manipulation. The "Level" column indicates the level of TAD in a hierarchy.
+
+```{r}
+# Running TADCompare with pre-specified TADs
+TD_Compare = TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000, pre_tads = Combined_Bed)
+
+# Returning the boundaries
+head(TD_Compare$TAD_Frame)
+# Testing to show that all pre-specified boundaries are returned
+table(TD_Compare$TAD_Frame$Boundary %in% bind_rows(Combined_Bed)$end) 
+```
+
+Here, we see that the only boundaries that are returned are those we pre-specified.
+
+## Visualization of TADCompare Results {#visualization}
+
+We provide means for visualizing differential TAD boundaries using the `DiffPlot` function. As an input, `DiffPlot` takes the output from the `TADCompare` function and the original contact matrices. As an output, it returns a `ggplot2` object that can be further customized. We demonstrate visualization of the differences between GM12878 and IMR90 cell lines, on the subset of chromosome 2, 40kb resolution data processed in Schmitt et al. [@Schmitt:2016aa]:
+
+```{r}
+data("GM12878.40kb.raw.chr2")
+data("IMR90.40kb.raw.chr2")
+mtx1 <- GM12878.40kb.raw.chr2
+mtx2 <- IMR90.40kb.raw.chr2
+res <- 40000 # Set resolution
+# Globally normalize matrices for better visual comparison (does not affect TAD calling)
+mtx1_total <- sum(mtx1)
+mtx2_total <- sum(mtx2)
+(scaling_factor <- mtx1_total / mtx2_total)
+# Rescale matrices depending on which matrix is smaller
+if (mtx1_total > mtx2_total) {
+  mtx2 <- mtx2 * scaling_factor
+} else {
+  mtx1 <- mtx1 * (1 / scaling_factor)
+}
+# Coordinates of interesting regions
+start_coord <- 8000000
+end_coord   <- 16000000
+# Another interesting region
+# start_coord <- 40000000
+# end_coord   <- 48000000
+```
+
+### Comparing TAD boundary scores
+
+```{r fig.width=10, fig.height=6}
+# Running TADCompare as-is
+TD_Compare <- TADCompare(mtx1, mtx2, resolution = res)
+# Running the plotting algorithm with pre-specified TADs
+p <- DiffPlot(tad_diff    = TD_Compare, 
+              cont_mat1   = mtx1,
+              cont_mat2   = mtx2,
+              resolution  = res,
+              start_coord = start_coord,
+              end_coord   = end_coord,
+              show_types  = TRUE, 
+              point_size  = 5,
+              max_height  = 5,
+              rel_heights = c(1, 2),
+              palette     = "RdYlBu")
+plot(p)
+```
+
+From these results, we can see that boundary scores from both matrices ("Boundary score 1" and "Boundary score 2") frequently detected as significant boundaries in both matrices (boundary scores above the 1.5 threshold), but are non-differential (black dots). The differential boundaries correspond to the "Differential boundary score" track, where absolute boundary score differences above the 2.0 threshold are detected. The different types of differential boundaries are defined according to a schema described in the `TADCompare` manuscript. Note that coloring by types may be disabled by setting "show_types" to FALSE; only differential and non-differential labels will be shown.
+
+### Comparing pre-defined TAD boundaries
+
+We can also use pre-specified TADs by providing a list of TAD coordinates containing TAD boundaries for each contact matrix. The list should be of length 2. We show how to do this below, using SpectralTAD for pre-specification:
+
+```{r fig.width=10, fig.height=6}
+# Call TADs using SpectralTAD
+bed_coords1 = bind_rows(SpectralTAD(mtx1, chr = "chr2", levels = 3))
+bed_coords2 = bind_rows(SpectralTAD(mtx2, chr = "chr2", levels = 3))
+# Placing the data in a list for the plotting procedure
+Combined_Bed = list(bed_coords1, bed_coords2)
+
+# Running TADCompare with pre-specified TADs
+TD_Compare <-  TADCompare(mtx1, mtx2, resolution = res, pre_tads = Combined_Bed)
+# Running the plotting algorithm with pre-specified TADs
+p <- DiffPlot(tad_diff    = TD_Compare, 
+              cont_mat1   = mtx1,
+              cont_mat2   = mtx2,
+              resolution  = res,
+              start_coord = start_coord,
+              end_coord   = end_coord,
+              pre_tad     = Combined_Bed,
+              show_types  = FALSE, 
+              point_size  = 5,
+              max_height  = 10,
+              rel_heights = c(1.5, 2),
+              palette     = "RdYlBu")
+plot(p)
+```
+
+As we can see, the pre-specification of TADs allows us to outline TAD boundaries enhancing visualization. Additionally, the differential boundaries presented now correspond to those called by the TAD caller as opposed to those detected by `TADCompare` using boundary scores. Note that the pre-specified TAD boundaries do not necessarily correspond to the boundary scores; consequently, the classification schema is applied with respect to the pre-specified TAD boundaries. Howevery, using pre-specified TADs makes it is easier to visually interpret the differences of the differences. Therefore, we recommend setting "show_types" to FALSE. Additionally, for the pre-specified TADs, a new category is introduced, called "Non-Overlap". Non-Overlap corresponds to boundaries that are determined to be non-differential by `TADCompare` but do not overlap when called by the TAD caller.
+
+# TimeCompare {#timecompare}
+
+## Introduction
+
+`TimeCompare` is a function for the time-course analysis of data. Briefly, a user inputs a list of contact matrices representing at least four time points. The `TimeCompare` function will run with fewer time points, but the classification of temporal changes may be incorrect. The output is a data frame containing all regions with TAD boundaries detected in at least one time point. These regions are further classified into six separate types of temporal changes (Highly common, dynamic, early/late appearing, and early/late disappearing) based on how TAD boundaries evolve over time. The function also returns a plot summarizing the occurrence of each TAD boundary and another data frame containing a summary of change at each region, regardless of whether a boundary was detected.
+
+## Running TimeCompare
+
+`TimeCompare` function takes a list of matrices similar in format to `TADCompare` function. Like `TADCompare`, `TimeCompare` function will estimate resolution and convert matrices to the appropriate format. For this example, we use time-varying sparse 3-column contact matrices from [@Rao:2017aa], representing the HCT-116 cell line. The matrices represent a single chromosome 22 cell sample treated with TAD boundary destroying auxin. The data is then sequenced at four time points (20, 40, 60, and 180 minutes) after the withdrawal of auxin. Once auxin is withdrawn, the TAD boundaries slowly return. Using `TimeCompare` function, we can track the return of TADs after withdrawal.
+
+```{r}
+# Get the list of contact matrices
+data("time_mats")
+# Checking format
+head(time_mats[[1]])
+# These are sparse 3-column matrices
+# Running MultiCompare
+time_var <- TimeCompare(time_mats, resolution = 50000)
+```
+
+The first item returned by `TimeCompare` function is `TAD_Bounds`, a data frame containing all regions that contain a TAD boundary detected in at least one time point:
+
+```{r}
+head(time_var$TAD_Bounds)
+```
+
+The first column corresponds to genomic coordinates. The columns beginning with the "Sample" prefix correspond to the boundary score at the given coordinate in each sample. The consensus score is simply the median score across all samples, and the category corresponds to the type of change.
+
+`All_Bounds` is the second list entry and is identical in structure to the `TAD_Bounds` data frame, but it includes every region of the genome regardless of whether it is a TAD or not.
+
+```{r}
+head(time_var$All_Bounds)
+```
+
+We also include a stacked barplot that includes the number of times each type of temporal boundary occurs in the data. This plot is created in ggplot2 and fully customizable.
+
+```{r}
+time_var$Count_Plot
+```
+
+# ConsensusTAD {#consensustads}
+
+## Introduction
+
+`ConsensusTADs` function implements an approach for calling TADs across multiple datasets. It uses the median boundary score across $n$ replicates or cell lines to calculate a consensus of TAD boundaries, that is, consistently detected across replicates. This effectively filters out noisy TAD boundaries that may appear in only one or a few replicates or cell lines.
+
+## Running ConsensusTADs
+
+`ConsensusTADs` function takes essentially the same input as the `TimeCompare` function (a list of contact matrices). It provides consensus TAD scores for each region, summarized across each contact matrix of the genome. It also provides a list of regions with significant TAD scores. These regions can be thought of as consensus TAD boundaries. Using these, we can get a single set of TADs summarized across a set of replicates, conditions, or time points. For this example, we use the two replicates from [@Rao:2014aa].
+
+We demonstrate how to run `ConsensusTADs` by calling consensus TADs on time-varying contact matrices created by treating a single sample with auxin, which destroys its TAD boundaries, and then tracking their return at four time points (20, 40, 60 and 180 minutes) [@Rao:2017aa]. The consensus boundary score is intended to provide a summary of TAD boundaries across all time points.
+
+```{r}
+# Get the rao contact matrices built into the package
+data("time_mats")
+# Running MultiCompare
+con_tads <- ConsensusTADs(time_mats, resolution = 50000)
+```
+
+`ConsensusTADs` returns two data frames. The first data frame, `Consensus`, contains all regions containing consensus TADs based on the consensus score.
+
+```{r}
+head(con_tads$Consensus)
+```
+
+The columns correspond to the coordinate of the region with a significant boundary score, the individual boundary score for each region, and the consensus score.
+
+The second data frame, `All_Regions`, is identical to the `Consensus` data frame, but it includes every region of the genome, which occurs in both matrices.
+
+```{r}
+head(con_tads$All_Regions)
+```
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
+
+# References
+
+
