@@ -4,7 +4,5 @@
 #' auxin treatment and removal from the HCT-116 cell line (50kb Resolution)
 #'
 #' @format A data frame with 704 rows and 704 variables:
-#' \describe{
-#' }
 #' @source \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104334}
 "time_mats"

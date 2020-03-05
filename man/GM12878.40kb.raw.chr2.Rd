@@ -4,9 +4,7 @@
 \name{GM12878.40kb.raw.chr2}
 \alias{GM12878.40kb.raw.chr2}
 \title{A subset of chomosome 2 contact matrix, GM12878 cell line.}
-\format{A data frame with 1001 rows and 1001 variables:
-\describe{
-}}
+\format{A data frame with 1001 rows and 1001 variables:}
 \source{
 \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE87112}
 }

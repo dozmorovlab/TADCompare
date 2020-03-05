@@ -5,9 +5,7 @@
 \alias{rao_chr22_rep}
 \title{Chromosome 22 combined intrachromosomal replicate contact matrix from
 Rao et al. 2014.}
-\format{A data frame with 704 rows and 704 variables:
-\describe{
-}}
+\format{A data frame with 704 rows and 704 variables:}
 \source{
 \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63525}
 }

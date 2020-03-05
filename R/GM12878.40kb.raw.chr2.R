@@ -4,7 +4,5 @@
 #' 40kb Resolution, data from Schmitt et al. 2016.
 #'
 #' @format A data frame with 1001 rows and 1001 variables:
-#' \describe{
-#' }
 #' @source \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE87112}
 "GM12878.40kb.raw.chr2"

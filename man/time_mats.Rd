@@ -4,9 +4,7 @@
 \name{time_mats}
 \alias{time_mats}
 \title{Chromosome 22 time-varying contact matrices from Rao et al. 2017.}
-\format{A data frame with 704 rows and 704 variables:
-\describe{
-}}
+\format{A data frame with 704 rows and 704 variables:}
 \source{
 \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104334}
 }
