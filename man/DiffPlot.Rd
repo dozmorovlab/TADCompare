@@ -80,5 +80,5 @@ data("rao_chr22_rep")
 tad_diff <- TADCompare(rao_chr22_prim, rao_chr22_rep, resolution = 50000)
 # Create plot
 DiffPlot(tad_diff,rao_chr22_prim, rao_chr22_rep, resolution = 50000, 
-start_coord = 49750000, end_coord = 50700000)
+start_coord = 22050000, end_coord = 24150000)
 }
