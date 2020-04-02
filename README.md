@@ -82,7 +82,7 @@ DiffPlot(tad_diff    = TD_Compare,
          rel_heights = c(1, 2))
 ```
 
-![](/vignettes/plot_original.png)
+![](https://mdozmorov.github.io/BIOS691.2018/assets/plot_original.png)
 
 `TADCompare` detects TAD boundaries by selecting regions with TAD boundary scores above a threshold (1.5 by default). An alternative way of running `TADCompare` is to call TAD boundaries using a separate TAD caller, and then compare those pre-defined TAD boundaries. The example below uses the [SpectralTAD](https://bioconductor.org/packages/devel/bioc/html/SpectralTAD.html) TAD caller to pre-define TAD boundaries.
 
@@ -110,7 +110,7 @@ DiffPlot(tad_diff    = TD_Compare,
          rel_heights = c(1, 1))
 ```
 
-![](/vignettes/plot_predefined.png)
+![](https://mdozmorov.github.io/BIOS691.2018/assets/plot_predefined.png)
 
 ## TimeCompare
 
