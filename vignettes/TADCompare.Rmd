@@ -24,6 +24,7 @@ library(dplyr)
 library(ggplot2)
 library(TADCompare)
 library(SpectralTAD)
+library(HiCcompare)
 ```
 
 # Introduction
@@ -35,13 +36,13 @@ TADCompare is an R package for differential analysis of TAD boundaries. It is de
 ## Installation
 
 ```{r, eval = FALSE}
-if (!requireNamespace("BiocManager", quietly=TRUE))
-    install.packages("BiocManager")
-install.packages(c("PRIMME","dplyr","ggplot2"))
-BiocManager::install(c("HiCcompare", "SpectralTAD"))
-BiocManager::install("TADCompare")
-# Or, for the latest version
-devtools::install_github("cresswellkg/TADCompare")
+# if (!requireNamespace("BiocManager", quietly=TRUE))
+#     install.packages("BiocManager")
+# install.packages(c("PRIMME","dplyr","ggplot2"))
+# BiocManager::install(c("HiCcompare", "SpectralTAD"))
+# BiocManager::install("TADCompare")
+# # Or, for the latest version
+# devtools::install_github("cresswellkg/TADCompare")
 ```
 
 # TADCompare {#tadcompare}
@@ -101,7 +102,7 @@ We recognize that users may like to use their own TAD caller for the identificat
 
 ```{r}
 # Call TADs using SpectralTAD
-bed_coords1 = bind_rows(SpectralTAD(rao_chr22_prim, chr = "chr22", levels = 3))
+bed_coords1 = bind_rows(SpectralTAD::SpectralTAD(rao_chr22_prim, chr = "chr22", levels = 3))
 bed_coords2 = bind_rows(SpectralTAD(rao_chr22_rep,  chr = "chr22", levels = 3))
 # Combining the TAD boundaries for both contact matrices
 Combined_Bed = list(bed_coords1, bed_coords2)
@@ -180,7 +181,7 @@ We can also use pre-specified TADs by providing a list of TAD coordinates contai
 ```{r fig.width=10, fig.height=6}
 # Call TADs using SpectralTAD
 bed_coords1 = bind_rows(SpectralTAD(mtx1, chr = "chr2", levels = 3))
-bed_coords2 = bind_rows(SpectralTAD(mtx2, chr = "chr2", levels = 3))
+bed_coords2 = bind_rows(SpectralTAD::SpectralTAD(mtx2, chr = "chr2", levels = 3))
 # Placing the data in a list for the plotting procedure
 Combined_Bed = list(bed_coords1, bed_coords2)
 
