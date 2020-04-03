@@ -36,13 +36,14 @@ TADCompare is an R package for differential analysis of TAD boundaries. It is de
 ## Installation
 
 ```{r, eval = FALSE}
-# if (!requireNamespace("BiocManager", quietly=TRUE))
-#     install.packages("BiocManager")
-# install.packages(c("PRIMME","dplyr","ggplot2"))
-# BiocManager::install(c("HiCcompare", "SpectralTAD"))
-# BiocManager::install("TADCompare")
-# # Or, for the latest version
-# devtools::install_github("cresswellkg/TADCompare")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+install.packages(c("PRIMME","dplyr","ggplot2"))
+BiocManager::install(c("HiCcompare", "SpectralTAD"))
+#BiocManager::install("TADCompare")
+# Or, for the latest version
+devtools::install_github("dozmorovlab/TADCompare")
+library(TADCompare)
 ```
 
 # TADCompare {#tadcompare}

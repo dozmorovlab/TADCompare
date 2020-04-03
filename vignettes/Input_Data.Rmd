@@ -35,7 +35,7 @@ TADCompare is an R package for differential analysis of TAD boundaries. It is de
 # if (!requireNamespace("BiocManager", quietly=TRUE))
 #     install.packages("BiocManager")
 # BiocManager::install("TADCompare")
-# library(TADCompare)
+library(TADCompare)
 ```
 
 # Working with different types of data
