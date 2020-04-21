@@ -225,4 +225,10 @@ summary_bench
 
 The table above shows the mean and median of runtimes for different types of contact matrices measured in seconds. As we see, `TADCompare` is extremely fast irrespectively of the parameters. However, sparse matrix inputs will slow down the algorithm. This can become more apparent as the size of the contact matrices increase.
 
+# Session Info
+
+```{r}
+sessionInfo()
+```
+
 # References
