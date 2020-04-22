@@ -29,8 +29,7 @@ Imports:
     ggpubr,
     RColorBrewer,
     reshape2,
-    cowplot,
-    stats
+    cowplot
 Suggests: 
     BiocStyle,
     knitr,
