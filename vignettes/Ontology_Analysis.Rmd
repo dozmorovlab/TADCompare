@@ -24,15 +24,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Installation
 
-```{r, warning = FALSE, message=FALSE}
-# if(!requireNamespace("BiocManager", quietly = TRUE))
-#     install.packages("BiocManager")
-# BiocManager::install("TADCompare")
-library(TADCompare)
+```{r, eval = FALSE}
+BiocManager::install("TADCompare")
 ```
 
 ```{r, echo = FALSE, warning = FALSE, message=FALSE}
-library(dplyr)
 library(TADCompare)
 ```
 

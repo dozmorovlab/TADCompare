@@ -20,29 +20,18 @@ bibliography: pack_ref.bib
 
 ```{r set-options, echo=FALSE, cache=FALSE, message=FALSE, warning = FALSE}
 options(stringsAsFactors = FALSE, warning = FALSE, message = FALSE)
-library(dplyr)
-library(ggplot2)
-library(TADCompare)
-library(SpectralTAD)
-library(HiCcompare)
 ```
-
-# Introduction
-
-TADCompare is an R package for differential analysis of TAD boundaries. It is designed to work on a wide range of formats and resolutions of Hi-C data. TADCompare package contains four functions: `TADCompare`, `TimeCompare`, `ConsensusTADs`, and `DiffPlot`. `TADCompare` function allows for the identification of differential TAD boundaries between [two contact matrices](#tadcompare).  `TimeCompare` function takes a set of contact matrices, one matrix per time point, identifies TAD boundaries, and classifies [how they change over time](#timecompare). `ConsensusTADs` function takes a list of TADs and identifies a consensus of TAD boundaries across all matrices using our [novel consensus boundary score](#consensustads). `DiffPlot` allows for [visualization of TAD boundary differences](#visualization) between two matrices. The required input includes matrices in sparse 3-column format, $n \times n$, or $n \times (n+3)$ formats. See [Input data vignette](Input_data.html) for a complete overview of input data formats. Instructions on changing the default parameters are provided. 
-
-# Getting Started
 
 ## Installation
 
 ```{r, eval = FALSE}
-if (!requireNamespace("BiocManager", quietly=TRUE))
-    install.packages("BiocManager")
-install.packages(c("PRIMME","dplyr","ggplot2"))
-BiocManager::install(c("HiCcompare", "SpectralTAD"))
-#BiocManager::install("TADCompare")
-# Or, for the latest version
+
+BiocManager::install("TADCompare")
+# Or, for the developmental version
 devtools::install_github("dozmorovlab/TADCompare")
+```
+
+```{r}
 library(TADCompare)
 ```
 

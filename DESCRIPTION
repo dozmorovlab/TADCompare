@@ -15,7 +15,7 @@ Description:
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.0.1
-Lazydata: false
+LazyData: false
 BugReports: https://github.com/dozmorovlab/TADCompare/issues
 Imports: 
     dplyr,
