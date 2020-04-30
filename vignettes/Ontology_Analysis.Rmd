@@ -29,6 +29,7 @@ BiocManager::install("TADCompare")
 ```
 
 ```{r, echo = FALSE, warning = FALSE, message=FALSE}
+library(dplyr)
 library(TADCompare)
 ```
 

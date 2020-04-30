@@ -32,6 +32,8 @@ devtools::install_github("dozmorovlab/TADCompare")
 ```
 
 ```{r}
+library(dplyr)
+library(SpectralTAD)
 library(TADCompare)
 ```
 

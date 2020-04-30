@@ -35,6 +35,8 @@ BiocManager::install("TADCompare")
 ```
 
 ```{r}
+library(dplyr)
+library(SpectralTAD)
 library(TADCompare)
 ```
 
