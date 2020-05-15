@@ -1,4 +1,5 @@
-TADCompare 0.99.33 (Developmental)
-==============
+Changes in version 0.99.35 (2020-05-15)
++ Proper formatting of the NEWS file
 
-Final Bioconductor Submission 2020-04-27
+Changes in version 0.99.33 (2020-04-27)
++ Submitted to Bioconductor
