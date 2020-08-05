@@ -21,7 +21,7 @@ Alternatively, the package can be installed from Bioconductor (to be submitted):
 ```
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-BiocManager::install("TADCompare")
+BiocManager::install("TADCompare", version = "devel")
 library(TADCompare)
 ```
 
