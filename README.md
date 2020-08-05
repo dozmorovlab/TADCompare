@@ -1,3 +1,5 @@
+Cresswell, Kellen G., and Mikhail G. Dozmorov. “[TADCompare: An R Package for Differential and Temporal Analysis of Topologically Associated Domains](https://doi.org/10.3389/fgene.2020.00158).” Frontiers in Genetics 11 (March 10, 2020): 158. 
+
 `TADCompare` is an R package for differential Topologically Associated Domain (TAD) detection between two Hi-C contact matrices and across a time course, and TAD boundary calling across multiple Hi-C replicates. It has three main functions, `TADCompare` for differential TAD analysis, `TimeCompare` for time course analysis, and `ConsensusTADs` for consensus boundary identification. The `DiffPlot` function allows for visualizing the differences between two contact matrices.
 
 # Installation
