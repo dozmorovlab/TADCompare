@@ -1,0 +1,17 @@
+citHeader("To cite package 'TADCompare', please, use:")
+
+citEntry(entry = "Article",
+	title = "TADCompare: An R Package for Differential and Temporal Analysis of Topologically Associated Domains",
+	author = personList(as.person("Kellen G. Cresswell"),
+		as.person("Mikhail G. Dozmorov")),
+	journal = "Frontiers in Genetics",
+	year = 2020L,
+	volume = 11L,
+	number = 158L,
+	month = "Mar",
+	url = "https://github.com/dozmorovlab/TADCompare",
+	doi = "10.3389/fgene.2020.00158",
+	textVersion = "Cresswell, Kellen G., and Mikhail G. Dozmorov. “TADCompare: An R Package for Differential and Temporal Analysis of Topologically Associated Domains.” Frontiers in Genetics 11 (March 10, 2020): 158. https://doi.org/10.3389/fgene.2020.00158"
+)
+
+
