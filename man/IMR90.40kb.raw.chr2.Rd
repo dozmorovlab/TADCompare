@@ -4,7 +4,9 @@
 \name{IMR90.40kb.raw.chr2}
 \alias{IMR90.40kb.raw.chr2}
 \title{A subset of chomosome 2 contact matrix, IMR90 cell line.}
-\format{A data frame with 1001 rows and 1001 variables:}
+\format{
+A data frame with 1001 rows and 1001 variables:
+}
 \source{
 \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE87112}
 }

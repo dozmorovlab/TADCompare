@@ -4,8 +4,13 @@
 \alias{ConsensusTADs}
 \title{Consensus boundary identification}
 \usage{
-ConsensusTADs(cont_mats, resolution, z_thresh = 3, window_size = 15,
-  gap_thresh = 0.2)
+ConsensusTADs(
+  cont_mats,
+  resolution,
+  z_thresh = 3,
+  window_size = 15,
+  gap_thresh = 0.2
+)
 }
 \arguments{
 \item{cont_mats}{List of contact matrices in either sparse 3 column,

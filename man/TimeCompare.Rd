@@ -4,8 +4,14 @@
 \alias{TimeCompare}
 \title{Time-varying TAD boundary analysis}
 \usage{
-TimeCompare(cont_mats, resolution, z_thresh = 2, window_size = 15,
-  gap_thresh = 0.2, groupings = NULL)
+TimeCompare(
+  cont_mats,
+  resolution,
+  z_thresh = 2,
+  window_size = 15,
+  gap_thresh = 0.2,
+  groupings = NULL
+)
 }
 \arguments{
 \item{cont_mats}{List of contact matrices in either sparse 3 column,
