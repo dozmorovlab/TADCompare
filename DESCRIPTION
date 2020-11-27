@@ -14,9 +14,8 @@ Description:
     comprehensive, easy to analyze results.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.0.1
+RoxygenNote: 7.1.1
 LazyData: true
-BugReports: https://github.com/dozmorovlab/TADCompare/issues
 Imports: 
     dplyr,
     PRIMME,
@@ -43,3 +42,5 @@ Suggests:
 Depends: R (>= 4.0) 
 VignetteBuilder: knitr
 biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering
+BugReports: https://github.com/dozmorovlab/TADCompare/issues
+URL: https://github.com/dozmorovlab/TADCompare
