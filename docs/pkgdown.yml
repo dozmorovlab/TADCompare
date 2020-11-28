@@ -1,0 +1,9 @@
+pandoc: 2.11.2
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  Input_Data: Input_Data.html
+  Ontology_Analysis: Ontology_Analysis.html
+  TADCompare: TADCompare.html
+last_built: 2020-11-28T00:11Z
+
