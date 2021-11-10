@@ -1,26 +1,12 @@
 Cresswell, Kellen G., and Mikhail G. Dozmorov. “[TADCompare: An R Package for Differential and Temporal Analysis of Topologically Associated Domains](https://doi.org/10.3389/fgene.2020.00158).” Frontiers in Genetics 11 (March 10, 2020): 158. 
 
-`TADCompare` is an R package for differential Topologically Associated Domain (TAD) detection between two Hi-C contact matrices and across a time course, and TAD boundary calling across multiple Hi-C replicates. It has three main functions, `TADCompare` for differential TAD analysis, `TimeCompare` for time course analysis, and `ConsensusTADs` for consensus boundary identification. The `DiffPlot` function allows for visualizing the differences between two contact matrices.
+`TADCompare` is an R package for differential Topologically Associated Domain (TAD) boundary detection between two Hi-C contact matrices and across a time course. It also ecables consensus TAD boundary calling across multiple Hi-C replicates. It has three main functions, `TADCompare` for differential TAD analysis, `TimeCompare` for time course analysis, and `ConsensusTADs` for consensus boundary identification. The `DiffPlot` function allows for visualizing the differences between two contact matrices.
 
 # Installation
 
 ```
 install.packages(c('dplyr', 'PRIMME', 'cluster', 'Matrix', 'magrittr', 'HiCcompare'))
 
-if (!requireNamespace("BiocManager", quietly=TRUE))
-    install.packages("BiocManager")
-```
-
-The latest version of `TADCompare` can be directly installed from Github:
-
-```
-devtools::install_github('cresswellkg/TADCompare', build_vignettes = TRUE)
-library(TADCompare)
-```
-
-Alternatively, the package can be installed from Bioconductor (to be submitted):
-
-```
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 BiocManager::install("TADCompare", version = "devel")
@@ -35,11 +21,11 @@ There are three types of input accepted:
 2. n x (n+3) contact matrices
 3. 3-column sparse contact matrices
 
-It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](https://htmlpreview.github.io/?https://github.com/dozmorovlab/TADCompare/blob/master/vignettes/Input_Data.html).
+It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](https://dozmorovlab.github.io/TADCompare/articles/Input_Data.html).
 
 # Usage
 
-Please, refer to the [TADCompare vignette](https://htmlpreview.github.io/?https://github.com/dozmorovlab/TADCompare/blob/master/vignettes/TADCompare.html) for an in depth tutorial.
+Please, refer to the [TADCompare vignette](https://dozmorovlab.github.io/TADCompare/articles/TADCompare.html) for an in depth tutorial.
 
 ## TADcompare
 
@@ -168,7 +154,7 @@ The developmental version is available at https://github.com/cresswellkg/TADComp
 
 # Contributions and Support
 
-Suggestions for new features and bug reports are welcome. Please, create a new issue for any of these or contact the author directly: @cresswellkg (cresswellkg[at]vcu[dot]edu)
+Suggestions for new features and bug reports are welcome. Please, create a new issue for any of these or contact the author directly: @mdozmorov (mdozmorov[at]vcu[dot]edu)
 
 # Contributors
 
