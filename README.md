@@ -21,11 +21,11 @@ There are three types of input accepted:
 2. n x (n+3) contact matrices
 3. 3-column sparse contact matrices
 
-It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](https://dozmorovlab.github.io/TADCompare/articles/Input_Data.html).
+It is required that the same format be used for each of the inputs to a given function, or an error will occur. These formats are explained in depth in the [Input Data vignette](https://bioconductor.org/packages/release/bioc/vignettes/TADCompare/inst/doc/Input_Data.html).
 
 # Usage
 
-Please, refer to the [TADCompare vignette](https://dozmorovlab.github.io/TADCompare/articles/TADCompare.html) for an in depth tutorial.
+Please, refer to the [TADCompare vignette](https://bioconductor.org/packages/release/bioc/vignettes/TADCompare/inst/doc/TADCompare.html) for an in depth tutorial.
 
 ## TADcompare
 
@@ -72,7 +72,7 @@ DiffPlot(tad_diff    = TD_Compare,
 
 ![](https://mdozmorov.github.io/BIOS691.2018/assets/plot_original.png)
 
-`TADCompare` detects TAD boundaries by selecting regions with TAD boundary scores above a threshold (1.5 by default). An alternative way of running `TADCompare` is to call TAD boundaries using a separate TAD caller, and then compare those pre-defined TAD boundaries. The example below uses the [SpectralTAD](https://bioconductor.org/packages/devel/bioc/html/SpectralTAD.html) TAD caller to pre-define TAD boundaries.
+`TADCompare` detects TAD boundaries by selecting regions with TAD boundary scores above a threshold (1.5 by default). An alternative way of running `TADCompare` is to call TAD boundaries using a separate TAD caller, and then compare those pre-defined TAD boundaries. The example below uses the [SpectralTAD](https://bioconductor.org/packages/SpectralTAD/) TAD caller to pre-define TAD boundaries.
 
 ```
 # Call TADs using SpectralTAD
@@ -146,7 +146,7 @@ The results are a set of coordinates with significant consensus TADs. Columns st
 
 ## Downstream analysis
 
-The output of `TADcompare` and `TimeCompare` functions may be used for a range of analyses on genomic regions. One common one is gene ontology enrichment analysis to determine the pathways in which genes near TAD boundaries occur in. An example is shown in the [Ontology_Analysis vignette](https://htmlpreview.github.io/?https://github.com/dozmorovlab/TADCompare/blob/master/vignettes/Ontology_Analysis.html)
+The output of `TADcompare` and `TimeCompare` functions may be used for a range of analyses on genomic regions. One common one is gene ontology enrichment analysis to determine the pathways in which genes near TAD boundaries occur in. An example is shown in the [Ontology_Analysis vignette](https://bioconductor.org/packages/release/bioc/vignettes/TADCompare/inst/doc/Ontology_Analysis.html)
 
 # Availability 
 
