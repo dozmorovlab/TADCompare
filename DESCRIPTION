@@ -1,6 +1,6 @@
 Package: TADCompare
 Title: TADCompare: Identification and characterization of differential TADs
-Version: 1.20.0
+Version: 1.21.0
 Authors@R: c(
     person(given = "Mikhail",
            family = "Dozmorov",
