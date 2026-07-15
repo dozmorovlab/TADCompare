@@ -27,11 +27,13 @@ get_eigs = function(mat, NEig = 2) {
 
   } else {
 
-    #Fall back to base R eigendecomposition when PRIMME is unavailable
+    # Fall back to base R eigendecomposition when PRIMME is unavailable
 
     full_eigen = eigen(mat, symmetric = TRUE)
 
-    #PRIMME::eigs_sym defaults to the NEig largest-magnitude eigenvalues
+    # PRIMME::eigs_sym defaults to the NEig largest-magnitude eigenvalues
+
+    NEig = min(NEig, length(full_eigen$values))
 
     ord = order(-abs(full_eigen$values))[seq_len(NEig)]
 
