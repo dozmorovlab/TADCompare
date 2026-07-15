@@ -7,7 +7,7 @@
 TimeCompare(
   cont_mats,
   resolution,
-  z_thresh = 2,
+  z_thresh = 3,
   window_size = 15,
   gap_thresh = 0.2,
   groupings = NULL
