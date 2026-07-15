@@ -7,7 +7,7 @@
 TimeCompare(
   cont_mats,
   resolution,
-  z_thresh = 2,
+  z_thresh = 3,
   window_size = 15,
   gap_thresh = 0.2,
   groupings = NULL
@@ -25,7 +25,7 @@ to genomic regions. If not provided, resolution will be estimated from
 column names of the first matrix. Default is "auto".}
 
 \item{z_thresh}{Threshold for boundary score. Higher values result in a
-more stringent detection of differential TADs. Default is 2.}
+more stringent detection of differential TADs. Default is 3.}
 
 \item{window_size}{Size of sliding window for TAD detection, measured in bins.
 Results should be consistent. Default is 15.}
