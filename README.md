@@ -5,7 +5,11 @@ Cresswell, Kellen G., and Mikhail G. Dozmorov. “[TADCompare: An R Package for 
 # Installation
 
 ```
-install.packages(c('dplyr', 'PRIMME', 'cluster', 'Matrix', 'magrittr', 'HiCcompare'))
+install.packages(c('dplyr', 'cluster', 'Matrix', 'magrittr', 'HiCcompare'))
+
+# Optional: install PRIMME for faster eigendecomposition. If not installed,
+# TADCompare falls back to base R's eigen() function.
+install.packages('PRIMME')
 
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")

@@ -18,7 +18,6 @@ RoxygenNote: 7.1.1
 LazyData: true
 Imports: 
     dplyr,
-    PRIMME,
     cluster,
     Matrix,
     magrittr,
@@ -38,7 +37,8 @@ Suggests:
     covr,
     pheatmap,
     rGREAT,
-    SpectralTAD
+    SpectralTAD,
+    PRIMME
 Depends: R (>= 4.0) 
 VignetteBuilder: knitr
 biocViews: Software, HiC, Sequencing, FeatureExtraction, Clustering
