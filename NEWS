@@ -1,3 +1,6 @@
+Changes in version 1.23.2 (2026-07-15)
++ Fix z_thresh argument to default to 3 and used in the functions
+
 Changes in version 1.23.1 (2026-07-15)
 + Soften PRIMME dependency
 
