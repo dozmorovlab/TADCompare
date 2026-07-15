@@ -2,7 +2,6 @@
 #'
 #' @import dplyr
 #' @import magrittr
-#' @import PRIMME
 #' @importFrom HiCcompare sparse2full
 #' @param cont_mats List of contact matrices in either sparse 3 column,
 #' n x n or n x (n+3) form where the first three columns are coordinates in
@@ -376,7 +375,7 @@ TimeCompare = function(cont_mats,
 
     #Get first two eigenvectors
 
-    Eigen1 = eigs_sym(sub_mat1, NEig = 2)
+    Eigen1 = get_eigs(sub_mat1, NEig = 2)
 
     #Pull out eigenvalues and eigenvectors
     eig_vals1 = Eigen1$values

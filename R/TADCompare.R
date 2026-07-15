@@ -2,7 +2,6 @@
 #'
 #' @import dplyr
 #' @import magrittr
-#' @import PRIMME
 #' @import ggplot2
 #' @import Matrix
 #' @import cluster
@@ -257,7 +256,7 @@ TADCompare = function(cont_mat1,
 
     #Get first two eigenvectors
 
-    Eigen1 = PRIMME::eigs_sym(sub_mat1, NEig = 2)
+    Eigen1 = get_eigs(sub_mat1, NEig = 2)
 
     eig_vals1 = Eigen1$values
     eig_vecs1 = Eigen1$vectors
@@ -271,7 +270,7 @@ TADCompare = function(cont_mat1,
 
     #Repeat for matrix 2
 
-    Eigen2 = PRIMME::eigs_sym(sub_mat2, NEig = 2)
+    Eigen2 = get_eigs(sub_mat2, NEig = 2)
 
     eig_vals2 = Eigen2$values
     eig_vecs2 = Eigen2$vectors
