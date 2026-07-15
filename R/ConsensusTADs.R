@@ -172,7 +172,7 @@ ConsensusTADs = function(cont_mats, resolution,
     dplyr::mutate(Sample = factor(Sample, levels = unique(Sample)))
 
   #Filtering for TADs specifically
-  TAD_Frame = score_frame %>% group_by(Coordinate) %>% filter(any(TAD_Score>3))
+  TAD_Frame = score_frame %>% group_by(Coordinate) %>% filter(any(TAD_Score>z_thresh))
 
 
   #Spread the score frame and TAD frame into wide format

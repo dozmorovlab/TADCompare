@@ -12,7 +12,7 @@
 #' to genomic regions. If not provided, resolution will be estimated from
 #' column names of the first matrix. Default is "auto".
 #' @param z_thresh Threshold for boundary score. Higher values result in a
-#' more stringent detection of differential TADs. Default is 3.
+#' more stringent detection of differential TADs. Default is 2.
 #' @param window_size Size of sliding window for TAD detection, measured in bins.
 #' Results should be consistent. Default is 15.
 #' @param gap_thresh Required \% of non-zero entries before a region will
@@ -214,7 +214,7 @@ TimeCompare = function(cont_mats,
 
   #Pulling out consensus for classification
 
-  TAD_Iden = TAD_Frame[,c(-1, -ncol(TAD_Frame))]>3
+  TAD_Iden = TAD_Frame[,c(-1, -ncol(TAD_Frame))]>z_thresh
 
   #Classify time trends
   All_Non_TADs = apply(TAD_Iden, 1, function(x) all(x == FALSE))
@@ -281,7 +281,7 @@ TimeCompare = function(cont_mats,
 
   TAD_Frame_Sub = TAD_Frame %>%
     dplyr::filter_at(dplyr::vars(`Sample 1`:Consensus_Score),
-                     dplyr::any_vars(.>3))
+                     dplyr::any_vars(.>z_thresh))
 
   TAD_Sum = TAD_Frame_Sub %>% group_by(Category) %>% summarise(Count = n())
 
