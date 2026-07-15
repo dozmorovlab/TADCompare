@@ -1,3 +1,6 @@
+Changes in version 1.23.1 (2026-07-15)
++ Soften PRIMME dependency
+
 Changes in version 1.13.3 (2024-03-06)
 + Remove rGREAT dependency
 
